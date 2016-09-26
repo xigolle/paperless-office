@@ -1,0 +1,25 @@
+﻿html,body{
+    width:100%;
+}
+/*#bs-example-navbar-collapse-1{
+    width:100%;
+}*/
+#search-form{
+    width:80%;
+}
+#search-bar{
+    width: 300px;
+       -webkit-transition: width 1s ease-in-out;
+    -moz-transition:width 1s ease-in-out;
+    -o-transition: width 1s ease-in-out;
+    transition: width 1s ease-in-out;
+   float:right;
+}
+.form-group, form{
+    width:100%;
+}
+ #search-bar:focus{
+    width: 100%;
+     
+
+}
