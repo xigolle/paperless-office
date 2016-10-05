@@ -7,10 +7,47 @@
 
     <script src="Scripts/jquery-2.2.4.js"></script>
     <script src="Scripts/bootstrap.js"></script>
+    <script src="Scripts/pdf.js"></script>
+    <script>
+        // URL of PDF document
+        var url = "http://mozilla.github.io/pdf.js/examples/learning/helloworld.pdf";
 
+        // Asynchronous download PDF
+        PDFJS.getDocument(url)
+          .then(function (pdf) {
+              return pdf.getPage(1);
+          })
+          .then(function (page) {
+              // Set scale (zoom) level
+              var scale = 1.5;
+
+              // Get viewport (dimensions)
+              var viewport = page.getViewport(scale);
+
+              // Get canvas#the-canvas
+              var canvas = document.getElementById('the-canvas');
+
+              // Fetch canvas' 2d context
+              var context = canvas.getContext('2d');
+
+              // Set dimensions to Canvas
+              canvas.height = viewport.height;
+              canvas.width = viewport.width;
+
+              // Prepare object needed by render method
+              var renderContext = {
+                  canvasContext: context,
+                  viewport: viewport
+              };
+
+              // Render PDF page
+              page.render(renderContext);
+          });
+    </script>
     <script src="Scripts/sidebar.js"></script>
     <script src="Scripts/angular.js"></script>
     <script src="Scripts/AngularScript.js"></script>
+    
     <title></title>
     <meta charset="utf-8" />
 </head>
@@ -72,6 +109,7 @@
                             add content here!!
                             <div ng-controller="testCTRL">
                                 {{name}}
+                                <canvas id="the-canvas"></canvas>
                             </div>
                         </div>
                     </div>
