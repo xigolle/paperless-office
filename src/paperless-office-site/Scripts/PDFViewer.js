@@ -67,11 +67,12 @@ function openSinglePDFReader(url) {
     $("canvas").toggle();
     $("#DocumentIFrame").toggle();
     $("#SuggestedDocumentSection").toggle();
-    $("#DocumentIFrame").attr('src', url);
+    console.log(url);
+    $("#DocumentIFrame").attr('src', "/web/viewer.html?file=../"+ url);
 }
 function showThumbnailOfDocuments(amount) {
     for (var i = 0; i < 5; i++) {
-        showMultiplePDFDocument("http://localhost:7152/Files/test" + i + ".pdf", "canvas" + i);
+        showMultiplePDFDocument("Files/test" + i + ".pdf", "canvas" + i);
     }
 }
 function showMultiplePDFDocument(url, canvasID) {
