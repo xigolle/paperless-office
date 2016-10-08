@@ -12,15 +12,56 @@ $(function () {
         openSinglePDFDocument("http://localhost:7152/Files/test0.pdf");
     });
     $("#DocumentIFrame").toggle();
-    $("#SuggestedDocumentSection").toggle();
+    $("SuggestedDocumentSection").toggle();
 });
 
 
+function openSinglePDFDocument(url) {
+    var url = url;
+    // Asynchronous download PDF
+    PDFJS.getDocument(url)
+      .then(function (pdf) {
+          console.log("first then");
+          return pdf.getPage(1);
+      })
+      .then(function (page) {
+          console.log("second then");
+          // Set scale (zoom) level
+          var scale = 0.5;
+
+          // Get viewport (dimensions)
+          var viewport = page.getViewport(scale);
+          // Create the document canvas
+          var newCanvas = document.createElement('canvas');
+          newCanvas.id = canvasID;
+          var PDFWrapper = document.getElementById("PDFDocumentWrapper");
+          
+       
+          PDFWrapper.appendChild(newCanvas);
+          console.log("test");
+          // Get canvas#the-canvas
+          var canvas = document.getElementById(canvasID);
+
+          // Fetch canvas' 2d context
+          var context = canvas.getContext('2d');
+
+          // Set dimensions to Canvas
+          canvas.height = viewport.height;
+          canvas.width = viewport.width;
+
+          // Prepare object needed by render method
+          var renderContext = {
+              canvasContext: context,
+              viewport: viewport
+          };
+
+          // Render PDF page
+          page.render(renderContext);
+      });
+}
 function openListOfDocuments() {
     $("canvas").toggle();
     $("#DocumentIFrame").toggle();
-    $("#SuggestedDocumentSection").toggle();
-
 }
 function openSinglePDFReader(url) {
     $("canvas").toggle();
