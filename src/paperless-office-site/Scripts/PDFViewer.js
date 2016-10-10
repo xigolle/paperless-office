@@ -12,7 +12,8 @@ $(function () {
         openSinglePDFDocument("http://localhost:7152/Files/test0.pdf");
     });
     $("#DocumentIFrame").toggle();
-    $("SuggestedDocumentSection").toggle();
+    $("#SuggestedDocumentSection").toggle();
+    $("#PDFDocumentWrapper").toggleClass("col-md-10");
 });
 
 
@@ -46,8 +47,12 @@ function openSinglePDFDocument(url) {
           var context = canvas.getContext('2d');
 
           // Set dimensions to Canvas
-          canvas.height = viewport.height;
-          canvas.width = viewport.width;
+          //viewport.height = 396;
+          //viewport.width = 306;
+          //canvas.height = viewport.height;
+          //canvas.width = viewport.width;
+          canvas.width = 306;
+          canvas.height = 396;
 
           // Prepare object needed by render method
           var renderContext = {
@@ -62,13 +67,17 @@ function openSinglePDFDocument(url) {
 function openListOfDocuments() {
     $("canvas").toggle();
     $("#DocumentIFrame").toggle();
+    $("#SuggestedDocumentSection").toggle();
+    $("#PDFDocumentWrapper").toggleClass("col-md-10");
+    
 }
 function openSinglePDFReader(url) {
     $("canvas").toggle();
-    $("#DocumentIFrame").toggle();
+    //$("#DocumentIFrame")
+    $("#PDFDocumentWrapper").toggleClass("col-md-10");
     $("#SuggestedDocumentSection").toggle();
     console.log(url);
-    $("#DocumentIFrame").attr('src', "/web/viewer.html?file=../"+ url);
+    $("#DocumentIFrame").attr('src', "/web/viewer.html?file=../" + url).toggle();;
 }
 function showThumbnailOfDocuments(amount) {
     for (var i = 0; i < 5; i++) {
@@ -89,10 +98,17 @@ function showMultiplePDFDocument(url, canvasID) {
           // Get viewport (dimensions)
           var viewport = page.getViewport(scale);
           // Create the document canvas
+          var newDocumentHolder = document.createElement('div');
+          //newDocumentHolder.className = "Canvas-Document";
           var newCanvas = document.createElement('canvas');
+          newCanvas.className = "Canvas-Document ";
+          
+          newCanvas.width = 306;
+          newCanvas.height = 396;
           newCanvas.id = canvasID;
           var PDFWrapper = document.getElementById("PDFDocumentWrapper");
-          
+          //PDFWrapper.appendChild(newDocumentHolder);
+          //newDocumentHolder.appendChild(newCanvas);
           PDFWrapper.appendChild(newCanvas);
           // Get canvas#the-canvas
           var canvas = document.getElementById(canvasID);
@@ -103,6 +119,8 @@ function showMultiplePDFDocument(url, canvasID) {
           // Set dimensions to Canvas
           canvas.height = viewport.height;
           canvas.width = viewport.width;
+          canvas.width = 306;
+          canvas.height = 396;
 
           // Prepare object needed by render method
           var renderContext = {
