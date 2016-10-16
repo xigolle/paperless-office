@@ -36,6 +36,20 @@ app.get("/api/getDocuments", function (req, res) {
 
 });
 
+app.get("/api/uploadDocuments", function(req, res) {
+    //werken met block blobs, append blobs of page blobs?
+    //blob maken adhv een file die naar de server wordt gestuurd en er dus opstaat
+    //of werken met write stream?
+
+    //local file
+    blobSvc.createBlockBlobFromLocalFile("test", "test.txt", "test.txt", function(error, result, response) {
+	if(!error) {
+	    res.send("file uploaded");
+        };
+    });
+
+    //writeStream
+});
 
 //Function that can be called to download a document to the server
 var getDoc = function(container, name) {
