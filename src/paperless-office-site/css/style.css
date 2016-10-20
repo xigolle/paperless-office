@@ -72,17 +72,27 @@ canvas {
     transition: all 0.5s ease;
     background-color: grey;
     text-align: center;
-    height: 45px;
+    height: 5%; 
 
+}
+
+#upload p {
+    height: 100%;
 }
 
 #upload.uploadToggled {
-    height: 400px;
+    height: 50%;
+}
+
+#upload.uploadToggled p {
+    height: 5%;
 }
 
 #upload-zone-wrapper {
-    border: dashed;
-    border-width: thin;
-    background-color: darkgrey;
-    height: 100%;
+    background-color: darkgrey;   
+    height: 90%;
+    display: flex;
+    align-items: center;
+    justify-content: center
 }
+
