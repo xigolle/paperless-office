@@ -7,14 +7,21 @@ var app = express();
 //Let's us work with containers and blobs
 var blobSvc = azure.createBlobService(config.storageAccountName, config.primaryKey);
 
-
+var testArray = [];
 app.listen(3000);
 
 app.get("/", function (req, res) {
     res.send("Hello world");
 });
+app.get("/api/getDocument", function (req, res) {
+    //console.log(req.params.name);
+    console.log(req.get('test'));
+    //blobSvc.createReadStream("test", req.params.name).pipe(res)
+
+});
 app.get("/api/getDocuments", function (req, res) {
-    
+    //empty array
+    testArray = [];
     //This can be used to 'pipe' ONE document directly to the site    
     //blobSvc.createReadStream("test", "Mathias/Knipsel.JPG").pipe(res);
 
@@ -23,13 +30,16 @@ app.get("/api/getDocuments", function (req, res) {
   	if(!error){
 	    //Will download all the documents in the specified container
 	    result.entries.forEach(function(name) {
-        	getDoc("test", name.name);
-   	     
+	        getDoc("test", name.name);
+	        testArray.push(name.name);
+            
+   	        
 	    });
             
       	    // result.entries contains the entries
-            // If not all blobs were returned, result.continuationToken has the continuation token. 
-            res.send(result.continuationToken);
+  	    // If not all blobs were returned, result.continuationToken has the continuation token. 
+	    res.send(testArray);
+            //res.send(result.continuationToken);
 
   	} else res.send("Could not get names");  
     });
