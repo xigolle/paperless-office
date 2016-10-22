@@ -1,0 +1,115 @@
+﻿html, body {
+}
+
+#search-form {
+    width: 80%;
+    border: none;
+    box-shadow: none;
+}
+
+#DocumentIFrame {
+    width: 100%;
+    height: 94vh;
+}
+
+#page-content-wrapper {
+    padding: 0px;
+    
+}
+
+canvas {
+    margin: 0 2%;
+    border: 1px solid rgba(0, 0, 0, 0.6);
+    -webkit-box-shadow: 7px 7px 22px -4px rgba(69,68,69,1);
+    -moz-box-shadow: 7px 7px 22px -4px rgba(69,68,69,1);
+    box-shadow: 7px 7px 22px -4px rgba(69,68,69,1);
+
+}
+
+.Canvas-Document {
+    margin-top: 3%;
+  
+}
+
+#search-bar {
+    width: 300px;
+    -webkit-transition: width 1s ease-in-out;
+    -moz-transition: width 1s ease-in-out;
+    -o-transition: width 1s ease-in-out;
+    transition: width 1s ease-in-out;
+    float: right;
+}
+
+.form-group, form {
+    width: 100%;
+}
+
+#search-bar:focus {
+    width: 100%;
+}
+
+
+@media(max-width: 768px) {
+    #search-form {
+        width: auto;
+        padding-top: 0px;
+        margin-top: 0px;
+    }
+
+    body {
+        padding: 75px;
+    }
+}
+
+#upload.toggled {
+    margin-left: 250px;
+}
+
+#upload {
+    -webkit-transition: all 0.5s ease;
+    -moz-transition: all 0.5s ease;
+    -o-transition: all 0.5s ease;
+    transition: all 0.5s ease;
+    background-color: grey;
+    text-align: center;
+    height: 5%; 
+    border-radius: 0;
+}
+
+#upload p {
+    height: 100%;
+}
+
+#upload.uploadToggled {
+    height: 50%;
+}
+
+#upload.uploadToggled p {
+    height: 5%;
+}
+
+#upload-zone-wrapper {
+    border: dashed thin;
+    border-color: gray;
+    background-color: darkgrey;   
+    height: 80%;
+}
+
+#fileInput {
+    height: 100%;
+     display: flex;
+    align-items: center;
+    justify-content: center
+}
+
+#fileInput input {
+    display: none;
+    height: 100%;
+    width: 100%;
+}
+
+#submit {
+    height: 10%;
+    margin-top: 0.5%;
+}
+
