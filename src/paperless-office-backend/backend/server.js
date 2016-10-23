@@ -10,13 +10,38 @@ var blobSvc = azure.createBlobService(config.storageAccountName, config.primaryK
 var testArray = [];
 app.listen(3000);
 
-app.get("/", function (req, res) {
-    res.send("Hello world");
+app.use(function (req, res, next) {
+
+    // Website you wish to allow to connect
+    res.setHeader('Access-Control-Allow-Origin', '*');
+
+    // Request methods you wish to allow
+    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
+
+    // Request headers you wish to allow
+    res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,content-type,test,Accept-Ranges');
+
+    // Set to true if you need the website to include cookies in the requests sent
+    // to the API (e.g. in case you use sessions)
+    res.setHeader('Access-Control-Allow-Credentials', true);
+
+    // Pass to next layer of middleware
+    next();
 });
+app.use(express.static('/website'));
+app.get("/", function (req, res) {
+  
+});
+app.get("/api/getDocumentURL/:url", function (req, res) {
+    console.log(req.params.url);
+    blobSvc.createReadStream("test", req.params.url).pipe(res)
+})
+
 app.get("/api/getDocument", function (req, res) {
     //console.log(req.params.name);
+    //console.log(req.get('test'));
     console.log(req.get('test'));
-    //blobSvc.createReadStream("test", req.params.name).pipe(res)
+    blobSvc.createReadStream("test", req.get('test')).pipe(res)
 
 });
 app.get("/api/getDocuments", function (req, res) {
