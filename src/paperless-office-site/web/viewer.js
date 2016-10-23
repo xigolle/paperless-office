@@ -7926,7 +7926,7 @@ var PDFViewerApplication = {
 };
 
 var HOSTED_VIEWER_ORIGINS = ['null',
-  'http://mozilla.github.io',  'http://paperless-office.westeurope.cloudapp.azure.com', '13.94.234.60', 'http://localhost:38979', 'https://mozilla.github.io'];
+  'http://mozilla.github.io',  'http://paperless-office.westeurope.cloudapp.azure.com', 'http://localhost:3000', '13.94.234.60', 'http://localhost:38979', 'https://mozilla.github.io'];
 function validateFileURL(file) {
   try {
     var viewerOrigin = new URL(window.location.href).origin || 'null';
