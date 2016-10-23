@@ -41,7 +41,7 @@ function showMultiplePDFDocument(url, canvasID, currentDoc) {
           documentCanvas.width = 306;
           documentCanvas.height = 396;
           documentCanvas.id = canvasID;
-          var PDFWrapper = document.getElementById("PDFDocumentWrapper");
+          var PDFWrapper = document.getElementById("Canvas-Document-Holder");
           //PDFWrapper.appendChild(newDocumentHolder);
           //newDocumentHolder.appendChild(newCanvas);
           newDocumentHolder.appendChild(documentIdentifier);
@@ -100,7 +100,7 @@ function openSinglePDFDocument(url) {
           newCanvas.id = canvasID;
           var newDiv = document.createElement('div');
           newDiv.className = "overlay-document";
-          var PDFWrapper = document.getElementById("PDFDocumentWrapper");
+          var PDFWrapper = document.getElementById("Canvas-Document-Holder");
           
           
           PDFWrapper.appendChild(newCanvas);
@@ -131,16 +131,17 @@ function openSinglePDFDocument(url) {
       });
 }
 function openListOfDocuments() {
-    $("canvas").toggle();
+    $("#Canvas-Document-Holder").toggle();
     $("#DocumentIFrame").toggle();
     $("#SuggestedDocumentSection").toggle();
     $("#PDFDocumentWrapper").toggleClass("col-md-10");
     
 }
 function openSinglePDFReader(url) {
-    $("canvas").toggle();
+    $("#Canvas-Document-Holder").toggle();
     //$("#DocumentIFrame")
     $("#PDFDocumentWrapper").toggleClass("col-md-10");
+
     $("#SuggestedDocumentSection").toggle();
     $("#DocumentIFrame").attr('src', "/web/viewer.html?file="+url).toggle();
     
