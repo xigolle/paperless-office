@@ -7,14 +7,45 @@ var app = express();
 //Let's us work with containers and blobs
 var blobSvc = azure.createBlobService(config.storageAccountName, config.primaryKey);
 
-
+var testArray = [];
 app.listen(3000);
 
+app.use(function (req, res, next) {
+
+    // Website you wish to allow to connect
+    res.setHeader('Access-Control-Allow-Origin', '*');
+
+    // Request methods you wish to allow
+    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
+
+    // Request headers you wish to allow
+    res.setHeader('Access-Control-Allow-Headers', '*');
+
+    // Set to true if you need the website to include cookies in the requests sent
+    // to the API (e.g. in case you use sessions)
+    res.setHeader('Access-Control-Allow-Credentials', true);
+
+    // Pass to next layer of middleware
+    next();
+});
+app.use(express.static('../website'));
 app.get("/", function (req, res) {
-    res.send("Hello world");
+});
+app.get("/api/getDocumentURL/:url", function (req, res) {
+    console.log(req.params.url);
+    blobSvc.createReadStream("test", req.params.url).pipe(res)
+})
+
+app.get("/api/getDocument", function (req, res) {
+    //console.log(req.params.name);
+    //console.log(req.get('test'));
+    console.log(req.get('test'));
+    blobSvc.createReadStream("test", req.get('test')).pipe(res)
+
 });
 app.get("/api/getDocuments", function (req, res) {
-    
+    //empty array
+    testArray = [];
     //This can be used to 'pipe' ONE document directly to the site    
     //blobSvc.createReadStream("test", "Mathias/Knipsel.JPG").pipe(res);
 
@@ -22,14 +53,18 @@ app.get("/api/getDocuments", function (req, res) {
     blobSvc.listBlobsSegmented("test", null, function(error, result, response){
   	if(!error){
 	    //Will download all the documents in the specified container
-	    result.entries.forEach(function(name) {
-        	getDoc("test", name.name);
-   	     
+  	    result.entries.forEach(function (name) {
+            //commented out because else it downloads the whole file to the server
+	        //getDoc("test", name.name);
+	        testArray.push(name.name);
+            
+   	        
 	    });
             
       	    // result.entries contains the entries
-            // If not all blobs were returned, result.continuationToken has the continuation token. 
-            res.send(result.continuationToken);
+  	    // If not all blobs were returned, result.continuationToken has the continuation token. 
+	    res.send(testArray);
+            //res.send(result.continuationToken);
 
   	} else res.send("Could not get names");  
     });
