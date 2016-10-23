@@ -17,17 +17,42 @@
 }
 
 canvas {
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    z-index: -99;
+}
+
+.document-identifier{
+    display:none;
+        position: absolute;
+    top: 50%;
+     left: 50%; 
+    /* color: blue; */
+    transform: translateY(-50%) translateX(-50%);
+}
+
+.Canvas-Document:hover {
+    background:rgba(0,0,0,0.7);
+}
+
+.Canvas-Document:hover .document-identifier{
+    display:inline;
+    color:white;
+}
+
+
+.Canvas-Document {
+    position: relative;
+    width: 306px;
+    height: 396px;
     margin: 0 2%;
+    display: inline-block;
     border: 1px solid rgba(0, 0, 0, 0.6);
     -webkit-box-shadow: 7px 7px 22px -4px rgba(69,68,69,1);
     -moz-box-shadow: 7px 7px 22px -4px rgba(69,68,69,1);
     box-shadow: 7px 7px 22px -4px rgba(69,68,69,1);
-
-}
-
-.Canvas-Document {
     margin-top: 3%;
-  
 }
 
 #search-bar {

@@ -19,7 +19,7 @@ app.use(function (req, res, next) {
     res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
 
     // Request headers you wish to allow
-    res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,content-type,test,Accept-Ranges');
+    res.setHeader('Access-Control-Allow-Headers', '*');
 
     // Set to true if you need the website to include cookies in the requests sent
     // to the API (e.g. in case you use sessions)
@@ -28,9 +28,8 @@ app.use(function (req, res, next) {
     // Pass to next layer of middleware
     next();
 });
-app.use(express.static('/website'));
+app.use(express.static('../website'));
 app.get("/", function (req, res) {
-  
 });
 app.get("/api/getDocumentURL/:url", function (req, res) {
     console.log(req.params.url);
@@ -54,8 +53,9 @@ app.get("/api/getDocuments", function (req, res) {
     blobSvc.listBlobsSegmented("test", null, function(error, result, response){
   	if(!error){
 	    //Will download all the documents in the specified container
-	    result.entries.forEach(function(name) {
-	        getDoc("test", name.name);
+  	    result.entries.forEach(function (name) {
+            //commented out because else it downloads the whole file to the server
+	        //getDoc("test", name.name);
 	        testArray.push(name.name);
             
    	        

@@ -7926,7 +7926,7 @@ var PDFViewerApplication = {
 };
 
 var HOSTED_VIEWER_ORIGINS = ['null',
-  'http://mozilla.github.io', 'https://mozilla.github.io'];
+  'http://mozilla.github.io',  'http://paperless-office.westeurope.cloudapp.azure.com', '13.94.234.60', 'http://localhost:38979', 'https://mozilla.github.io'];
 function validateFileURL(file) {
   try {
     var viewerOrigin = new URL(window.location.href).origin || 'null';
@@ -7937,7 +7937,9 @@ function validateFileURL(file) {
     var fileOrigin = new URL(file, window.location.href).origin;
     // Removing of the following line will not guarantee that the viewer will
     // start accepting URLs from foreign origin -- CORS headers on the remote
-    // server must be properly configured.
+      // server must be properly configured.
+    console.log('fileOrigin', fileOrigin);
+    console.log('viewerOrigin', viewerOrigin);
     if (fileOrigin !== viewerOrigin) {
       throw new Error('file origin does not match viewer\'s');
     }
