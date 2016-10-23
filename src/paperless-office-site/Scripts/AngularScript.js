@@ -26,7 +26,7 @@ app.service('DocumentService', function ($http) {
     }
     this.getAmountDocuments = function () {
         console.log("Get amount of documents and name");
-        return $http.get("http://localhost:3000/api/getDocuments");
+        return $http.get("http://paperless-office.westeurope.cloudapp.azure.com/api/getDocuments");
     
     }
 })
@@ -52,7 +52,7 @@ app.controller("testCTRL", function ($scope, DocumentService) {
             for (var i = 0; i < documentNames.data.length; i++) {
                 var URLReadyDocument = encodeURI(documentNames.data[i]);
 
-                showMultiplePDFDocument("http://localhost:3000/api/getDocumentURL/" + URLReadyDocument, "canvas" + i, URLReadyDocument);
+                showMultiplePDFDocument("http://paperless-office.westeurope.cloudapp.azure.com/api/getDocumentURL/" + URLReadyDocument, "canvas" + i, URLReadyDocument);
             }
         });
 
