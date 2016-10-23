@@ -10,7 +10,7 @@ var blobSvc = azure.createBlobService(config.storageAccountName, config.primaryK
 
 var testArray = [];
 
-app.listen(5000);
+app.listen(3000);
 
 
 //This will show the website when a person visits 13.94.234.60:3000
@@ -49,7 +49,7 @@ app.get("/api/getDocuments", function (req, res) {
 
 });
 
-//*****************************************
+//Tries to make a user folder, and catches the error if it already exists. Bad code --> needs to be fixed: empty catch.
 var mkdirSync = function (path) {
     try {
         fs.mkdirSync(path);
@@ -58,14 +58,13 @@ var mkdirSync = function (path) {
     }
 }
 
+//This will define the full storage path for the uploaded files.
 var storage = multer.diskStorage({
     destination: function (req, file, callback) {
-        mkdirSync("./users/" + req.body.user);
-        
+        mkdirSync("./users/" + req.body.user);     
         callback(null, "./users/"+req.body.user);
     },
     filename: function (req, file, callback) {
-        //console.log(file);
         callback(null, file.originalname)
     }
 });
@@ -77,9 +76,7 @@ app.post("/api/uploadDocuments", function (req, res) {
         if (err) {
             console.log("Error Occured: " + err);
             return;
-        }
-        // request.files is an object where fieldname is the key and value is the array of files 
-        
+        }      
         var userFolder = "./users/" + req.body.user
 
         //voor demo: documenten worden ineens naar storage gestuurd
@@ -92,40 +89,11 @@ app.post("/api/uploadDocuments", function (req, res) {
                     } else console.log(error);
                 });
             });
-        });
-
-        
-        
+        });      
 
         res.end();
     })
 });
-//******************************************
-
-/*app.post("/api/uploadDocuments", function(req, res) {
-    //werken met block blobs, append blobs of page blobs?
-    //blob maken adhv een file die naar de server wordt gestuurd en er dus opstaat
-    //of werken met write stream?
-    console.log(req.files.myFile);
-   /* fs.readFile(req.files.displayImage.path, function (err, data) {
-        // ...
-        var newPath = __dirname + "/uploads/uploadedFileName";
-        fs.writeFile(newPath, data, function (err) {
-            res.redirect("back");
-        });
-    });*/
-
-    //local file
-    /*blobSvc.createBlockBlobFromLocalFile("test", "test.txt", "test.txt", function(error, result, response) {
-	if(!error) {
-	    res.send("file uploaded");
-        };
-    });
-
-    //writeStream
-});*/
-
-
 
 //Function that can be called to download a document to the server
 var getDoc = function(container, name) {

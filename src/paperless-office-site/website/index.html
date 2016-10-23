@@ -86,7 +86,7 @@
                     <p>test</p>
                 </div>
                 
-
+                <!-- Upload button Content-->
                 <div id="upload" class="navbar-fixed-bottom btn-block btn-lg" ng-controller="uploadController">
                     <p>Upload something?</p>               
                     <div id="upload-zone-wrapper">
@@ -95,7 +95,9 @@
                             <input type="file" multiple name="myFile" accept=".pdf, image/*" onchange="angular.element(this).scope().addFile(this.files)" />
                         </label>
                      </div>
-                    <input type="submit" id="submit" value="Submit" ng-click="upload()" class="pull-right"/>
+                    <button type="submit" id="submit" ng-click="upload()" class="pull-right">
+                        <span class="glyphicon glyphicon-ok-circle" ng-click="upload()"></span>
+                    </button>
                 </div>
             </div>
         </div>

@@ -10,4 +10,7 @@
     $("#submit").click(function (e) {
         e.stopPropagation();
     });
+    $("#submit span").click(function (e) {
+        e.stopPropagation();
+    });
 })
