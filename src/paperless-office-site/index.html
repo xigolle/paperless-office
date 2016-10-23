@@ -10,9 +10,10 @@
     <script src="Scripts/pdf.js"></script>
     <script src="Scripts/PDFViewer.js"></script>
     <script src="Scripts/sidebar.js"></script>
+    <script src="Scripts/uploadButton.js"></script>
     <script src="Scripts/angular.js"></script>
     <script src="Scripts/AngularScript.js"></script>
-    
+
     <title></title>
     <meta charset="utf-8" />
 </head>
@@ -85,6 +86,19 @@
                     <p>test</p>
                 </div>
                 
+                <!-- Upload button Content-->
+                <div id="upload" class="navbar-fixed-bottom btn-block btn-lg" ng-controller="uploadController">
+                    <p>Upload something?</p>               
+                    <div id="upload-zone-wrapper">
+                        <label id="fileInput" class="btn btn-block btn-file">
+                            Click here to upload a file.
+                            <input type="file" multiple name="myFile" accept=".pdf, image/*" onchange="angular.element(this).scope().addFile(this.files)" />
+                        </label>
+                     </div>
+                    <button type="submit" id="submit" ng-click="upload()" class="pull-right">
+                        <span class="glyphicon glyphicon-ok-circle" ng-click="upload()"></span>
+                    </button>
+                </div>
             </div>
         </div>
         <!-- /#page-content-wrapper -->

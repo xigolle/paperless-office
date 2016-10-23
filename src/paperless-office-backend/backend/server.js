@@ -1,6 +1,7 @@
 var express = require("express");
 var azure = require("azure-storage");
 var fs = require("fs");
+var multer = require("multer");
 var config = require("../config.json");
 //var bodyparser = require("body-parser");
 var app = express();
@@ -71,19 +72,50 @@ app.get("/api/getDocuments", function (req, res) {
 
 });
 
-app.get("/api/uploadDocuments", function(req, res) {
-    //werken met block blobs, append blobs of page blobs?
-    //blob maken adhv een file die naar de server wordt gestuurd en er dus opstaat
-    //of werken met write stream?
+//Tries to make a user folder, and catches the error if it already exists. Bad code --> needs to be fixed: empty catch.
+var mkdirSync = function (path) {
+    try {
+        fs.mkdirSync(path);
+    } catch (e) {
+        //if (e.code != 'EEXIST') console.log( e);
+    }
+}
 
-    //local file
-    blobSvc.createBlockBlobFromLocalFile("test", "test.txt", "test.txt", function(error, result, response) {
-	if(!error) {
-	    res.send("file uploaded");
-        };
-    });
+//This will define the full storage path for the uploaded files.
+var storage = multer.diskStorage({
+    destination: function (req, file, callback) {
+        mkdirSync("./users/" + req.body.user);     
+        callback(null, "./users/"+req.body.user);
+    },
+    filename: function (req, file, callback) {
+        callback(null, file.originalname)
+    }
+});
 
-    //writeStream
+var upload = multer({ storage: storage }).any("myFile");
+
+app.post("/api/uploadDocuments", function (req, res) {
+    upload(req, res, function (err) {
+        if (err) {
+            console.log("Error Occured: " + err);
+            return;
+        }      
+        var userFolder = "./users/" + req.body.user
+
+        //voor demo: documenten worden ineens naar storage gestuurd
+        fs.readdir( userFolder, function( err, files ) {
+            files.forEach(function (file, index) {
+                blobSvc.createBlockBlobFromLocalFile("test", file, userFolder + "/" + file, function (error, result, response) {
+                    if (!error) {
+                        console.log("success");
+                        fs.unlinkSync(userFolder + "/" + file);
+                    } else console.log(error);
+                });
+            });
+        });      
+
+        res.end();
+    })
 });
 
 //Function that can be called to download a document to the server
