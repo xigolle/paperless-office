@@ -28,7 +28,7 @@ app.use(function (req, res, next) {
     // Pass to next layer of middleware
     next();
 });
-app.use(express.static('../website'));
+app.use(express.static('../../paperless-office-site'));
 app.get("/", function (req, res) {
 });
 app.get("/api/getDocumentURL/:url", function (req, res) {
