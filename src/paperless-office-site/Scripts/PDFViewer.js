@@ -71,7 +71,7 @@ function showMultiplePDFDocument(url, canvasID, currentDoc) {
 
               //openSinglePDFReader($(this).data("url"));
               //encode the url to a format the pdf reader can use to get the document
-              var SingleDocumentURL = encodeURIComponent("http://localhost:3000/api/getDocumentURL/" + $(this).data("currentDoc"));
+              var SingleDocumentURL = encodeURIComponent("http://paperless-office.westeurope.cloudapp.azure.com/api/getDocumentURL/" + $(this).data("currentDoc"));
               openSinglePDFReader(SingleDocumentURL);
           });
 
