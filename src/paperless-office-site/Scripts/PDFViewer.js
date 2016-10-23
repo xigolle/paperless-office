@@ -5,9 +5,7 @@ $(function () {
     $("#HomeButton").click(function () {
         openListOfDocuments();
     })
-    //$("#loaddocuments").click(function () {
-    //    showThumbnailOfDocuments(5);
-    //});
+
     $("#loaddocument").click(function () {
         openSinglePDFDocument("http://localhost:7152/Files/test0.pdf");
     });
@@ -71,9 +69,6 @@ function showMultiplePDFDocument(url, canvasID, currentDoc) {
           //$("#" + newCanvas.id).data("foo", 52);
           $("#" + documentCanvas.id).parent().data("currentDoc", currentDoc).click(function () {
 
-              console.log("clicked");
-              console.log("logging current doc");
-              console.log($(this).data("currentDoc"));
               //openSinglePDFReader($(this).data("url"));
               //encode the url to a format the pdf reader can use to get the document
               var SingleDocumentURL = encodeURIComponent("http://localhost:3000/api/getDocumentURL/" + $(this).data("currentDoc"));
