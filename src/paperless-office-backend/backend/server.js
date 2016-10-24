@@ -4,7 +4,7 @@ var fs = require("fs");
 var multer = require("multer");
 //-------------------
 var PDF = require('pdfkit');
-var PDFMerge = require('pdf-merge');
+var merge = require('easy-pdf-merge');
 //-------------------
 var config = require("../config.json");
 //var bodyparser = require("body-parser");
@@ -113,40 +113,32 @@ app.post("/api/uploadDocuments", function (req, res) {
             files.forEach(function (file, index) {
                 
                 var fileExt = file.split(".");
-                /*
-                if (fileExt[fileExt.length - 1] == "png" || fileExt[fileExt.length - 1] == "PNG") {
-                    var copyNewName = fs.createReadStream(userFolder + file).pipe(fs.createWriteStream(userFolder + fileExt[0] + 'temp.JPG'));
-                    
-                    copyNewName.on('finish', function () {
-                        fs.unlinkSync(userFolder + file);
-                        var copyOldName = fs.createReadStream(userFolder + fileExt[0] + 'temp.JPG').pipe(fs.createWriteStream(userFolder + fileExt[0] + '.JPG'));
-                        copyOldName.on('finish', function () {
-                            fs.unlinkSync(userFolder + fileExt[0] + 'temp.JPG');
-                            makePDF(userFolder, fileExt[0] + '.JPG', fileExt[0]);
-                        });
-                    });
-
-                } else if (fileExt[fileExt.length - 1] == "jpg" || fileExt[fileExt.length - 1] == "JPG") {
-                    makePDF(userFolder, file, fileExt[0]);
-                }*/
-
-                makePDF(userFolder, file, fileExt[0])
-                fileArray.push(__dirname + "\\users\\" + req.body.user + "\\" + fileExt[0] + ".pdf");
-                console.log(__dirname + "/users/" + req.body.user + "/" + fileExt[0] + ".pdf");
+               
+                if (fileExt[fileExt.length - 1] != "pdf") {
+                    fileArray.push(makePDF(userFolder, file, fileExt[0]));
+                } else fileArray.push(userFolder + file);
                 
                 
-                /*blobSvc.createBlockBlobFromLocalFile("test", file, userFolder + "/" + file, function (error, result, response) {
+            });
+
+            merge(fileArray, "merged.pdf", function (err) {
+
+                if (err)
+                    return console.log(err);
+
+                
+                blobSvc.createBlockBlobFromLocalFile("test", "merged.pdf", "merged.pdf", function (error, result, response) {
                     if (!error) {
                         console.log("success");
-                        fs.unlinkSync(userFolder + "/" + file);
+                        fs.unlinkSync("merged.pdf");
+                        fileArray.forEach(function (file, index) {
+                            fs.unlinkSync(file);
+                        });
+                      
                     } else console.log(error);
-                });*/
+                });
             });
-            var pdfMerge = new PDFMerge(fileArray);
-            pdfMerge.asNewFile('merged.pdf').merge(function (error, filePath) {
-                console.log(error);
-                fileArray = [];
-            });
+            
             
         });
         
@@ -158,6 +150,7 @@ app.post("/api/uploadDocuments", function (req, res) {
     
 });
 
+//This function will convert images to pdf
 var makePDF = function (userFolder, fileName, pdfName) {
     var doc = new PDF();
     var newDoc = userFolder + pdfName + '.pdf';
