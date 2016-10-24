@@ -2,6 +2,10 @@ var express = require("express");
 var azure = require("azure-storage");
 var fs = require("fs");
 var multer = require("multer");
+//-------------------
+var PDF = require('pdfkit');
+var PDFMerge = require('pdf-merge');
+//-------------------
 var config = require("../config.json");
 //var bodyparser = require("body-parser");
 var app = express();
@@ -95,28 +99,74 @@ var storage = multer.diskStorage({
 var upload = multer({ storage: storage }).any("myFile");
 
 app.post("/api/uploadDocuments", function (req, res) {
-    upload(req, res, function (err) {
+   upload(req, res, function (err) {
         if (err) {
             console.log("Error Occured: " + err);
             return;
-        }      
-        var userFolder = "./users/" + req.body.user
-
+        }  
+       
+        
+        var userFolder = "./users/" + req.body.user + "/";
+        var fileArray = [];
         //voor demo: documenten worden ineens naar storage gestuurd
         fs.readdir( userFolder, function( err, files ) {
             files.forEach(function (file, index) {
-                blobSvc.createBlockBlobFromLocalFile("test", file, userFolder + "/" + file, function (error, result, response) {
+                
+                var fileExt = file.split(".");
+                /*
+                if (fileExt[fileExt.length - 1] == "png" || fileExt[fileExt.length - 1] == "PNG") {
+                    var copyNewName = fs.createReadStream(userFolder + file).pipe(fs.createWriteStream(userFolder + fileExt[0] + 'temp.JPG'));
+                    
+                    copyNewName.on('finish', function () {
+                        fs.unlinkSync(userFolder + file);
+                        var copyOldName = fs.createReadStream(userFolder + fileExt[0] + 'temp.JPG').pipe(fs.createWriteStream(userFolder + fileExt[0] + '.JPG'));
+                        copyOldName.on('finish', function () {
+                            fs.unlinkSync(userFolder + fileExt[0] + 'temp.JPG');
+                            makePDF(userFolder, fileExt[0] + '.JPG', fileExt[0]);
+                        });
+                    });
+
+                } else if (fileExt[fileExt.length - 1] == "jpg" || fileExt[fileExt.length - 1] == "JPG") {
+                    makePDF(userFolder, file, fileExt[0]);
+                }*/
+
+                makePDF(userFolder, file, fileExt[0])
+                fileArray.push(__dirname + "\\users\\" + req.body.user + "\\" + fileExt[0] + ".pdf");
+                console.log(__dirname + "/users/" + req.body.user + "/" + fileExt[0] + ".pdf");
+                
+                
+                /*blobSvc.createBlockBlobFromLocalFile("test", file, userFolder + "/" + file, function (error, result, response) {
                     if (!error) {
                         console.log("success");
                         fs.unlinkSync(userFolder + "/" + file);
                     } else console.log(error);
-                });
+                });*/
             });
-        });      
+            var pdfMerge = new PDFMerge(fileArray);
+            pdfMerge.asNewFile('merged.pdf').merge(function (error, filePath) {
+                console.log(error);
+                fileArray = [];
+            });
+            
+        });
+        
+
 
         res.end();
     })
+    console.log(req.file);
+    
 });
+
+var makePDF = function (userFolder, fileName, pdfName) {
+    var doc = new PDF();
+    var newDoc = userFolder + pdfName + '.pdf';
+    doc.pipe(fs.createWriteStream(newDoc));
+    doc.image(userFolder + fileName, 0, 0, { fit: [doc.page.width, doc.page.height] });
+    doc.end();
+    fs.unlinkSync(userFolder + fileName);
+    return newDoc;
+}
 
 //Function that can be called to download a document to the server
 var getDoc = function(container, name) {
