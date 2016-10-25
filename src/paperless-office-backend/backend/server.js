@@ -13,7 +13,7 @@ var app = express();
 var blobSvc = azure.createBlobService(config.storageAccountName, config.primaryKey);
 
 var testArray = [];
-app.listen(4000);
+app.listen(3000);
 
 app.use(function (req, res, next) {
 

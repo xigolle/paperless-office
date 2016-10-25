@@ -1,7 +1,5 @@
 ﻿
 var app = angular.module("app", []);
-var fd = new FormData();
-var userAdded = false;
 
 app.service('DocumentService', function ($http) {
 
@@ -91,24 +89,49 @@ app.controller("testCTRL", function ($scope, DocumentService) {
 
 app.controller("uploadController", function ($scope, $http) {
 
+    var fd = new FormData();
+    var userAdded = false;
+    var docNameAdded = false;
+    $scope.collapseDetails = "collapse";
+    $scope.collapseZone = "";
+    $scope.docName = "";
+    $scope.docLabels = "";
 
 
     $scope.upload = function () {
 
         if (userAdded) {
-            $http.post("paperless-office.westeurope.cloudapp.azure.com/api/uploadDocuments", fd, {
-                withCredentials: true,
-                headers: { 'Content-Type': undefined },
-                transformRequest: angular.identity
-            }).then(function successCallback(response) {
-                console.log("success");
-            }, function errorCallback(response) {
-                console.log("failure");
-            });
+            $scope.collapseDetails = "";
+            $scope.collapseZone = "collapse";
+            console.log($scope.docName);
+            if ($scope.docName.split(' ').join('') != "") {
+                docNameAdded = true;
+                fd.append("docName", $scope.docName);
+                fd.append("docLabels", $scope.docLabels);
+                $scope.docName = "";
+                console.log(fd);
+            }
+            if (docNameAdded) {
+                $http.post("http://www.paperless-office.westeurope.cloudapp.azure.com/api/uploadDocuments", fd, {
+                    withCredentials: true,
+                    headers: { 'Content-Type': undefined },
+                    transformRequest: angular.identity
+                }).then(function successCallback(response) {
+                    console.log("success");                 
+                }, function errorCallback(response) {
+                    console.log("failure");
+                });
 
-            fd = new FormData();
-            userAdded = false;
+                $scope.collapseDetails = "collapse";
+                $scope.collapseZone = "";
+
+                fd = new FormData();
+                userAdded = false;
+                docNameAdded = false;
+            }
+            
         }
+        
     }
 
     $scope.addFile = function (files) {
