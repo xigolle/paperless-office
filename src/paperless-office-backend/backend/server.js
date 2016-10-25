@@ -125,7 +125,7 @@ app.post("/api/uploadDocuments", function (req, res) {
             merge(fileArray, "merged.pdf", function (err) {
 
                 if (err) {
-                    blobSvc.createBlockBlobFromLocalFile("test", userFolder + fileExt[0] + ".pdf", fileExt[0] + ".pdf", function (error, result, response) {
+                    blobSvc.createBlockBlobFromLocalFile("test", fileExt[0] + ".pdf", userFolder + fileExt[0] + ".pdf", function (error, result, response) {
                         if (!error) {
                             console.log("success");                        
                             fileArray.forEach(function (file, index) {
