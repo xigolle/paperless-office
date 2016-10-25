@@ -67,7 +67,7 @@ app.controller("uploadController", function ($scope, $http) {
     $scope.upload = function () {
 
         if (userAdded) {
-            $http.post("/api/uploadDocuments", fd, {
+            $http.post("paperless-office.westeurope.cloudapp.azure.com/api/uploadDocuments", fd, {
                 withCredentials: true,
                 headers: { 'Content-Type': undefined },
                 transformRequest: angular.identity
