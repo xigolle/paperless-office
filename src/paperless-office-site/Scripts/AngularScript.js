@@ -112,7 +112,7 @@ app.controller("uploadController", function ($scope, $http) {
                 console.log(fd);
             }
             if (docNameAdded) {
-                $http.post("http://www.paperless-office.westeurope.cloudapp.azure.com/api/uploadDocuments", fd, {
+                $http.post("http://paperless-office.westeurope.cloudapp.azure.com/api/uploadDocuments", fd, {
                     withCredentials: true,
                     headers: { 'Content-Type': undefined },
                     transformRequest: angular.identity
