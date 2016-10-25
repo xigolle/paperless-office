@@ -2,6 +2,10 @@ var express = require("express");
 var azure = require("azure-storage");
 var fs = require("fs");
 var multer = require("multer");
+//-------------------
+var PDF = require('pdfkit');
+var merge = require('easy-pdf-merge');
+//-------------------
 var config = require("../config.json");
 //var bodyparser = require("body-parser");
 var app = express();
@@ -57,7 +61,8 @@ app.get("/api/getDocuments", function (req, res) {
   	    result.entries.forEach(function (name) {
             //commented out because else it downloads the whole file to the server
 	        //getDoc("test", name.name);
-	        testArray.push(name.name);
+  	        //testArray.push(name.name);
+  	        testArray.push({ "name": name.name, "date": name.lastModified });
             
    	        
 	    });
@@ -95,28 +100,67 @@ var storage = multer.diskStorage({
 var upload = multer({ storage: storage }).any("myFile");
 
 app.post("/api/uploadDocuments", function (req, res) {
-    upload(req, res, function (err) {
+   upload(req, res, function (err) {
         if (err) {
             console.log("Error Occured: " + err);
             return;
-        }      
-        var userFolder = "./users/" + req.body.user
-
+        }  
+       
+        
+        var userFolder = "./users/" + req.body.user + "/";
+        var fileArray = [];
         //voor demo: documenten worden ineens naar storage gestuurd
         fs.readdir( userFolder, function( err, files ) {
             files.forEach(function (file, index) {
-                blobSvc.createBlockBlobFromLocalFile("test", file, userFolder + "/" + file, function (error, result, response) {
+                
+                var fileExt = file.split(".");
+               
+                if (fileExt[fileExt.length - 1] != "pdf") {
+                    fileArray.push(makePDF(userFolder, file, fileExt[0]));
+                } else fileArray.push(userFolder + file);
+                
+                
+            });
+
+            merge(fileArray, "merged.pdf", function (err) {
+
+                if (err)
+                    return console.log(err);
+
+                
+                blobSvc.createBlockBlobFromLocalFile("test", "merged.pdf", "merged.pdf", function (error, result, response) {
                     if (!error) {
                         console.log("success");
-                        fs.unlinkSync(userFolder + "/" + file);
+                        fs.unlinkSync("merged.pdf");
+                        fileArray.forEach(function (file, index) {
+                            fs.unlinkSync(file);
+                        });
+                      
                     } else console.log(error);
                 });
             });
-        });      
+            
+            
+        });
+        
+
 
         res.end();
     })
+    console.log(req.file);
+    
 });
+
+//This function will convert images to pdf
+var makePDF = function (userFolder, fileName, pdfName) {
+    var doc = new PDF();
+    var newDoc = userFolder + pdfName + '.pdf';
+    doc.pipe(fs.createWriteStream(newDoc));
+    doc.image(userFolder + fileName, 0, 0, { fit: [doc.page.width, doc.page.height] });
+    doc.end();
+    fs.unlinkSync(userFolder + fileName);
+    return newDoc;
+}
 
 //Function that can be called to download a document to the server
 var getDoc = function(container, name) {
