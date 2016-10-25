@@ -55,7 +55,7 @@ app.controller("testCTRL", function ($scope, DocumentService) {
             function sortNumber(a, b) {
                 //console.log(a.date);
                 //console.log(b.date);
-                return a.date - b.date;
+                return b.date - a.date;
                 //return a - b;
             }
             var test = Date.parse(documentNames.data[0].date);
@@ -111,7 +111,7 @@ app.controller("testCTRL", function ($scope, DocumentService) {
                 //console.log("Test" + URLReadyDocument);
                 //console.log("test"+documentNames.data[i]);
 
-                showMultiplePDFDocument("http://paperless-office.westeurope.cloudapp.azure.com/api/getDocumentURL/" + URLReadyDocument, "canvas" + i, URLReadyDocument);
+                showMultiplePDFDocument("http://paperless-office.westeurope.cloudapp.azure.com/api/getDocumentURL/" + URLReadyDocument, "canvass" + i, URLReadyDocument);
             }
         });
 
