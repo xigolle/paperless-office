@@ -44,72 +44,42 @@ app.controller("testCTRL", function ($scope, DocumentService) {
 
     function showThumbnailOfDocuments() {
         var documentCallback = DocumentService.getAmountDocuments();
-        //console.log("DocumentCallback" + documentCallback);
-        //console.log(documentCallback);
         documentCallback.then(function (documentNames) {
             ////after the list of documents is collected start getting documents
-            //console.log("Logged promise");
-            //console.log(payload.data);
-            //showThumbnailOfDocuments(payload.data)
-            //console.log(documentNames);
             function sortNumber(a, b) {
-                //console.log(a.date);
-                //console.log(b.date);
                 return b.date - a.date;
-                //return a - b;
             }
             var test = Date.parse(documentNames.data[0].date);
-            //console.log(test);
-            //console.log(newArray);
-            console.log("unsorted");
-            console.log(documentNames.data);
             for (var i = 0; i < documentNames.data.length; i++) {
                 documentNames.data[i].date = Date.parse(documentNames.data[i].date);
 
             }
-            //console.log(documentNames.data);
-            console.log("test array");
-            var testArray = ['40', '45000', '30', '200'];
-            //console.log(testArray);
-            //testArray.sort(sortNumber);
-            console.log("test array sorted");
-            //console.log(testArray);
+          
 
             documentNames.data.sort(sortNumber);
-            console.log(documentNames.data);
-            console.log("sorted");
-            //console.log(documentNames.data);
             for (var i = 0; i < documentNames.data.length; i++) {
 
-                //documentNames.data[i].date = Date.parse(documentNames.data[i].date);
-                //console.log("unsorted");
-                //console.log(documentNames.data[i].date);
-
-                //console.log("sorted");
-                //console.log(documentNames.data[i].date);
-                //console.log(documentNames.data[i]);
+                
                 var newDocumentHolder = document.createElement('div');
 
                 var documentCanvas = document.createElement('canvas');
                 var documentIdentifier = document.createElement('span');
 
-                //var documentIdentifierText = document.createTextNode(decodeURI(currentDoc));
+                var documentIdentifierText = document.createTextNode(decodeURI(documentNames.data[i].name));
                 documentIdentifier.className = "document-identifier";
-                //documentIdentifier.appendChild(documentIdentifierText);
+                documentIdentifier.appendChild(documentIdentifierText);
 
                 newDocumentHolder.className = "Canvas-Document ";
                 documentCanvas.width = 306;
                 documentCanvas.height = 396;
                 documentCanvas.id = "canvass"+i;
                 var PDFWrapper = document.getElementById("Canvas-Document-Holder");
-                //PDFWrapper.appendChild(newDocumentHolder);
-                //newDocumentHolder.appendChild(newCanvas);
+                
                 newDocumentHolder.appendChild(documentIdentifier);
                 newDocumentHolder.appendChild(documentCanvas);
                 PDFWrapper.appendChild(newDocumentHolder);
                 var URLReadyDocument = encodeURI(documentNames.data[i].name);
-                //console.log("Test" + URLReadyDocument);
-                //console.log("test"+documentNames.data[i]);
+                
 
                 showMultiplePDFDocument("http://paperless-office.westeurope.cloudapp.azure.com/api/getDocumentURL/" + URLReadyDocument, "canvass" + i, URLReadyDocument);
             }
