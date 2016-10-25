@@ -1,7 +1,5 @@
 ﻿
 var app = angular.module("app", []);
-var fd = new FormData();
-var userAdded = false;
 
 app.service('DocumentService', function ($http) {
 
@@ -21,13 +19,13 @@ app.service('DocumentService', function ($http) {
         }).then(function successCallback(response) {
             console.log("succes" + response);
         }, function errorCallback(response) {
-            console.log("error" +response);
+            console.log("error" + response);
         });
     }
     this.getAmountDocuments = function () {
         console.log("Get amount of documents and name");
-        return $http.get("http://localhost:3000/api/getDocuments");
-    
+        return $http.get("http://paperless-office.westeurope.cloudapp.azure.com/api/getDocuments");
+
     }
 })
 
@@ -46,13 +44,42 @@ app.controller("testCTRL", function ($scope, DocumentService) {
         var documentCallback = DocumentService.getAmountDocuments();
         documentCallback.then(function (documentNames) {
             ////after the list of documents is collected start getting documents
-            //console.log("Logged promise");
-            //console.log(payload.data);
-            //showThumbnailOfDocuments(payload.data)
+            function sortNumber(a, b) {
+                return b.date - a.date;
+            }
+            var test = Date.parse(documentNames.data[0].date);
             for (var i = 0; i < documentNames.data.length; i++) {
-                var URLReadyDocument = encodeURI(documentNames.data[i]);
+                documentNames.data[i].date = Date.parse(documentNames.data[i].date);
 
-                showMultiplePDFDocument("http://localhost:3000/api/getDocumentURL/" + URLReadyDocument, "canvas" + i, URLReadyDocument);
+            }
+          
+
+            documentNames.data.sort(sortNumber);
+            for (var i = 0; i < documentNames.data.length; i++) {
+
+                
+                var newDocumentHolder = document.createElement('div');
+
+                var documentCanvas = document.createElement('canvas');
+                var documentIdentifier = document.createElement('span');
+
+                var documentIdentifierText = document.createTextNode(decodeURI(documentNames.data[i].name));
+                documentIdentifier.className = "document-identifier";
+                documentIdentifier.appendChild(documentIdentifierText);
+
+                newDocumentHolder.className = "Canvas-Document ";
+                documentCanvas.width = 306;
+                documentCanvas.height = 396;
+                documentCanvas.id = "canvass"+i;
+                var PDFWrapper = document.getElementById("Canvas-Document-Holder");
+                
+                newDocumentHolder.appendChild(documentIdentifier);
+                newDocumentHolder.appendChild(documentCanvas);
+                PDFWrapper.appendChild(newDocumentHolder);
+                var URLReadyDocument = encodeURI(documentNames.data[i].name);
+                
+
+                showMultiplePDFDocument("http://paperless-office.westeurope.cloudapp.azure.com/api/getDocumentURL/" + URLReadyDocument, "canvass" + i, URLReadyDocument);
             }
         });
 
@@ -62,24 +89,49 @@ app.controller("testCTRL", function ($scope, DocumentService) {
 
 app.controller("uploadController", function ($scope, $http) {
 
+    var fd = new FormData();
+    var userAdded = false;
+    var docNameAdded = false;
+    $scope.collapseDetails = "collapse";
+    $scope.collapseZone = "";
+    $scope.docName = "";
+    $scope.docLabels = "";
 
 
     $scope.upload = function () {
 
         if (userAdded) {
-            $http.post("paperless-office.westeurope.cloudapp.azure.com/api/uploadDocuments", fd, {
-                withCredentials: true,
-                headers: { 'Content-Type': undefined },
-                transformRequest: angular.identity
-            }).then(function successCallback(response) {
-                console.log("success");
-            }, function errorCallback(response) {
-                console.log("failure");
-            });
+            $scope.collapseDetails = "";
+            $scope.collapseZone = "collapse";
+            console.log($scope.docName);
+            if ($scope.docName.split(' ').join('') != "") {
+                docNameAdded = true;
+                fd.append("docName", $scope.docName);
+                fd.append("docLabels", $scope.docLabels);
+                $scope.docName = "";
+                console.log(fd);
+            }
+            if (docNameAdded) {
+                $http.post("http://paperless-office.westeurope.cloudapp.azure.com/api/uploadDocuments", fd, {
+                    //withCredentials: true,
+                    headers: { 'Content-Type': undefined },
+                    transformRequest: angular.identity
+                }).then(function successCallback(response) {
+                    console.log("success");                 
+                }, function errorCallback(response) {
+                    console.log("failure");
+                });
 
-            fd = new FormData();
-            userAdded = false;
+                $scope.collapseDetails = "collapse";
+                $scope.collapseZone = "";
+
+                fd = new FormData();
+                userAdded = false;
+                docNameAdded = false;
+            }
+            
         }
+        
     }
 
     $scope.addFile = function (files) {

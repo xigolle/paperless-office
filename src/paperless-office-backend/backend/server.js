@@ -61,7 +61,8 @@ app.get("/api/getDocuments", function (req, res) {
   	    result.entries.forEach(function (name) {
             //commented out because else it downloads the whole file to the server
 	        //getDoc("test", name.name);
-	        testArray.push(name.name);
+  	        //testArray.push(name.name);
+  	        testArray.push({ "name": name.name, "date": name.lastModified });
             
    	        
 	    });
@@ -108,11 +109,11 @@ app.post("/api/uploadDocuments", function (req, res) {
         
         var userFolder = "./users/" + req.body.user + "/";
         var fileArray = [];
-        //voor demo: documenten worden ineens naar storage gestuurd
+        var fileExt;
         fs.readdir( userFolder, function( err, files ) {
             files.forEach(function (file, index) {
                 
-                var fileExt = file.split(".");
+                fileExt = file.split(".");
                
                 if (fileExt[fileExt.length - 1] != "pdf") {
                     fileArray.push(makePDF(userFolder, file, fileExt[0]));
@@ -123,8 +124,19 @@ app.post("/api/uploadDocuments", function (req, res) {
 
             merge(fileArray, "merged.pdf", function (err) {
 
-                if (err)
-                    return console.log(err);
+                if (err) {
+                    blobSvc.createBlockBlobFromLocalFile("test", userFolder + fileExt[0] + ".pdf", fileExt[0] + ".pdf", function (error, result, response) {
+                        if (!error) {
+                            console.log("success");                        
+                            fileArray.forEach(function (file, index) {
+                                fs.unlinkSync(file);
+                            });
+
+                        } else console.log(error);
+                    });
+                    return console.log("Not enough files to merge");
+                }
+                    
 
                 
                 blobSvc.createBlockBlobFromLocalFile("test", "merged.pdf", "merged.pdf", function (error, result, response) {

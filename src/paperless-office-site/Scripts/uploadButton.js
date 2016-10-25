@@ -13,4 +13,10 @@
     $("#submit span").click(function (e) {
         e.stopPropagation();
     });
+    $("#upload input").click(function (e) {
+        e.stopPropagation();
+    });
+    $("#docLabels").click(function (e) {
+        e.stopPropagation();
+    });
 })

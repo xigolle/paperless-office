@@ -109,15 +109,20 @@ canvas {
     height: 50%;
 }
 
-#upload.uploadToggled p {
+#upload.uploadToggled  p {
     height: 5%;
+    line-height: 1;
+}
+
+#upload-wrapper {
+    height: 80%;
 }
 
 #upload-zone-wrapper {
     border: dashed thin;
     border-color: gray;
     background-color: darkgrey;   
-    height: 80%;
+    height: 100%;
 }
 
 #fileInput {
@@ -145,3 +150,16 @@ canvas {
     color: green;
 }
 
+#upload-details-wrapper input {
+    width: 100%;
+    margin-bottom: 1%;
+}
+
+#upload-details-wrapper {
+    height: 100%;
+}
+
+#docLabels {
+    height: 70%;
+    width: 100%;
+}
