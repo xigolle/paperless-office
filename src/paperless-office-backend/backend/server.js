@@ -61,7 +61,8 @@ app.get("/api/getDocuments", function (req, res) {
   	    result.entries.forEach(function (name) {
             //commented out because else it downloads the whole file to the server
 	        //getDoc("test", name.name);
-	        testArray.push(name.name);
+  	        //testArray.push(name.name);
+  	        testArray.push({ "name": name.name, "date": name.lastModified });
             
    	        
 	    });

@@ -26,28 +26,6 @@ function showMultiplePDFDocument(url, canvasID, currentDoc) {
 
           // Get viewport (dimensions)
           var viewport = page.getViewport(scale);
-          // Create the document canvas
-          var newDocumentHolder = document.createElement('div');
-          //newDocumentHolder.className = "Canvas-Document";
-          var documentCanvas = document.createElement('canvas');
-          var documentIdentifier = document.createElement('span');
-         
-          var documentIdentifierText = document.createTextNode(decodeURI(currentDoc));
-          documentIdentifier.className = "document-identifier";
-          documentIdentifier.appendChild(documentIdentifierText);
-
-          newDocumentHolder.className = "Canvas-Document ";
-
-          documentCanvas.width = 306;
-          documentCanvas.height = 396;
-          documentCanvas.id = canvasID;
-          var PDFWrapper = document.getElementById("Canvas-Document-Holder");
-          //PDFWrapper.appendChild(newDocumentHolder);
-          //newDocumentHolder.appendChild(newCanvas);
-          newDocumentHolder.appendChild(documentIdentifier);
-          newDocumentHolder.appendChild(documentCanvas);
-          PDFWrapper.appendChild(newDocumentHolder);
-          // Get canvas#the-canvas
           var canvas = document.getElementById(canvasID);
 
           // Fetch canvas' 2d context
@@ -67,10 +45,8 @@ function showMultiplePDFDocument(url, canvasID, currentDoc) {
 
           //set on click listener
           //$("#" + newCanvas.id).data("foo", 52);
-          $("#" + documentCanvas.id).parent().data("currentDoc", currentDoc).click(function () {
+          $("#" + canvasID).parent().data("currentDoc", currentDoc).click(function () {
 
-              //openSinglePDFReader($(this).data("url"));
-              //encode the url to a format the pdf reader can use to get the document
               var SingleDocumentURL = encodeURIComponent("http://paperless-office.westeurope.cloudapp.azure.com/api/getDocumentURL/" + $(this).data("currentDoc"));
               openSinglePDFReader(SingleDocumentURL);
           });

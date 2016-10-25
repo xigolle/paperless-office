@@ -21,13 +21,13 @@ app.service('DocumentService', function ($http) {
         }).then(function successCallback(response) {
             console.log("succes" + response);
         }, function errorCallback(response) {
-            console.log("error" +response);
+            console.log("error" + response);
         });
     }
     this.getAmountDocuments = function () {
         console.log("Get amount of documents and name");
         return $http.get("http://paperless-office.westeurope.cloudapp.azure.com/api/getDocuments");
-    
+
     }
 })
 
@@ -46,13 +46,42 @@ app.controller("testCTRL", function ($scope, DocumentService) {
         var documentCallback = DocumentService.getAmountDocuments();
         documentCallback.then(function (documentNames) {
             ////after the list of documents is collected start getting documents
-            //console.log("Logged promise");
-            //console.log(payload.data);
-            //showThumbnailOfDocuments(payload.data)
+            function sortNumber(a, b) {
+                return b.date - a.date;
+            }
+            var test = Date.parse(documentNames.data[0].date);
             for (var i = 0; i < documentNames.data.length; i++) {
-                var URLReadyDocument = encodeURI(documentNames.data[i]);
+                documentNames.data[i].date = Date.parse(documentNames.data[i].date);
 
-                showMultiplePDFDocument("http://paperless-office.westeurope.cloudapp.azure.com/api/getDocumentURL/" + URLReadyDocument, "canvas" + i, URLReadyDocument);
+            }
+          
+
+            documentNames.data.sort(sortNumber);
+            for (var i = 0; i < documentNames.data.length; i++) {
+
+                
+                var newDocumentHolder = document.createElement('div');
+
+                var documentCanvas = document.createElement('canvas');
+                var documentIdentifier = document.createElement('span');
+
+                var documentIdentifierText = document.createTextNode(decodeURI(documentNames.data[i].name));
+                documentIdentifier.className = "document-identifier";
+                documentIdentifier.appendChild(documentIdentifierText);
+
+                newDocumentHolder.className = "Canvas-Document ";
+                documentCanvas.width = 306;
+                documentCanvas.height = 396;
+                documentCanvas.id = "canvass"+i;
+                var PDFWrapper = document.getElementById("Canvas-Document-Holder");
+                
+                newDocumentHolder.appendChild(documentIdentifier);
+                newDocumentHolder.appendChild(documentCanvas);
+                PDFWrapper.appendChild(newDocumentHolder);
+                var URLReadyDocument = encodeURI(documentNames.data[i].name);
+                
+
+                showMultiplePDFDocument("http://paperless-office.westeurope.cloudapp.azure.com/api/getDocumentURL/" + URLReadyDocument, "canvass" + i, URLReadyDocument);
             }
         });
 
