@@ -113,7 +113,7 @@ app.controller("uploadController", function ($scope, $http) {
             }
             if (docNameAdded) {
                 $http.post("http://paperless-office.westeurope.cloudapp.azure.com/api/uploadDocuments", fd, {
-                    withCredentials: true,
+                    //withCredentials: true,
                     headers: { 'Content-Type': undefined },
                     transformRequest: angular.identity
                 }).then(function successCallback(response) {
