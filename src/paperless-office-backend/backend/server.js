@@ -108,6 +108,8 @@ app.post("/api/uploadDocuments", function (req, res) {
        
         console.log(req.body.docName + "    " + req.body.docLabels);
         var userFolder = "./users/" + req.body.user + "/";
+        var docName = req.body.docName + ".pdf";
+        var docLabels = req.body.docLabels;
         var fileArray = [];
         var fileExt;
         fs.readdir( userFolder, function( err, files ) {
@@ -122,10 +124,10 @@ app.post("/api/uploadDocuments", function (req, res) {
                 
             });
 
-            merge(fileArray, "merged.pdf", function (err) {
+            merge(fileArray, docName, function (err) {
 
                 if (err) {
-                    blobSvc.createBlockBlobFromLocalFile("test", fileExt[0] + ".pdf", userFolder + fileExt[0] + ".pdf", function (error, result, response) {
+                    blobSvc.createBlockBlobFromLocalFile("test", docName, userFolder + docName, function (error, result, response) {
                         if (!error) {
                             console.log("success");                        
                             fileArray.forEach(function (file, index) {
@@ -139,10 +141,10 @@ app.post("/api/uploadDocuments", function (req, res) {
                     
 
                 
-                blobSvc.createBlockBlobFromLocalFile("test", "merged.pdf", "merged.pdf", function (error, result, response) {
+                blobSvc.createBlockBlobFromLocalFile("test", docName, docName, function (error, result, response) {
                     if (!error) {
                         console.log("success");
-                        fs.unlinkSync("merged.pdf");
+                        fs.unlinkSync(docName);
                         fileArray.forEach(function (file, index) {
                             fs.unlinkSync(file);
                         });
