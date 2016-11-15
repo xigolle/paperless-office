@@ -106,7 +106,7 @@ app.post("/api/uploadDocuments", function (req, res) {
             return;
         }  
        
-        
+        console.log(req.body.docName + "    " + req.body.docLabels);
         var userFolder = "./users/" + req.body.user + "/";
         var fileArray = [];
         var fileExt;
