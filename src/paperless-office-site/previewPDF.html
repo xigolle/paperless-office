@@ -23,7 +23,10 @@
                 }
 
             $("#pdfInp").change(function () {
+                console.log("files");
+                //console.log(this.files);
                 if (this.files && this.files[0]) {
+                    
                     var reader = new FileReader();
                     reader.onload = function (e) {
                         console.log("Logging result");

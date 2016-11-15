@@ -89,11 +89,12 @@
                 <!-- Upload button Content-->
                 <div id="upload" class="navbar-fixed-bottom btn-block btn-lg" ng-controller="uploadController">
                     <p>Upload something?</p>  
+                    <div id="previewDocuments"></div>
                     <div id="upload-wrapper">            
                         <div id="upload-zone-wrapper" ng-class="collapseZone">
                             <label id="fileInput" class="btn btn-block btn-file">
                                 Click here to upload a file.
-                                <input type="file" multiple name="myFile" accept=".pdf, .png, .jpeg, .jpg" onchange="angular.element(this).scope().addFile(this.files)" />
+                                <input type="file" id="inputUpload" multiple name="myFile" accept=".pdf, .png, .jpeg, .jpg" onchange="angular.element(this).scope().addFile(this.files)" />
                             </label>                        
                         </div>     
                         <div id="upload-details-wrapper" ng-class="collapseDetails">

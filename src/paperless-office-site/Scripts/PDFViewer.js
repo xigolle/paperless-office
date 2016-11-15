@@ -31,14 +31,50 @@ $(function () {
 
     $("#inputUpload").change(function () {
         console.log("We are changing stuff!");
-        if (this.files && this.files[0]) {
-            var reader = new FileReader();
-            reader.onload = function (e) {
-                console.log("Should show in a canvas!");
-                showInCanvas(e.target.result);
+        console.log(this.files);
+        for (var i = 0; i < this.files.length; i++) {
+            if (this.files && this.files[i]) {
+
+                var thisCanvas = showImageInCanvas(i);
+                console.log(thisCanvas.id);
+                switch (this.files[i]["type"]) {
+                    case "image/png":
+                        console.log("We got an image");
+                        if (this.files && this.files[i]) {
+
+
+                            var reader = new FileReader();
+
+                            reader.onload = function (e) {
+                                //console.log("We aren't doing anything!?");
+                                var img = new Image();
+                                img.src = e.target.result;
+                                img.onload = function () {
+                                    var ctx = canvas.getContext("2d");
+                                    ctx.drawImage(img, 0, 0);
+                                }
+                                //$('#thisCanvas.id').css('background-image', e.target.result);
+                            }
+
+                            reader.readAsDataURL(this.files[i]);
+                        }
+                        break;
+                    case "application/pdf":
+                        var reader = new FileReader();
+                        reader.onload = function (e) {
+                            console.log("Should show in a canvas!");
+                            showInCanvas(e.target.result);
+                        }
+                        reader.readAsDataURL(this.files[0]);
+                        break;
+                    default:
+                        console.log("sorry we do not support this file format!");
+                        break;
+                }
+
             }
-            reader.readAsDataURL(this.files[0]);
         }
+
     });
 
     function convertDataURIToBinary(dataURI) {
@@ -54,12 +90,25 @@ $(function () {
         }
         return array;
     }
+    function showImageInCanvas(id) {
+        var newCanvas = document.createElement('canvas');
+        newCanvas.id = "Canvas" + id;
 
+        var divWrapper = document.getElementById("previewDocuments");
+        console.log("Should have done something??");
+        divWrapper.appendChild(newCanvas);
+        canvas = document.getElementById("Canvas" + id);
+        canvas.height = 306;
+        canvas.width = 396;
+        return canvas;
+
+    }
     function showInCanvas(url) {
         // See README for overview
         'use strict';
         // Fetch the PDF document from the URL using promises
         var pdfAsArray = convertDataURIToBinary(url);
+        console.log("show in canvas function");
         PDFJS.getDocument(pdfAsArray).then(function (pdf) {
             // Using promise to fetch the page
             pdf.getPage(1).then(function (page) {
@@ -70,7 +119,8 @@ $(function () {
                 var newCanvas = document.createElement('canvas');
                 newCanvas.id = "Canvas" + number;
 
-                var divWrapper = document.getElementById("newDocuments");
+                var divWrapper = document.getElementById("previewDocuments");
+                console.log("Should have done something??");
                 divWrapper.appendChild(newCanvas);
                 canvas = document.getElementById("Canvas" + number);
                 number++;
