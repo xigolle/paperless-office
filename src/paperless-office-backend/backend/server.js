@@ -118,7 +118,7 @@ app.post("/api/uploadDocuments", function (req, res) {
                 fileExt = file.split(".");
                
                 if (fileExt[fileExt.length - 1] != "pdf") {
-                    fileArray.push(makePDF(userFolder, file, fileExt[0]));
+                    fileArray.push(makePDF(userFolder, file, docName));
                 } else fileArray.push(userFolder + file);
                 
                 
@@ -167,7 +167,7 @@ app.post("/api/uploadDocuments", function (req, res) {
 //This function will convert images to pdf
 var makePDF = function (userFolder, fileName, pdfName) {
     var doc = new PDF();
-    var newDoc = userFolder + pdfName + '.pdf';
+    var newDoc = userFolder + pdfName;
     doc.pipe(fs.createWriteStream(newDoc));
     doc.image(userFolder + fileName, 0, 0, { fit: [doc.page.width, doc.page.height] });
     doc.end();
