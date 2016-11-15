@@ -106,14 +106,16 @@ app.post("/api/uploadDocuments", function (req, res) {
             return;
         }  
        
-        
+        console.log(req.body.docName + "    " + req.body.docLabels);
         var userFolder = "./users/" + req.body.user + "/";
+        var docName = req.body.docName + ".pdf";
+        var docLabels = req.body.docLabels;
         var fileArray = [];
-        //voor demo: documenten worden ineens naar storage gestuurd
+        var fileExt;
         fs.readdir( userFolder, function( err, files ) {
             files.forEach(function (file, index) {
                 
-                var fileExt = file.split(".");
+                fileExt = file.split(".");
                
                 if (fileExt[fileExt.length - 1] != "pdf") {
                     fileArray.push(makePDF(userFolder, file, fileExt[0]));
@@ -122,16 +124,27 @@ app.post("/api/uploadDocuments", function (req, res) {
                 
             });
 
-            merge(fileArray, "merged.pdf", function (err) {
+            merge(fileArray, docName, function (err) {
 
-                if (err)
-                    return console.log(err);
+                if (err) {
+                    blobSvc.createBlockBlobFromLocalFile("test", docName, userFolder + fileExt[0] + ".pdf", function (error, result, response) {
+                        if (!error) {
+                            console.log("success");                        
+                            fileArray.forEach(function (file, index) {
+                                fs.unlinkSync(file);
+                            });
+
+                        } else console.log(error);
+                    });
+                    return console.log("Not enough files to merge");
+                }
+                    
 
                 
-                blobSvc.createBlockBlobFromLocalFile("test", "merged.pdf", "merged.pdf", function (error, result, response) {
+                blobSvc.createBlockBlobFromLocalFile("test", docName, docName, function (error, result, response) {
                     if (!error) {
                         console.log("success");
-                        fs.unlinkSync("merged.pdf");
+                        fs.unlinkSync(docName);
                         fileArray.forEach(function (file, index) {
                             fs.unlinkSync(file);
                         });

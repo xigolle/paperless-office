@@ -88,14 +88,21 @@
                 
                 <!-- Upload button Content-->
                 <div id="upload" class="navbar-fixed-bottom btn-block btn-lg" ng-controller="uploadController">
-                    <p>Upload something?</p>               
-                    <div id="upload-zone-wrapper">
-
-                        <label id="fileInput" class="btn btn-block btn-file">
-                            Click here to upload a file.
-                            <input type="file" id="inputUpload" multiple name="myFile" accept=".pdf, image/*" onchange="angular.element(this).scope().addFile(this.files)" />
-                        </label>
-                     </div>
+                    <p>Upload something?</p>  
+                    <div id="upload-wrapper">            
+                        <div id="upload-zone-wrapper" ng-class="collapseZone">
+                            <label id="fileInput" class="btn btn-block btn-file">
+                                Click here to upload a file.
+                                <input type="file" multiple name="myFile" accept=".pdf, .png, .jpeg, .jpg" onchange="angular.element(this).scope().addFile(this.files)" />
+                            </label>                        
+                        </div>     
+                        <div id="upload-details-wrapper" ng-class="collapseDetails">
+                            <p>File name:</p>
+                            <input id="docName" type="text" ng-model="docName"/>
+                            <p>Labels:</p>
+                            <textarea id="docLabels" name="textArea" placeholder="Seperate labels with ','" ng-model="docLabels"></textarea>
+                        </div>      
+                    </div>       
                     <button type="submit" id="submit" ng-click="upload()" class="pull-right">
                         <span class="glyphicon glyphicon-ok-circle" ng-click="upload()"></span>
                     </button>
