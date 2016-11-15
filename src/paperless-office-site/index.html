@@ -90,9 +90,10 @@
                 <div id="upload" class="navbar-fixed-bottom btn-block btn-lg" ng-controller="uploadController">
                     <p>Upload something?</p>               
                     <div id="upload-zone-wrapper">
+
                         <label id="fileInput" class="btn btn-block btn-file">
                             Click here to upload a file.
-                            <input type="file" multiple name="myFile" accept=".pdf, image/*" onchange="angular.element(this).scope().addFile(this.files)" />
+                            <input type="file" id="inputUpload" multiple name="myFile" accept=".pdf, image/*" onchange="angular.element(this).scope().addFile(this.files)" />
                         </label>
                      </div>
                     <button type="submit" id="submit" ng-click="upload()" class="pull-right">

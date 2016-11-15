@@ -112,13 +112,16 @@ app.controller("uploadController", function ($scope, $http) {
     }
 
     $scope.addFile = function (files) {
-
+        
+        console.log("in add file function");
         if (!userAdded) {
             //Met deze lijn kunnen we de user meegeven
             fd.append("user", "Mathias Samyn");
             userAdded = true;
         }
         angular.forEach(files, function (file) {
+            console.log("logging result of angularScript");
+            console.log(file);
             fd.append("file", file);
         });
 
