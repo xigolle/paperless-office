@@ -121,7 +121,7 @@ canvas {
 #upload-zone-wrapper {
     border: dashed thin;
     border-color: gray;
-    background-color: darkgrey;   
+    background-color: darkgrey; 
     height: 100%;
 }
 
