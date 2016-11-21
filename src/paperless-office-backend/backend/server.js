@@ -166,9 +166,9 @@ app.post("/api/uploadDocuments", function (req, res) {
                 assert.equal(null,err);
                 console.log("Connected succesfully to server");
     
-               
+                var collection = db.collection(req.body.users);
                 //push gebruiken om bij docs in te zetten
-                db[collection].update(
+                collection.update(
                     {
                         $push: {
                             "docs": {
@@ -196,7 +196,7 @@ app.post("/api/uploadDocuments", function (req, res) {
                   
                 
                     
-                console.log(db.collection.find());
+                console.log(collection.find());
         
                     //db['emailaddress'].drop(); //foutief
         
