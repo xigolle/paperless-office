@@ -167,8 +167,21 @@ app.post("/api/uploadDocuments", function (req, res) {
                 console.log("Connected succesfully to server");
     
                
-                 
-                db[collection].insert({
+                //push gebruiken om bij docs in te zetten
+                db.collection.update(
+                    {
+                        $push: {
+                            "docs": {
+                                docName: [
+                                    {
+                                        "labels": labelArray,
+                                        "ocrOutput": "OCR_output"
+                                    }
+                                ]
+                            }
+                        }
+                    });
+                /*db[collection].insert({
                     "docs": [
                         {
                             docName: [
@@ -179,7 +192,7 @@ app.post("/api/uploadDocuments", function (req, res) {
                             ]
                         }
                     ]
-                });//in deze insert zet je al de info: name, labels... (labels:["label","label"])
+                });//in deze insert zet je al de info: name, labels... (labels:["label","label"])*/
                   
                 
                     
