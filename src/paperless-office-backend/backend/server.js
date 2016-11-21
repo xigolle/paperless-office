@@ -168,7 +168,7 @@ app.post("/api/uploadDocuments", function (req, res) {
     
                
                 //push gebruiken om bij docs in te zetten
-                db.collection.update(
+                db[collection].update(
                     {
                         $push: {
                             "docs": {
