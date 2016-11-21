@@ -113,7 +113,7 @@ app.post("/api/uploadDocuments", function (req, res) {
         var userFolder = "./users/" + req.body.user + "/";
         var docName = req.body.docName + ".pdf";
         var docLabels = req.body.docLabels;
-        var labelArray = docLabels.split("#");
+        var labelArray = docLabels.trim().split("#");
         var fileArray = [];
         var fileExt;
         fs.readdir( userFolder, function( err, files ) {
@@ -179,7 +179,7 @@ app.post("/api/uploadDocuments", function (req, res) {
                         {
                             $push: {
                                 "docs": {
-                                    docName: {
+                                    [docName]: {
                                         "labels": labelArray,
                                         "ocrOutput": "OCR_output"
                                     }
