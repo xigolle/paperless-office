@@ -144,7 +144,7 @@ app.controller("uploadController", function ($scope, $http) {
         console.log($scope.myStyle);
         if (!userAdded) {
             //Met deze lijn kunnen we de user meegeven
-            fd.append("user", "Mathias Samyn");
+            fd.append("user", "mathiassamyn@hotmail.com");
             userAdded = true;
         }
         angular.forEach(files, function (file) {
