@@ -159,14 +159,14 @@ app.post("/api/uploadDocuments", function (req, res) {
 
             //************************
             var url = 'mongodb://13.94.234.60:27017/mydb';
-            var collection = req.body.user;
+            //var collection = req.body.user;
 
             MongoClient.connect(url,function(err,db)
             {
                 assert.equal(null,err);
                 console.log("Connected succesfully to server");
     
-                var collection = db.collection(req.body.users);
+                var collection = db.collection(req.body.user);
                 //push gebruiken om bij docs in te zetten
                 collection.update(
                     {
@@ -196,13 +196,15 @@ app.post("/api/uploadDocuments", function (req, res) {
                   
                 
                     
-                console.log(collection.find());
+                //console.log(collection.find());
         
                     //db['emailaddress'].drop(); //foutief
         
                     //db['emailaddress'].find(query[,options]callback).pretty(); //find gaat ook, pretty is duidelijker
-             
-                db.close();
+                setTimeout(function () {
+                    db.close();
+                }, 100);
+                
             });
             //************************
             
