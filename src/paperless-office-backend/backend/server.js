@@ -172,12 +172,10 @@ app.post("/api/uploadDocuments", function (req, res) {
                     {
                         $push: {
                             "docs": {
-                                docName: [
-                                    {
-                                        "labels": labelArray,
-                                        "ocrOutput": "OCR_output"
-                                    }
-                                ]
+                                docName: {
+                                    "labels": labelArray,
+                                    "ocrOutput": "OCR_output"
+                                }
                             }
                         }
                     });
@@ -196,12 +194,13 @@ app.post("/api/uploadDocuments", function (req, res) {
                   
                 
                     
-                //console.log(collection.find());
+               
         
                     //db['emailaddress'].drop(); //foutief
         
                     //db['emailaddress'].find(query[,options]callback).pretty(); //find gaat ook, pretty is duidelijker
                 setTimeout(function () {
+                    console.log(collection.find());
                     db.close();
                 }, 100);
                 
