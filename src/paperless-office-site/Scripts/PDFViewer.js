@@ -12,6 +12,11 @@ $(function () {
     $("#DocumentIFrame").toggle();
     $("#SuggestedDocumentSection").toggle();
     $("#PDFDocumentWrapper").toggleClass("col-md-10");
+    $("#liquid").liquidcarousel({
+        height: 140,
+        hidearrows:false
+    });
+
 
 
     var number = 0;
