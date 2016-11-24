@@ -167,11 +167,16 @@ app.post("/api/uploadDocuments", function (req, res) {
                 console.log("Connected succesfully to server");
     
                 var collection = db.collection(req.body.user);
-
+                /*var obj = {};
+                obj[docName] = {
+                    "labels": labelArray,
+                    "ocrOutput": "OCR_output"
+                };*/
                 collection.find().toArray(function (err, items) {
                     id = items;
                     console.log(id[0]['_id']);
                     //push gebruiken om bij docs in te zetten
+                  
                     collection.update(
                         {
                             "_id": id[0]['_id']
@@ -179,11 +184,11 @@ app.post("/api/uploadDocuments", function (req, res) {
                         {
                             $push: {
                                 "docs": {
-                                    [docName]: {
-                                        "labels": labelArray,
-                                        "ocrOutput": "OCR_output"
-                                    }
+                                    "name": docName,
+                                    "labels": labelArray,
+                                    "ocrOutput": "OCR_output"
                                 }
+                                                                  
                             }
                         });
                 });
