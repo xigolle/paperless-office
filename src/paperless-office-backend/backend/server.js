@@ -6,6 +6,9 @@ var multer = require("multer");
 var PDF = require('pdfkit');
 var merge = require('easy-pdf-merge');
 //-------------------
+var MongoClient = require('mongodb').MongoClient;
+var assert = require('assert');
+//-------------------
 var config = require("../config.json");
 //var bodyparser = require("body-parser");
 var app = express();
@@ -106,14 +109,23 @@ app.post("/api/uploadDocuments", function (req, res) {
             return;
         }  
        
-        
+        console.log(req.body.docName + "    " + req.body.docLabels);
         var userFolder = "./users/" + req.body.user + "/";
+        var docName = req.body.docName + ".pdf";
+        var docLabels = req.body.docLabels;
+        var tempLabelArray = docLabels.split("#");
+        var labelArray = [];
+        tempLabelArray.forEach(function (label) {
+            if (label != "") {
+                labelArray.push(label.trim());
+            }
+        });
         var fileArray = [];
-        //voor demo: documenten worden ineens naar storage gestuurd
+        var fileExt;
         fs.readdir( userFolder, function( err, files ) {
             files.forEach(function (file, index) {
                 
-                var fileExt = file.split(".");
+                fileExt = file.split(".");
                
                 if (fileExt[fileExt.length - 1] != "pdf") {
                     fileArray.push(makePDF(userFolder, file, fileExt[0]));
@@ -122,22 +134,73 @@ app.post("/api/uploadDocuments", function (req, res) {
                 
             });
 
-            merge(fileArray, "merged.pdf", function (err) {
+            merge(fileArray, docName, function (err) {
 
-                if (err)
-                    return console.log(err);
+                if (err) {
+                    blobSvc.createBlockBlobFromLocalFile("test", docName, userFolder + fileExt[0] + ".pdf", function (error, result, response) {
+                        if (!error) {
+                            console.log("success");                        
+                            fileArray.forEach(function (file, index) {
+                                fs.unlinkSync(file);
+                            });
+
+                        } else console.log(error);
+                    });
+                    return console.log("Not enough files to merge");
+                }
+                    
 
                 
-                blobSvc.createBlockBlobFromLocalFile("test", "merged.pdf", "merged.pdf", function (error, result, response) {
+                blobSvc.createBlockBlobFromLocalFile("test", docName, docName, function (error, result, response) {
                     if (!error) {
                         console.log("success");
-                        fs.unlinkSync("merged.pdf");
+                        fs.unlinkSync(docName);
                         fileArray.forEach(function (file, index) {
                             fs.unlinkSync(file);
                         });
                       
                     } else console.log(error);
                 });
+            });
+
+
+            var url = 'mongodb://13.94.234.60:27017/mydb';
+
+
+            MongoClient.connect(url,function(err,db)
+            {
+                assert.equal(null,err);
+                console.log("Connected succesfully to server");
+    
+                var collection = db.collection(req.body.user);
+                
+                collection.find().toArray(function (err, items) {
+                    id = items;
+                    console.log(id[0]['_id']);
+       
+                  
+                    collection.update(
+                        {
+                            "_id": id[0]['_id']
+                        },
+                        {
+                            $push: {
+                                "docs": {
+                                    "name": docName,
+                                    "labels": labelArray,
+                                    "ocrOutput": "OCR_output"
+                                }
+                                                                  
+                            }
+                        });
+                });
+
+              
+                setTimeout(function () {
+                  
+                    db.close();
+                }, 100);
+                
             });
             
             
