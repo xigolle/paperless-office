@@ -163,9 +163,9 @@ app.post("/api/uploadDocuments", function (req, res) {
                 });
             });
 
-            //************************
+
             var url = 'mongodb://13.94.234.60:27017/mydb';
-            //var collection = req.body.user;
+
 
             MongoClient.connect(url,function(err,db)
             {
@@ -177,7 +177,7 @@ app.post("/api/uploadDocuments", function (req, res) {
                 collection.find().toArray(function (err, items) {
                     id = items;
                     console.log(id[0]['_id']);
-                    //push gebruiken om bij docs in te zetten
+       
                   
                     collection.update(
                         {
@@ -196,34 +196,12 @@ app.post("/api/uploadDocuments", function (req, res) {
                 });
 
               
-
-                /*db[collection].insert({
-                    "docs": [
-                        {
-                            docName: [
-                                {
-                                    "labels": labelArray,
-                                    "ocrOutput": "OCR_output"
-                                }
-                            ]
-                        }
-                    ]
-                });//in deze insert zet je al de info: name, labels... (labels:["label","label"])*/
-                  
-                
-                    
-               
-        
-                    //db['emailaddress'].drop(); //foutief
-        
-                    //db['emailaddress'].find(query[,options]callback).pretty(); //find gaat ook, pretty is duidelijker
                 setTimeout(function () {
-                    //console.log(collection.find());
+                  
                     db.close();
                 }, 100);
                 
             });
-            //************************
             
             
         });
