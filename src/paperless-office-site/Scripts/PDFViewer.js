@@ -14,7 +14,7 @@ $(function () {
     $("#PDFDocumentWrapper").toggleClass("col-md-10");
     $("#liquid").liquidcarousel({
         height: 140,
-        hidearrows:false
+        hidearrows: false
     });
 
 
@@ -33,32 +33,42 @@ $(function () {
 
         PDFJS.workerSrc = 'pdfjs-dist-master/build/pdf.worker.js';
     }
-
+    function createImageWrapper(src) {
+        var divWrapper = document.getElementById("previewDocuments");
+        console.log("Should have done something??");
+        var image = new Image();
+        image.src = src;
+        image.onload = function () {
+            var li = document.createElement('li');
+            var link = document.createElement('a');
+            link.appendChild(image);
+            li.appendChild(link);
+            $("#" + divWrapper.id).prepend(li);
+            //need this code to "reboot" the carousel to update with the new image
+            $("#liquid").liquidcarousel({
+                height: 140,
+                hidearrows: false
+            });
+        }
+    }
     $("#inputUpload").change(function () {
         console.log("We are changing stuff!");
         console.log(this.files);
         for (var i = 0; i < this.files.length; i++) {
             if (this.files && this.files[i]) {
-
-                var thisCanvas = showImageInCanvas(i);
-                console.log(thisCanvas.id);
+                console.log("logging type");
+                console.log(this.files[i]["type"]);
+                //var thisCanvas = showImageInCanvas(i);
+                //console.log(thisCanvas.id);
                 switch (this.files[i]["type"]) {
                     case "image/png":
-                        console.log("We got an image");
+                    case "image/jpg":
+                    case "image/jpeg":
                         if (this.files && this.files[i]) {
-
-
                             var reader = new FileReader();
-
                             reader.onload = function (e) {
-                                //console.log("We aren't doing anything!?");
-                                var img = new Image();
-                                img.src = e.target.result;
-                                img.onload = function () {
-                                    var ctx = canvas.getContext("2d");
-                                    ctx.drawImage(img, 0, 0);
-                                }
-                                //$('#thisCanvas.id').css('background-image', e.target.result);
+                                createImageWrapper(e.target.result);
+                                
                             }
 
                             reader.readAsDataURL(this.files[i]);
@@ -70,7 +80,7 @@ $(function () {
                             console.log("Should show in a canvas!");
                             showInCanvas(e.target.result);
                         }
-                        reader.readAsDataURL(this.files[0]);
+                        reader.readAsDataURL(this.files[i]);
                         break;
                     default:
                         console.log("sorry we do not support this file format!");
@@ -95,49 +105,44 @@ $(function () {
         }
         return array;
     }
-    function showImageInCanvas(id) {
-        var newCanvas = document.createElement('canvas');
-        newCanvas.id = "Canvas" + id;
 
-        var divWrapper = document.getElementById("previewDocuments");
-        console.log("Should have done something??");
-        divWrapper.appendChild(newCanvas);
-        canvas = document.getElementById("Canvas" + id);
-        canvas.height = 306;
-        canvas.width = 396;
-        return canvas;
-
-    }
     function showInCanvas(url) {
         // See README for overview
         'use strict';
         // Fetch the PDF document from the URL using promises
         var pdfAsArray = convertDataURIToBinary(url);
-        console.log("show in canvas function");
+        console.log("trollings");
         PDFJS.getDocument(pdfAsArray).then(function (pdf) {
             // Using promise to fetch the page
             pdf.getPage(1).then(function (page) {
                 var scale = 0.5;
                 var viewport = page.getViewport(scale);
                 // Prepare canvas using PDF page dimensions
-                var canvas = document.getElementById('the-canvas');
+                //var canvas = document.getElementById('the-canvas');
                 var newCanvas = document.createElement('canvas');
                 newCanvas.id = "Canvas" + number;
 
-                var divWrapper = document.getElementById("previewDocuments");
-                console.log("Should have done something??");
-                divWrapper.appendChild(newCanvas);
-                canvas = document.getElementById("Canvas" + number);
+                //var divWrapper = document.getElementById("previewDocuments");
+                //console.log("Should have done something??");
+                //divWrapper.appendChild(newCanvas);
+                //canvas = document.getElementById("Canvas" + number);
                 number++;
-                var context = canvas.getContext('2d');
-                canvas.height = 306;
-                canvas.width = 396;
+                var context = newCanvas.getContext('2d');
+                newCanvas.height = 306;
+                newCanvas.width = 396;
                 // Render PDF page into canvas context
                 var renderContext = {
                     canvasContext: context,
                     viewport: viewport
                 };
-                page.render(renderContext);
+                var task = page.render(renderContext);
+                task.promise.then(function () {
+                    
+                    createImageWrapper(newCanvas.toDataURL());
+
+                    
+
+                })
             });
         });
     }
@@ -185,56 +190,7 @@ function showMultiplePDFDocument(url, canvasID, currentDoc) {
       });
 }
 
-function openSinglePDFDocument(url) {
-    var url = url;
-    // Asynchronous download PDF
-    PDFJS.getDocument(url)
-      .then(function (pdf) {
-          console.log("first then");
-          return pdf.getPage(1);
-      })
-      .then(function (page) {
-          console.log("second then");
-          // Set scale (zoom) level
-          var scale = 0.5;
 
-          // Get viewport (dimensions)
-          var viewport = page.getViewport(scale);
-          // Create the document canvas
-          var newCanvas = document.createElement('canvas');
-          newCanvas.id = canvasID;
-          var newDiv = document.createElement('div');
-          newDiv.className = "overlay-document";
-          var PDFWrapper = document.getElementById("Canvas-Document-Holder");
-
-
-          PDFWrapper.appendChild(newCanvas);
-
-          console.log("test");
-          // Get canvas#the-canvas
-          var canvas = document.getElementById(canvasID);
-
-          // Fetch canvas' 2d context
-          var context = canvas.getContext('2d');
-
-          // Set dimensions to Canvas
-          //viewport.height = 396;
-          //viewport.width = 306;
-          //canvas.height = viewport.height;
-          //canvas.width = viewport.width;
-          canvas.width = 306;
-          canvas.height = 396;
-
-          // Prepare object needed by render method
-          var renderContext = {
-              canvasContext: context,
-              viewport: viewport
-          };
-
-          // Render PDF page
-          page.render(renderContext);
-      });
-}
 function openListOfDocuments() {
     $("#Canvas-Document-Holder").toggle();
     $("#DocumentIFrame").toggle();
