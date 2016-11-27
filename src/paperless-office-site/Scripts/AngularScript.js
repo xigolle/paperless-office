@@ -92,6 +92,7 @@ app.controller("uploadController", function ($scope, $http) {
     var fd = new FormData();
     var userAdded = false;
     var docNameAdded = false;
+
     $scope.collapseDetails = "collapse";
     $scope.collapseZone = "";
     $scope.docName = "";
@@ -128,18 +129,22 @@ app.controller("uploadController", function ($scope, $http) {
                 fd = new FormData();
                 userAdded = false;
                 docNameAdded = false;
+            } else {
+                $scope.myStyle = { "border-color": "red" };
             }
             
+        } else {
+            $scope.myStyle = { "border-color": "darkred" };
         }
         
     }
 
     $scope.addFile = function (files) {
-        
-        console.log("in add file function");
+        $scope.myStyle = { "border-color": "gray" };
+        console.log($scope.myStyle);
         if (!userAdded) {
             //Met deze lijn kunnen we de user meegeven
-            fd.append("user", "Mathias Samyn");
+            fd.append("user", "mathiassamyn@hotmail.com");
             userAdded = true;
         }
         angular.forEach(files, function (file) {

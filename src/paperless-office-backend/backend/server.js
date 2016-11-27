@@ -6,6 +6,9 @@ var multer = require("multer");
 var PDF = require('pdfkit');
 var merge = require('easy-pdf-merge');
 //-------------------
+var MongoClient = require('mongodb').MongoClient;
+var assert = require('assert');
+//-------------------
 var config = require("../config.json");
 //var bodyparser = require("body-parser");
 var app = express();
@@ -110,6 +113,13 @@ app.post("/api/uploadDocuments", function (req, res) {
         var userFolder = "./users/" + req.body.user + "/";
         var docName = req.body.docName + ".pdf";
         var docLabels = req.body.docLabels;
+        var tempLabelArray = docLabels.split("#");
+        var labelArray = [];
+        tempLabelArray.forEach(function (label) {
+            if (label != "") {
+                labelArray.push(label.trim());
+            }
+        });
         var fileArray = [];
         var fileExt;
         fs.readdir( userFolder, function( err, files ) {
@@ -151,6 +161,46 @@ app.post("/api/uploadDocuments", function (req, res) {
                       
                     } else console.log(error);
                 });
+            });
+
+
+            var url = 'mongodb://13.94.234.60:27017/mydb';
+
+
+            MongoClient.connect(url,function(err,db)
+            {
+                assert.equal(null,err);
+                console.log("Connected succesfully to server");
+    
+                var collection = db.collection(req.body.user);
+                
+                collection.find().toArray(function (err, items) {
+                    id = items;
+                    console.log(id[0]['_id']);
+       
+                  
+                    collection.update(
+                        {
+                            "_id": id[0]['_id']
+                        },
+                        {
+                            $push: {
+                                "docs": {
+                                    "name": docName,
+                                    "labels": labelArray,
+                                    "ocrOutput": "OCR_output"
+                                }
+                                                                  
+                            }
+                        });
+                });
+
+              
+                setTimeout(function () {
+                  
+                    db.close();
+                }, 100);
+                
             });
             
             
