@@ -1,5 +1,13 @@
 ﻿
 var app = angular.module("app", []);
+Array.prototype.remove = function (from, to) {
+    //Code from:
+    //http://stackoverflow.com/questions/500606/deleting-array-elements-in-javascript-delete-vs-splice
+    //makes it easier to delete from array. Array Remove - By John Resig (MIT Licensed)
+    var rest = this.slice((to || from) + 1 || this.length);
+    this.length = from < 0 ? this.length + from : from;
+    return this.push.apply(this, rest);
+};
 
 app.service('DocumentService', function ($http) {
 
@@ -110,7 +118,8 @@ app.controller("uploadController", function ($scope, $http) {
                 fd.append("docName", $scope.docName);
                 fd.append("docLabels", $scope.docLabels);
                 $scope.docName = "";
-                console.log(fd);
+                console.log("User Added!!!");
+                console.log(fd.keys);
             }
             if (docNameAdded) {
                 $http.post("http://paperless-office.westeurope.cloudapp.azure.com/api/uploadDocuments", fd, {
@@ -125,7 +134,8 @@ app.controller("uploadController", function ($scope, $http) {
 
                 $scope.collapseDetails = "collapse";
                 $scope.collapseZone = "";
-
+                console.log("Logging FD!");
+                console.log(fd.keys());
                 fd = new FormData();
                 userAdded = false;
                 docNameAdded = false;
@@ -138,7 +148,20 @@ app.controller("uploadController", function ($scope, $http) {
         }
         
     }
+    $scope.removeFromFormData = function (name) {
+        
+        var tempArray = fd.getAll("file");
+        for (var i = 0; i < tempArray.length; i++) {
+            if (tempArray[i].name === name) {
+                tempArray.remove(i);
+            }
+        }
+        fd = new FormData();
+        for (var i = 0; i < tempArray.length; i++) {
+            fd.append("file", tempArray[i]);
+        }
 
+    }
     $scope.addFile = function (files) {
         $scope.myStyle = { "border-color": "gray" };
         console.log($scope.myStyle);
@@ -148,11 +171,11 @@ app.controller("uploadController", function ($scope, $http) {
             userAdded = true;
         }
         angular.forEach(files, function (file) {
-            console.log("logging result of angularScript");
-            console.log(file);
             fd.append("file", file);
         });
-
+        
+       
+        //console.log(files);
     }
 
 });
