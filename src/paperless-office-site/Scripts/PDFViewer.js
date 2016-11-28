@@ -33,9 +33,9 @@ $(function () {
 
         PDFJS.workerSrc = 'pdfjs-dist-master/build/pdf.worker.js';
     }
-    function createImageWrapper(src) {
+   
+    function createImageWrapper(src,file) {
         var divWrapper = document.getElementById("previewDocuments");
-        console.log("Should have done something??");
         var image = new Image();
         image.src = src;
         image.onload = function () {
@@ -43,6 +43,12 @@ $(function () {
             var link = document.createElement('a');
             link.appendChild(image);
             li.appendChild(link);
+            $(li).click(function (e) {
+                //alert(e);
+                $(this).remove();
+                var doclist = angular.element("#upload").scope().removeFromFormData(file);
+                //console.log(fd);
+            });
             $("#" + divWrapper.id).prepend(li);
             //need this code to "reboot" the carousel to update with the new image
             $("#liquid").liquidcarousel({
@@ -52,12 +58,8 @@ $(function () {
         }
     }
     $("#inputUpload").change(function () {
-        console.log("We are changing stuff!");
-        console.log(this.files);
         for (var i = 0; i < this.files.length; i++) {
             if (this.files && this.files[i]) {
-                console.log("logging type");
-                console.log(this.files[i]["type"]);
                 //var thisCanvas = showImageInCanvas(i);
                 //console.log(thisCanvas.id);
                 switch (this.files[i]["type"]) {
@@ -65,9 +67,10 @@ $(function () {
                     case "image/jpg":
                     case "image/jpeg":
                         if (this.files && this.files[i]) {
+                            var currentFile = this.files[i]
                             var reader = new FileReader();
                             reader.onload = function (e) {
-                                createImageWrapper(e.target.result);
+                                createImageWrapper(e.target.result,currentFile.name);
                                 
                             }
 
@@ -75,10 +78,10 @@ $(function () {
                         }
                         break;
                     case "application/pdf":
+                        var currentFile = this.files[i];
                         var reader = new FileReader();
                         reader.onload = function (e) {
-                            console.log("Should show in a canvas!");
-                            showInCanvas(e.target.result);
+                            showInCanvas(e.target.result,currentFile.name);
                         }
                         reader.readAsDataURL(this.files[i]);
                         break;
@@ -106,12 +109,11 @@ $(function () {
         return array;
     }
 
-    function showInCanvas(url) {
+    function showInCanvas(url,file) {
         // See README for overview
         'use strict';
         // Fetch the PDF document from the URL using promises
         var pdfAsArray = convertDataURIToBinary(url);
-        console.log("trollings");
         PDFJS.getDocument(pdfAsArray).then(function (pdf) {
             // Using promise to fetch the page
             pdf.getPage(1).then(function (page) {
@@ -138,7 +140,7 @@ $(function () {
                 var task = page.render(renderContext);
                 task.promise.then(function () {
                     
-                    createImageWrapper(newCanvas.toDataURL());
+                    createImageWrapper(newCanvas.toDataURL(),file);
 
                     
 
