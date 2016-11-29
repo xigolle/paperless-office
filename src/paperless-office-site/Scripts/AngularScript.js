@@ -16,7 +16,6 @@ app.service('DocumentService', function ($http) {
 
     //this call doesn't get used at the moment will be maybe used in later us when we decide to use headers.
     this.getDocument = function () {
-        console.log("get document function started");
         $http({
             method: 'GET',
             url: "http://paperless-office.westeurope.cloudapp.azure.com/api/getDocument",
@@ -31,7 +30,6 @@ app.service('DocumentService', function ($http) {
         });
     }
     this.getAmountDocuments = function () {
-        console.log("Get amount of documents and name");
         return $http.get("http://paperless-office.westeurope.cloudapp.azure.com/api/getDocuments");
 
     }
@@ -112,14 +110,11 @@ app.controller("uploadController", function ($scope, $http) {
         if (userAdded) {
             $scope.collapseDetails = "";
             $scope.collapseZone = "collapse";
-            console.log($scope.docName);
             if ($scope.docName.split(' ').join('') != "") {
                 docNameAdded = true;
                 fd.append("docName", $scope.docName);
                 fd.append("docLabels", $scope.docLabels);
                 $scope.docName = "";
-                console.log("User Added!!!");
-                console.log(fd.keys);
             }
             if (docNameAdded) {
                 $http.post("http://paperless-office.westeurope.cloudapp.azure.com/api/uploadDocuments", fd, {
@@ -134,8 +129,6 @@ app.controller("uploadController", function ($scope, $http) {
 
                 $scope.collapseDetails = "collapse";
                 $scope.collapseZone = "";
-                console.log("Logging FD!");
-                console.log(fd.keys());
                 fd = new FormData();
                 userAdded = false;
                 docNameAdded = false;
@@ -148,8 +141,8 @@ app.controller("uploadController", function ($scope, $http) {
         }
         
     }
-    $scope.removeFromFormData = function (name) {
-        
+     $scope.removeFromFormData = function (name) {
+
         var tempArray = fd.getAll("file");
         for (var i = 0; i < tempArray.length; i++) {
             if (tempArray[i].name === name) {
@@ -174,8 +167,6 @@ app.controller("uploadController", function ($scope, $http) {
             fd.append("file", file);
         });
         
-       
-        //console.log(files);
     }
 
 });
