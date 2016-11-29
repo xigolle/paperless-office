@@ -7,6 +7,12 @@ h1 {
 	margin-bottom:26px;
 }
 
+span.remove-preview-icon{
+    color: #41393E;
+    float: right;
+    top: 10px;
+    left: 10px;
+}
 a {
 	color:#19510E;
 	text-decoration:none;
