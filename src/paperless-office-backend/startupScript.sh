@@ -1,6 +1,6 @@
 #!/bin/sh -
 
 
-sudo mongod --fork --logpath /home/PaperlessOffice/mongodblogs/mongodb.log
+sudo mongod --fork --logpath /var/log/mongodb/mongodb.log
 
 
