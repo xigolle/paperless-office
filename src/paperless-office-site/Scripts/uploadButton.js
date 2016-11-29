@@ -4,19 +4,8 @@
         $("#upload").toggleClass("uploadToggled");
         
     });
-    $("#fileInput").click(function (e) {
+    $("#upload").children().not("p").click(function (e) {
         e.stopPropagation();
-    });
-    $("#submit").click(function (e) {
-        e.stopPropagation();
-    });
-    $("#submit span").click(function (e) {
-        e.stopPropagation();
-    });
-    $("#upload input").click(function (e) {
-        e.stopPropagation();
-    });
-    $("#docLabels").click(function (e) {
-        e.stopPropagation();
-    });
+    })
+
 })

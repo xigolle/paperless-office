@@ -148,6 +148,8 @@ app.controller("uploadController", function ($scope, $http) {
             userAdded = true;
         }
         angular.forEach(files, function (file) {
+            console.log("logging result of angularScript");
+            console.log(file);
             fd.append("file", file);
         });
 
