@@ -193,7 +193,10 @@ app.post("/api/uploadDocuments", function (req, res) {
                                                                   
                             }
                         });
+                    
+                    
                 });
+                
 
               
                 setTimeout(function () {
@@ -213,6 +216,10 @@ app.post("/api/uploadDocuments", function (req, res) {
     console.log(req.file);
     
 });
+
+app.post('http://paperless-office.westeurope.cloudapp.azure.com/api/search', function(req,res){
+    
+})
 
 //This function will convert images to pdf
 var makePDF = function (userFolder, fileName, pdfName) {

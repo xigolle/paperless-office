@@ -1,4 +1,4 @@
-﻿
+
 var app = angular.module("app", []);
 
 app.service('DocumentService', function ($http) {
@@ -155,6 +155,16 @@ app.controller("uploadController", function ($scope, $http) {
 
     }
 
+});
+
+app.controller("searchController", function( $scope, $http){
+    
+    $scope.searchLabel = "";
+    $scope.find = function (){
+        $http.post('http://paperless-office.westeurope.cloudapp.azure.com/api/search',$scope.searchLabel).then(function(response){
+            $scope.searchLabels = response.data;
+        })
+    }
 });
 
 

@@ -57,9 +57,9 @@
                         <a class="navbar-brand" href="#">Paperless Office</a>
                     </div>
                     <!-- Collect the nav links, forms, and other content for toggling -->
-                    <form id="search-form" class="navbar-form navbar-right">
+                    <form id="search-form" class="navbar-form navbar-right" ng="searchController">
                         <div class="form-group">
-                            <input type="text" id="search-bar" class="form-control" placeholder="Search">
+                            <input type="text" id="search-bar" class="form-control" placeholder="Search" ng-model="searchLabel" ng-submit="find()">
                         </div>
                     </form>
                     <!-- /.navbar-collapse -->
