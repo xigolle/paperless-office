@@ -161,7 +161,8 @@ app.controller("searchController", function( $scope, $http){
     
     $scope.searchLabel = "";
     $scope.find = function (){
-        $http.post('http://paperless-office.westeurope.cloudapp.azure.com/api/search',$scope.searchLabel).then(function(response){
+        $http.post('http://paperless-office.westeurope.cloudapp.azure.com/api/search',$scope.searchLabel)
+            .then(function(response){
             $scope.searchLabels = response.data;
         })
     }

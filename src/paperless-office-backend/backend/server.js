@@ -219,8 +219,19 @@ app.post("/api/uploadDocuments", function (req, res) {
 
 app.post('http://paperless-office.westeurope.cloudapp.azure.com/api/search', function(req,res){
     
+    var query={};
+    query.searchLabel = new RegEXP(req.body.searchLabel, 'i');
+    
+    console.log(req.body.searchLabel);
+    
+    SearchLabel.find(query, function(error,searchLabels){
+        if(error){
+            return res.status(400).send({msg:"error occured"});
+        }
+        return res.status(200).send(searchLabels);
+        console.log(searchLabels);
+    })
 })
-
 //This function will convert images to pdf
 var makePDF = function (userFolder, fileName, pdfName) {
     var doc = new PDF();
@@ -241,7 +252,3 @@ var getDoc = function(container, name) {
         } else res.send("Could not retrieve file");
     });
 }
-
-
-
-
