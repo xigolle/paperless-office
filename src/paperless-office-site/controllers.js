@@ -26,6 +26,12 @@
 
       };
 
+      ////////////////////////////
+      $scope.register = function () {
+          $location.path('/register');
+      };
+      ////////////////////////////
+
   }]);
 
 angular.module('app').controller('logoutController',
@@ -71,5 +77,11 @@ angular.module('app').controller('registerController',
             });
 
       };
+
+      ////////////////////////////
+      $scope.login = function () {
+          $location.path('/login');
+      };
+      ////////////////////////////
 
   }]);

@@ -1,4 +1,4 @@
-﻿<div class="col-md-4">
+﻿<div class="col-md-4 col-md-offset-4">
     <h1>Register</h1>
     <div ng-show="error" class="alert alert-danger">{{errorMessage}}</div>
     <form class="form" ng-submit="register()">
@@ -14,4 +14,6 @@
             <button type="submit" class="btn btn-default" ng-disabled="disabled">Register</button>
         </div>
     </form>
+    <p>or</p>
+    <button class="btn btn-default" ng-click="login()">Login</button>
 </div>

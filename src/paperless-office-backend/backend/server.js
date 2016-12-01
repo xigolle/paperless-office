@@ -10,6 +10,36 @@ var MongoClient = require('mongodb').MongoClient;
 var assert = require('assert');
 //-------------------
 var config = require("../config.json");
+
+//---------------------
+// dependencies
+var debug = require('debug')('passport-mongo');
+
+var logger = require('morgan');
+var cookieParser = require('cookie-parser');
+var bodyParser = require('body-parser');
+var expressSession = require('express-session');
+var mongoose = require('mongoose');
+var hash = require('bcrypt-nodejs');
+var path = require('path');
+var passport = require('passport');
+var localStrategy = require('passport-local').Strategy;
+
+// mongoose
+mongoose.connect('mongodb://localhost/mydb');
+
+// user schema/model
+var User = require('./models/user.js');
+
+// create instance of express
+var app = express();
+
+// require routes
+var routes = require('./routes/api.js');
+
+//---------------------------
+
+
 //var bodyparser = require("body-parser");
 var app = express();
 //Let's us work with containers and blobs
@@ -37,8 +67,8 @@ app.use(function (req, res, next) {
     next();
 });
 app.use(express.static('../../paperless-office-site'));
-app.get("/", function (req, res) {
-});
+/*app.get("/", function (req, res) {
+});*/
 app.get("/api/getDocumentURL/:url", function (req, res) {
     console.log(req.params.url);
     blobSvc.createReadStream("test", req.params.url).pipe(res)
@@ -77,7 +107,7 @@ app.get("/api/getDocuments", function (req, res) {
 
   	} else res.send("Could not get names");  
     });
-
+    
 });
 
 //Tries to make a user folder, and catches the error if it already exists. Bad code --> needs to be fixed: empty catch.
@@ -210,7 +240,7 @@ app.post("/api/uploadDocuments", function (req, res) {
 
         res.end();
     })
-    console.log(req.file);
+   console.log(User.currentUser);
     
 });
 
@@ -226,43 +256,17 @@ var makePDF = function (userFolder, fileName, pdfName) {
 }
 
 //Function that can be called to download a document to the server
-var getDoc = function(container, name) {
-    blobSvc.getBlobToStream(container, name, fs.createWriteStream(name), function(error, result, response){
-    	if(!error){
-	     console.log("blob retrieved");
-             //res.sendFile('/home/PaperlessOffice/node-server/output.pdf');
+var getDoc = function (container, name) {
+    blobSvc.getBlobToStream(container, name, fs.createWriteStream(name), function (error, result, response) {
+        if (!error) {
+            console.log("blob retrieved");
+            //res.sendFile('/home/PaperlessOffice/node-server/output.pdf');
         } else res.send("Could not retrieve file");
     });
-}
-
+};
 
 //---------------------------------
 
-
-// dependencies
-var debug = require('debug')('passport-mongo');
-
-var logger = require('morgan');
-var cookieParser = require('cookie-parser');
-var bodyParser = require('body-parser');
-var expressSession = require('express-session');
-var mongoose = require('mongoose');
-var hash = require('bcrypt-nodejs');
-var path = require('path');
-var passport = require('passport');
-var localStrategy = require('passport-local').Strategy;
-
-// mongoose
-mongoose.connect('mongodb://localhost/mean-auth');
-
-// user schema/model
-var User = require('./models/user.js');
-
-// create instance of express
-var app = express();
-
-// require routes
-var routes = require('./routes/api.js');
 
 // define middleware
 app.use(express.static(path.join(__dirname, '../../paperless-office-site')));
@@ -285,7 +289,6 @@ passport.serializeUser(User.serializeUser());
 passport.deserializeUser(User.deserializeUser());
 
 // routes
-debugger;
 app.use('/user/', routes);
 
 /*app.get('/', function (req, res) {
@@ -294,7 +297,6 @@ app.use('/user/', routes);
 
 // error handlers
 app.use(function (req, res, next) {
-    debugger;
     var err = new Error('Not Found');
     err.status = 404;
     next(err);

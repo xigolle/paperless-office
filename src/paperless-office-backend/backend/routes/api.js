@@ -4,8 +4,11 @@ var passport = require('passport');
 
 var User = require('../models/user.js');
 
+var currentUser;
+
 
 router.post('/register', function (req, res) {
+    currentUser = req.body.username;
     User.register(new User({ username: req.body.username }),
       req.body.password, function (err, account) {
           if (err) {
