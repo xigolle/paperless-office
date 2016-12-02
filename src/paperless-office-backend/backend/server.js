@@ -16,7 +16,7 @@ var config = require("../config.json");
 var debug = require('debug')('passport-mongo');
 
 var logger = require('morgan');
-var cookieParser = require('cookie-parser');
+//var cookieParser = require('cookie-parser'); sinds versie 1.5.0 van express-session is deze niet meer nodig
 var bodyParser = require('body-parser');
 var expressSession = require('express-session');
 var mongoose = require('mongoose');
@@ -67,8 +67,7 @@ app.use(function (req, res, next) {
     next();
 });
 app.use(express.static('../../paperless-office-site'));
-/*app.get("/", function (req, res) {
-});*/
+
 app.get("/api/getDocumentURL/:url", function (req, res) {
     console.log(req.params.url);
     blobSvc.createReadStream(routes.currentUser, req.params.url).pipe(res)
@@ -123,8 +122,8 @@ var mkdirSync = function (path) {
 //This will define the full storage path for the uploaded files.
 var storage = multer.diskStorage({
     destination: function (req, file, callback) {
-        mkdirSync("./users/" + /*req.body.user*/ routes.currentUser);     
-        callback(null, "./users/"+/*req.body.user*/ routes.currentUser);
+        mkdirSync("./users/" + routes.currentUser);     
+        callback(null, "./users/"+ routes.currentUser);
     },
     filename: function (req, file, callback) {
         callback(null, file.originalname)
@@ -142,7 +141,7 @@ app.post("/api/uploadDocuments", function (req, res) {
         
        
         console.log(req.body.docName + "    " + req.body.docLabels);
-        var userFolder = "./users/" + /*req.body.user*/ routes.currentUser + "/";
+        var userFolder = "./users/" + routes.currentUser + "/";
         var docName = req.body.docName + ".pdf";
         var docLabels = req.body.docLabels;
         var tempLabelArray = docLabels.split("#");
@@ -204,7 +203,7 @@ app.post("/api/uploadDocuments", function (req, res) {
                 assert.equal(null,err);
                 console.log("Connected succesfully to server");
     
-                var collection = db.collection(/*req.body.user*/routes.currentUser);
+                var collection = db.collection(routes.currentUser);
                 
                 collection.find().toArray(function (err, items) {
                     id = items;
@@ -274,11 +273,12 @@ app.use(express.static(path.join(__dirname, '../../paperless-office-site')));
 app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
-app.use(cookieParser());
+//app.use(cookieParser()); sinds versie 1.5.0 van express-session is deze niet meer nodig
 app.use(require('express-session')({
     secret: 'keyboard cat',
     resave: false,
     saveUninitialized: false
+    //cookie: { secure: true } cookie werkt dan enkel bij https
 }));
 app.use(passport.initialize());
 app.use(passport.session());
@@ -291,10 +291,6 @@ passport.deserializeUser(User.deserializeUser());
 
 // routes
 app.use('/user/', routes.routes);
-
-/*app.get('/', function (req, res) {
-    res.sendFile(path.join(__dirname, '../client', 'index.html'));
-});*/
 
 // error handlers
 app.use(function (req, res, next) {
