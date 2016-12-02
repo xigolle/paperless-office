@@ -71,24 +71,25 @@ app.use(express.static('../../paperless-office-site'));
 });*/
 app.get("/api/getDocumentURL/:url", function (req, res) {
     console.log(req.params.url);
-    blobSvc.createReadStream("test", req.params.url).pipe(res)
+    blobSvc.createReadStream(routes.currentUser, req.params.url).pipe(res)
 })
 
 app.get("/api/getDocument", function (req, res) {
     //console.log(req.params.name);
     //console.log(req.get('test'));
     console.log(req.get('test'));
-    blobSvc.createReadStream("test", req.get('test')).pipe(res)
+    blobSvc.createReadStream(routes.currentUser, req.get('test')).pipe(res)
 
 });
 app.get("/api/getDocuments", function (req, res) {
+    //console.log(routes.currentUser);
     //empty array
     testArray = [];
     //This can be used to 'pipe' ONE document directly to the site    
     //blobSvc.createReadStream("test", "Mathias/Knipsel.JPG").pipe(res);
 
     //Gets all the document names that are in the specified container
-    blobSvc.listBlobsSegmented("test", null, function(error, result, response){
+    blobSvc.listBlobsSegmented(routes.currentUser, null, function(error, result, response){
   	if(!error){
 	    //Will download all the documents in the specified container
   	    result.entries.forEach(function (name) {
@@ -122,8 +123,8 @@ var mkdirSync = function (path) {
 //This will define the full storage path for the uploaded files.
 var storage = multer.diskStorage({
     destination: function (req, file, callback) {
-        mkdirSync("./users/" + req.body.user);     
-        callback(null, "./users/"+req.body.user);
+        mkdirSync("./users/" + /*req.body.user*/ routes.currentUser);     
+        callback(null, "./users/"+/*req.body.user*/ routes.currentUser);
     },
     filename: function (req, file, callback) {
         callback(null, file.originalname)
@@ -138,9 +139,10 @@ app.post("/api/uploadDocuments", function (req, res) {
             console.log("Error Occured: " + err);
             return;
         }  
+        
        
         console.log(req.body.docName + "    " + req.body.docLabels);
-        var userFolder = "./users/" + req.body.user + "/";
+        var userFolder = "./users/" + /*req.body.user*/ routes.currentUser + "/";
         var docName = req.body.docName + ".pdf";
         var docLabels = req.body.docLabels;
         var tempLabelArray = docLabels.split("#");
@@ -167,7 +169,7 @@ app.post("/api/uploadDocuments", function (req, res) {
             merge(fileArray, docName, function (err) {
 
                 if (err) {
-                    blobSvc.createBlockBlobFromLocalFile("test", docName, userFolder + fileExt[0] + ".pdf", function (error, result, response) {
+                    blobSvc.createBlockBlobFromLocalFile(routes.currentUser, docName, userFolder + fileExt[0] + ".pdf", function (error, result, response) {
                         if (!error) {
                             console.log("success");                        
                             fileArray.forEach(function (file, index) {
@@ -181,7 +183,7 @@ app.post("/api/uploadDocuments", function (req, res) {
                     
 
                 
-                blobSvc.createBlockBlobFromLocalFile("test", docName, docName, function (error, result, response) {
+                blobSvc.createBlockBlobFromLocalFile(routes.currentUser, docName, docName, function (error, result, response) {
                     if (!error) {
                         console.log("success");
                         fs.unlinkSync(docName);
@@ -194,7 +196,7 @@ app.post("/api/uploadDocuments", function (req, res) {
             });
 
 
-            var url = 'mongodb://13.94.234.60:27017/mydb';
+            var url = 'mongodb://localhost/mydb';
 
 
             MongoClient.connect(url,function(err,db)
@@ -202,7 +204,7 @@ app.post("/api/uploadDocuments", function (req, res) {
                 assert.equal(null,err);
                 console.log("Connected succesfully to server");
     
-                var collection = db.collection(req.body.user);
+                var collection = db.collection(/*req.body.user*/routes.currentUser);
                 
                 collection.find().toArray(function (err, items) {
                     id = items;
@@ -240,7 +242,6 @@ app.post("/api/uploadDocuments", function (req, res) {
 
         res.end();
     })
-   console.log(User.currentUser);
     
 });
 
@@ -289,7 +290,7 @@ passport.serializeUser(User.serializeUser());
 passport.deserializeUser(User.deserializeUser());
 
 // routes
-app.use('/user/', routes);
+app.use('/user/', routes.routes);
 
 /*app.get('/', function (req, res) {
     res.sendFile(path.join(__dirname, '../client', 'index.html'));
