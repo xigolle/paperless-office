@@ -32,7 +32,10 @@ router.post('/register', function (req, res) {
               assert.equal(null, err);
               console.log("Connected succesfully to server");
               db.createCollection(req.body.username);
+              db.collection(req.body.username).insert({docs:[]});
           });
+
+          
 
           //Make container for new user
           blobSvc.createContainerIfNotExists(req.body.username, function (error, result, response) {
