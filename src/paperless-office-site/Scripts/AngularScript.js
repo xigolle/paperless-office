@@ -90,7 +90,7 @@ app.controller("testCTRL", function ($scope, DocumentService) {
 app.controller("uploadController", function ($scope, $http) {
 
     var fd = new FormData();
-    var userAdded = false; //TODO: rename var to resemble tha fact that at least 1 file has been added
+    var firstDocAdded = false; 
     var docNameAdded = false;
 
     $scope.collapseDetails = "collapse";
@@ -101,7 +101,7 @@ app.controller("uploadController", function ($scope, $http) {
 
     $scope.upload = function () {
 
-        if (userAdded) {
+        if (firstDocAdded) {
             $scope.collapseDetails = "";
             $scope.collapseZone = "collapse";
             console.log($scope.docName);
@@ -127,7 +127,7 @@ app.controller("uploadController", function ($scope, $http) {
                 $scope.collapseZone = "";
 
                 fd = new FormData();
-                userAdded = false;
+                firstDocAdded = false;
                 docNameAdded = false;
             } else {
                 $scope.myStyle = { "border-color": "red" };
@@ -142,10 +142,10 @@ app.controller("uploadController", function ($scope, $http) {
     $scope.addFile = function (files) {
         $scope.myStyle = { "border-color": "gray" };
         console.log($scope.myStyle);
-        if (!userAdded) {
+        if (!firstDocAdded) {
             //Met deze lijn kunnen we de user meegeven
             //fd.append("user", "mathiassamyn@hotmail.com");
-            userAdded = true;
+            firstDocAdded = true;
         }
         angular.forEach(files, function (file) {
             console.log("logging result of angularScript");
