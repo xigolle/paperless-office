@@ -1,5 +1,5 @@
 ﻿
-var app = angular.module("app", []);
+var app = angular.module("app", ["ngRoute"]);
 Array.prototype.remove = function (from, to) {
     //Code from:
     //http://stackoverflow.com/questions/500606/deleting-array-elements-in-javascript-delete-vs-splice
@@ -96,7 +96,7 @@ app.controller("testCTRL", function ($scope, DocumentService) {
 app.controller("uploadController", function ($scope, $http) {
 
     var fd = new FormData();
-    var userAdded = false;
+    var firstDocAdded = false; 
     var docNameAdded = false;
 
     $scope.collapseDetails = "collapse";
@@ -107,7 +107,7 @@ app.controller("uploadController", function ($scope, $http) {
 
     $scope.upload = function () {
 
-        if (userAdded) {
+        if (firstDocAdded) {
             $scope.collapseDetails = "";
             $scope.collapseZone = "collapse";
             if ($scope.docName.split(' ').join('') != "") {
@@ -130,7 +130,7 @@ app.controller("uploadController", function ($scope, $http) {
                 $scope.collapseDetails = "collapse";
                 $scope.collapseZone = "";
                 fd = new FormData();
-                userAdded = false;
+                firstDocAdded = false;
                 docNameAdded = false;
             } else {
                 $scope.myStyle = { "border-color": "red" };
@@ -158,10 +158,10 @@ app.controller("uploadController", function ($scope, $http) {
     $scope.addFile = function (files) {
         $scope.myStyle = { "border-color": "gray" };
         console.log($scope.myStyle);
-        if (!userAdded) {
+        if (!firstDocAdded) {
             //Met deze lijn kunnen we de user meegeven
-            fd.append("user", "mathiassamyn@hotmail.com");
-            userAdded = true;
+            //fd.append("user", "mathiassamyn@hotmail.com");
+            firstDocAdded = true;
         }
         angular.forEach(files, function (file) {
             fd.append("file", file);
@@ -171,4 +171,45 @@ app.controller("uploadController", function ($scope, $http) {
 
 });
 
+
+
+//--------------------------------
+
+app.config(function ($routeProvider) {
+    $routeProvider
+      .when('/', {
+          templateUrl: 'partials/home.html',
+          access: { restricted: true }
+      })
+      .when('/login', {
+          templateUrl: 'partials/login.html',
+          controller: 'loginController',
+          access: { restricted: false }
+      })
+      .when('/logout', {
+          controller: 'logoutController',
+          access: { restricted: true }
+      })
+      .when('/register', {
+          templateUrl: 'partials/register.html',
+          controller: 'registerController',
+          access: { restricted: false }
+      })
+      .otherwise({
+          redirectTo: '/'
+      });
+});
+
+app.run(function ($rootScope, $location, $route, AuthService) {
+    $rootScope.$on('$routeChangeStart',
+      function (event, next, current) {
+          AuthService.getUserStatus()
+          .then(function () {
+              if (next.access.restricted && !AuthService.isLoggedIn()) {
+                  $location.path('/login');
+                  $route.reload();
+              }
+          });
+      });
+});
 
