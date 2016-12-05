@@ -219,12 +219,12 @@ app.post("/api/uploadDocuments", function (req, res) {
 
 app.post('http://paperless-office.westeurope.cloudapp.azure.com/api/search', function(req,res){
     
-    var query={};
-    query.searchLabel = new RegEXP(req.body.searchLabel, 'i');
+    var Query={};
+    Query.searchLabel = new RegEXP(req.body.searchLabel, 'i');
     
     console.log(req.body.searchLabel);
     
-    SearchLabel.find({docs:{$elemMatch:{query}}}, function(error,searchLabels){
+    SearchLabel.find({docs:{$elemMatch:{Query}}}, function(error,searchLabels){
         if(error){
             return res.status(400).send({msg:"error occured"});
         }
