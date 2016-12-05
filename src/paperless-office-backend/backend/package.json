@@ -13,7 +13,8 @@
     "mongodb": "^2.2.11",
     "multer": "^1.2.0",
     "nodemon": "^1.11.0",
-    "pdfkit": "^0.8.0"
+    "pdfkit": "^0.8.0",
+    "tesseract.js": "^1.0.10"
   },
   "devDependencies": {},
   "scripts": {

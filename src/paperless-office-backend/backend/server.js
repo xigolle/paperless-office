@@ -1,14 +1,14 @@
+
+
 var express = require("express");
 var azure = require("azure-storage");
 var fs = require("fs");
 var multer = require("multer");
-//-------------------
 var PDF = require('pdfkit');
+var Tesseract = require('tesseract.js');
 var merge = require('easy-pdf-merge');
-//-------------------
 var MongoClient = require('mongodb').MongoClient;
 var assert = require('assert');
-//-------------------
 var config = require("../config.json");
 //var bodyparser = require("body-parser");
 var app = express();
@@ -50,6 +50,14 @@ app.get("/api/getDocument", function (req, res) {
     console.log(req.get('test'));
     blobSvc.createReadStream("test", req.get('test')).pipe(res)
 
+});
+app.get("/api/ocr/:url", function (req, res) {
+    
+    console.log("run ocr: " + req.params.url);
+    Tesseract.recognize(req.params.url).then(function (result) {
+
+        console.log(result);
+    })
 });
 app.get("/api/getDocuments", function (req, res) {
     //empty array
