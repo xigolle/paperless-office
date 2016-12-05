@@ -224,7 +224,7 @@ app.post('http://paperless-office.westeurope.cloudapp.azure.com/api/search', fun
     
     console.log(req.body.searchLabel);
     
-    SearchLabel.find({docs:{$elemMatch:{req.body.searchLabel}}}, function(error,searchLabels){
+    SearchLabel.find({docs:{$elemMatch:{[req.body.searchLabel]}}}, function(error,searchLabels){
         if(error){
             return res.status(400).send({msg:"error occured"});
         }
