@@ -1,5 +1,13 @@
 ﻿
 var app = angular.module("app", ["ngRoute"]);
+Array.prototype.remove = function (from, to) {
+    //Code from:
+    //http://stackoverflow.com/questions/500606/deleting-array-elements-in-javascript-delete-vs-splice
+    //makes it easier to delete from array. Array Remove - By John Resig (MIT Licensed)
+    var rest = this.slice((to || from) + 1 || this.length);
+    this.length = from < 0 ? this.length + from : from;
+    return this.push.apply(this, rest);
+};
 
 app.service('DocumentService', function ($http) {
 
@@ -8,7 +16,6 @@ app.service('DocumentService', function ($http) {
 
     //this call doesn't get used at the moment will be maybe used in later us when we decide to use headers.
     this.getDocument = function () {
-        console.log("get document function started");
         $http({
             method: 'GET',
             url: "http://paperless-office.westeurope.cloudapp.azure.com/api/getDocument",
@@ -23,7 +30,6 @@ app.service('DocumentService', function ($http) {
         });
     }
     this.getAmountDocuments = function () {
-        console.log("Get amount of documents and name");
         return $http.get("http://paperless-office.westeurope.cloudapp.azure.com/api/getDocuments");
 
     }
@@ -104,13 +110,11 @@ app.controller("uploadController", function ($scope, $http) {
         if (firstDocAdded) {
             $scope.collapseDetails = "";
             $scope.collapseZone = "collapse";
-            console.log($scope.docName);
             if ($scope.docName.split(' ').join('') != "") {
                 docNameAdded = true;
                 fd.append("docName", $scope.docName);
                 fd.append("docLabels", $scope.docLabels);
                 $scope.docName = "";
-                console.log(fd);
             }
             if (docNameAdded) {
                 $http.post("http://paperless-office.westeurope.cloudapp.azure.com/api/uploadDocuments", fd, {
@@ -125,7 +129,6 @@ app.controller("uploadController", function ($scope, $http) {
 
                 $scope.collapseDetails = "collapse";
                 $scope.collapseZone = "";
-
                 fd = new FormData();
                 firstDocAdded = false;
                 docNameAdded = false;
@@ -138,7 +141,20 @@ app.controller("uploadController", function ($scope, $http) {
         }
         
     }
+     $scope.removeFromFormData = function (name) {
 
+        var tempArray = fd.getAll("file");
+        for (var i = 0; i < tempArray.length; i++) {
+            if (tempArray[i].name === name) {
+                tempArray.remove(i);
+            }
+        }
+        fd = new FormData();
+        for (var i = 0; i < tempArray.length; i++) {
+            fd.append("file", tempArray[i]);
+        }
+
+    }
     $scope.addFile = function (files) {
         $scope.myStyle = { "border-color": "gray" };
         console.log($scope.myStyle);
@@ -148,11 +164,9 @@ app.controller("uploadController", function ($scope, $http) {
             firstDocAdded = true;
         }
         angular.forEach(files, function (file) {
-            console.log("logging result of angularScript");
-            console.log(file);
             fd.append("file", file);
         });
-
+        
     }
 
 });
