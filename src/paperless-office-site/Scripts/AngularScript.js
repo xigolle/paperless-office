@@ -1,5 +1,5 @@
 ﻿
-var app = angular.module("app", ["ngRoute"]);
+var app = angular.module("app", ["ngRoute", "angular-loading-bar"]);
 Array.prototype.remove = function (from, to) {
     //Code from:
     //http://stackoverflow.com/questions/500606/deleting-array-elements-in-javascript-delete-vs-splice
@@ -150,7 +150,11 @@ app.controller("uploadController", function ($scope, $http) {
             }
         }
         fd = new FormData();
+        if (tempArray.length <= 0) {
+            docNameAdded = false;
+        }
         for (var i = 0; i < tempArray.length; i++) {
+            
             fd.append("file", tempArray[i]);
         }
 

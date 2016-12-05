@@ -169,6 +169,7 @@ $(function () {
         });
     }
 });
+
 function showMultiplePDFDocument(url, canvasID, currentDoc) {
     var url = url;
     // Asynchronous download PDF
