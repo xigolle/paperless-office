@@ -204,6 +204,8 @@ function showMultiplePDFDocument(url, canvasID, currentDoc) {
 
               var SingleDocumentURL = encodeURIComponent("http://paperless-office.westeurope.cloudapp.azure.com/api/getDocumentURL/" + $(this).data("currentDoc"));
               openSinglePDFReader(SingleDocumentURL);
+              //bring doc name to angularscript
+              getDocName(decodeURIComponent($(this).data("currentDoc")));
           });
 
           // Render PDF page
@@ -226,9 +228,6 @@ function openSinglePDFReader(url) {
 
     $("#SuggestedDocumentSection").toggle();
     $("#DocumentIFrame").attr('src', "/web/viewer.html?file=" + url).toggle();
-
-    //bring url to angularscript
-    getDocName(url);
 }
 
 //AngularScript will us the url var to know which doc is being deleted

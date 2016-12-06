@@ -32,7 +32,8 @@ router.post('/register', function (req, res) {
               assert.equal(null, err);
               console.log("Connected succesfully to server");
               db.createCollection(req.body.username);
-              db.collection(req.body.username).insert({docs:[]});
+              db.collection(req.body.username).insert({ docs: [] });
+              setTimeout(function () {db.close()}, 100);
           });
 
           
