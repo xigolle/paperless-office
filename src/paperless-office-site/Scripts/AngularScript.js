@@ -171,6 +171,13 @@ app.controller("uploadController", function ($scope, $http) {
 
 });
 
+app.controller('deleteController', function ($scope) {
+    $scope.delete = function () {
+        
+        console.log(getDocName());
+    }
+});
+
 
 
 //--------------------------------

@@ -227,6 +227,16 @@ function openSinglePDFReader(url) {
     $("#SuggestedDocumentSection").toggle();
     $("#DocumentIFrame").attr('src', "/web/viewer.html?file=" + url).toggle();
 
+    //bring url to angularscript
+    getDocName(url);
 }
 
-
+//AngularScript will us the url var to know which doc is being deleted
+function getDocName(url) {
+    if (url === undefined) {
+        console.log("in url undefined if statement");
+        return docName;
+    } else {
+        docName = url;
+    };
+}
