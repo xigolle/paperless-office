@@ -171,7 +171,7 @@ app.controller("uploadController", function ($scope, $http) {
 
 });
 
-app.controller('deleteController', function ($scope, $http) {
+app.controller('deleteController', function ($scope, $http, $route) {
     $scope.delete = function () {
         
         console.log(getDocName());
