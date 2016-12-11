@@ -39,7 +39,7 @@ var routes = require('./routes/api.js');
 
 //---------------------------
 
-app.use(bodyParser.JSON());
+app.use(bodyParser.json());
 
 //Let's us work with containers and blobs
 var blobSvc = azure.createBlobService(config.storageAccountName, config.primaryKey);
