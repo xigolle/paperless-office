@@ -176,7 +176,7 @@ app.controller('deleteController', function ($scope, $http) {
         
         console.log(getDocName());
 
-        $http.post("/api/delete", getDocName()).then(function successCallback(response) {
+        $http.post("/api/delete", { "docName": getDocName() }).then(function successCallback(response) {
             console.log("delete was a success");
         }, function errorCallback(response) {
             console.log("delete was a failure");
