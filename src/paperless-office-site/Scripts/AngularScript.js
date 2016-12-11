@@ -181,6 +181,8 @@ app.controller('deleteController', function ($scope, $http) {
         }, function errorCallback(response) {
             console.log("delete was a failure");
         });
+
+        $route.reload();
     }
 });
 

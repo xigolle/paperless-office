@@ -228,7 +228,7 @@ function openSinglePDFReader(url) {
 
     $("#SuggestedDocumentSection").toggle();
     $("#DocumentIFrame").attr('src', "/web/viewer.html?file=" + url).toggle();
-    $("#DeleteButton").toggle();
+    $("#DeleteButton").toggleClass("hidden");
 }
 
 //AngularScript will us the url var to know which doc is being deleted
