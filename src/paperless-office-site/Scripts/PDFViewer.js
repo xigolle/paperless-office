@@ -219,7 +219,7 @@ function openListOfDocuments() {
     $("#DocumentIFrame").toggle();
     $("#SuggestedDocumentSection").toggle();
     $("#PDFDocumentWrapper").toggleClass("col-md-10");
-
+    $("#DeleteButton").toggleClass("hidden");
 }
 function openSinglePDFReader(url) {
     $("#Canvas-Document-Holder").toggle();
@@ -228,6 +228,7 @@ function openSinglePDFReader(url) {
 
     $("#SuggestedDocumentSection").toggle();
     $("#DocumentIFrame").attr('src', "/web/viewer.html?file=" + url).toggle();
+    $("#DeleteButton").toggle();
 }
 
 //AngularScript will us the url var to know which doc is being deleted
