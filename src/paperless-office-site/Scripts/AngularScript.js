@@ -62,7 +62,7 @@ Array.prototype.remove = function (from, to) {
     return this.push.apply(this, rest);
 };
 
-app.service('DocumentService', function ($http) {
+app.service('DocumentService', function ($http, cfpLoadingBar) {
 
     this.items = [];
     this.DocumentNames = [];
@@ -72,6 +72,7 @@ app.service('DocumentService', function ($http) {
         $http({
             method: 'GET',
             url: "/api/getDocument",
+            ignoreLoadingBar: true,
             headers: {
                 "test": "Bedrijven.pdf"
             }
@@ -238,12 +239,12 @@ app.controller("uploadController", function ($scope, $http) {
 
 });
 
-app.controller('deleteController', function ($scope, $http, $route) {
+app.controller('deleteController', function ($scope, $http, $route, cfpLoadingBar) {
     $scope.delete = function () {
 
         console.log(getDocName());
 
-        $http.post("/api/delete", { "docName": getDocName() }).then(function successCallback(response) {
+        $http.post("/api/delete", { "docName": getDocName() }, { ignoreLoadingBar: true }).then(function successCallback(response) {
             console.log("delete was a success");
         }, function errorCallback(response) {
             console.log("delete was a failure");
