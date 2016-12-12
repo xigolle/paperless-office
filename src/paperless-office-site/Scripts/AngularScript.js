@@ -2,12 +2,49 @@
 var app = angular.module("app", ["ngRoute", "angular-loading-bar"]);
 
 function addUploadStatus(classname) {
-    $("#submit span").removeClass("upload-noDocuments")
-    $("#submit span").removeClass("upload-error")
+    var spanObject = "#submit span";
+    var SuccesfullyUploaded = false;
+    if ($(spanObject).hasClass("upload-succes")) SuccesfullyUploaded = true;  
+    else SuccesfullyUploaded = false;
+    
 
-    $("#submit span").removeClass("upload-succes")
-    $("#submit span").removeClass("upload-progress");
-    $("#submit span").addClass(classname);
+
+    $(spanObject).removeClass("upload-noDocuments");
+    $(spanObject).removeClass("upload-error");
+    $(spanObject).removeClass("upload-hasDocuments");
+    $(spanObject).removeClass("upload-succes");
+    $(spanObject).removeClass("upload-progress");
+    $(spanObject).removeClass("glyphicon-ok-sign");
+    $(spanObject).removeClass("glyphicon-remove-circle");
+    $(spanObject).removeClass("glyphicon-ok-circle");
+    if (!SuccesfullyUploaded) {
+        switch (classname) {
+            case "upload-noDocuments":
+            case "upload-error":
+                $(spanObject).addClass("glyphicon-remove-circle");
+                break;
+            case "upload-progress":
+            case "upload-hasDocuments":
+                $(spanObject).addClass("glyphicon-ok-circle");
+
+                break;
+            case "upload-succes":
+                $(spanObject).addClass("glyphicon-ok-sign");
+                $("#previewDocuments").empty();
+
+                break;
+
+            default:
+
+        }
+        $(spanObject).addClass(classname);
+    } else {
+        console.log("else gets called");
+        //there are no documents and there is pressed on the upload button
+        $("#upload").removeClass("uploadToggled");
+        $(spanObject).addClass("upload-noDocuments");
+
+    }
 
 
 }
@@ -119,6 +156,7 @@ app.controller("uploadController", function ($scope, $http) {
 
 
     $scope.upload = function () {
+        console.log("calling upload function");
         addUploadStatus("upload-progress");
         if (firstDocAdded) {
             $scope.collapseDetails = "";
@@ -136,6 +174,7 @@ app.controller("uploadController", function ($scope, $http) {
                     transformRequest: angular.identity
                 }).then(function successCallback(response) {
                     console.log("success");
+
                     addUploadStatus("upload-succes");
                 }, function errorCallback(response) {
                     console.log("failure");
@@ -168,6 +207,7 @@ app.controller("uploadController", function ($scope, $http) {
         fd = new FormData();
         if (tempArray.length <= 0) {
             docNameAdded = false;
+            addUploadStatus("upload-noDocuments");
         }
         for (var i = 0; i < tempArray.length; i++) {
 
@@ -193,7 +233,7 @@ app.controller("uploadController", function ($scope, $http) {
 
 app.controller('deleteController', function ($scope, $http, $route) {
     $scope.delete = function () {
-        
+
         console.log(getDocName());
 
         $http.post("/api/delete", { "docName": getDocName() }).then(function successCallback(response) {

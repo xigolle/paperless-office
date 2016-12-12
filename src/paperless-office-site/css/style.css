@@ -191,16 +191,28 @@ canvas {
     font-size: 2em;
 }
 .upload-noDocuments{
-    color:red;
+    
+    color:gray;
+    display:none;
 }
 .upload-error{
     color:red;
+    display:block;
+}
+.upload-hasDocuments{
+    color:yellowgreen;
+    display:block;
+
 }
 .upload-succes{
-    color:green;
+    color:lawngreen;
+    display:block;
+
 }
 .upload-progress{
     color:orange;
+    display:block;
+
 }
 
 #upload-details-wrapper input {

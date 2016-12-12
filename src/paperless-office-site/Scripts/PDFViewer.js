@@ -118,7 +118,7 @@ $(function () {
                         console.log("sorry we do not support this file format!");
                         break;
                 }
-                addUploadStatus("upload-succes");
+                addUploadStatus("upload-hasDocuments");
 
             }
         }
