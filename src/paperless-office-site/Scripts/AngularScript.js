@@ -1,5 +1,10 @@
 ﻿
-var app = angular.module("app", ["ngRoute", "angular-loading-bar"]);
+var app = angular.module("app", ["ngRoute", "angular-loading-bar"])
+.config(['cfpLoadingBarProvider', function (cfpLoadingBarProvider) {
+    cfpLoadingBarProvider.parentSelector = '#upload';
+    cfpLoadingBarProvider.spinnerTemplate = '<div id="loading-bar-spinner"><div class="spinner-icon"></div></div><div id="uploading-text" class="fa fa-spinner">Uploading...</div>';
+    cfpLoadingBarProvider.includeSpinner = true;
+}])
 
 function addUploadStatus(classname) {
     var spanObject = "#submit span";
@@ -85,14 +90,13 @@ app.service('DocumentService', function ($http) {
 
 
 
-app.controller("testCTRL", function ($scope, DocumentService) {
+app.controller("testCTRL", function ($scope, DocumentService, cfpLoadingBar) {
 
 
 
     //start function to show thumbnails of documents
     //makes sure it runs when the website starts
     showThumbnailOfDocuments();
-
 
     function showThumbnailOfDocuments() {
         var documentCallback = DocumentService.getAmountDocuments();
@@ -135,6 +139,8 @@ app.controller("testCTRL", function ($scope, DocumentService) {
 
 
                     showMultiplePDFDocument("/api/getDocumentURL/" + URLReadyDocument, "canvass" + i, URLReadyDocument);
+                    //cfpLoadingBar.start();
+
                 }
             }
         });
@@ -156,6 +162,7 @@ app.controller("uploadController", function ($scope, $http) {
 
 
     $scope.upload = function () {
+
         console.log("calling upload function");
         addUploadStatus("upload-progress");
         if (firstDocAdded) {

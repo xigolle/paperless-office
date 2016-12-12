@@ -154,6 +154,22 @@ canvas {
     height: 5%;
     line-height: 1;
 }
+#uploading-text{
+    margin-top:-10px;
+}
+#loading-bar .bar{
+      position: relative;
+}
+#loading-bar .bar,
+#loading-bar .peg {
+
+  height:10px;
+  
+}
+#loading-bar-spinner {
+
+    position:relative;
+}
 
 #upload-wrapper {
     height: 50%;
