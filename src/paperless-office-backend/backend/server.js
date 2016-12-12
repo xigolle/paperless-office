@@ -76,6 +76,7 @@ app.get("/api/getDocumentURL/:url", function (req, res) {
 app.get("/api/getDocument", function (req, res) {
     //console.log(req.params.name);
     //console.log(req.get('test'));
+	
     console.log(req.get('test'));
     blobSvc.createReadStream(routes.currentUser, req.get('test')).pipe(res)
 

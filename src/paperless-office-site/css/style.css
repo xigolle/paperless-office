@@ -189,7 +189,18 @@ canvas {
 
 #submit span {
     font-size: 2em;
-    color: green;
+}
+.upload-noDocuments{
+    color:red;
+}
+.upload-error{
+    color:red;
+}
+.upload-succes{
+    color:green;
+}
+.upload-progress{
+    color:orange;
 }
 
 #upload-details-wrapper input {
