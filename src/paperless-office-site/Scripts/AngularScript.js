@@ -97,7 +97,7 @@ app.controller("testCTRL", function ($scope, DocumentService) {
     function showThumbnailOfDocuments() {
         var documentCallback = DocumentService.getAmountDocuments();
         documentCallback.then(function (documentNames) {
-            if (documentNames.length <= 0) {
+            if (!(documentNames.length <= 0)) {
                 ////after the list of documents is collected start getting documents
                 function sortNumber(a, b) {
                     return b.date - a.date;
