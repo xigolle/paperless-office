@@ -18,7 +18,7 @@ app.service('DocumentService', function ($http) {
     this.getDocument = function () {
         $http({
             method: 'GET',
-            url: "http://paperless-office.westeurope.cloudapp.azure.com/api/getDocument",
+            url: "/api/getDocument",
             headers: {
                 "test": "Bedrijven.pdf"
             }
@@ -30,7 +30,7 @@ app.service('DocumentService', function ($http) {
         });
     }
     this.getAmountDocuments = function () {
-        return $http.get("http://paperless-office.westeurope.cloudapp.azure.com/api/getDocuments");
+        return $http.get("/api/getDocuments");
 
     }
 })
@@ -85,7 +85,7 @@ app.controller("testCTRL", function ($scope, DocumentService) {
                 var URLReadyDocument = encodeURI(documentNames.data[i].name);
                 
 
-                showMultiplePDFDocument("http://paperless-office.westeurope.cloudapp.azure.com/api/getDocumentURL/" + URLReadyDocument, "canvass" + i, URLReadyDocument);
+                showMultiplePDFDocument("/api/getDocumentURL/" + URLReadyDocument, "canvass" + i, URLReadyDocument);
             }
         });
 
@@ -117,7 +117,7 @@ app.controller("uploadController", function ($scope, $http) {
                 $scope.docName = "";
             }
             if (docNameAdded) {
-                $http.post("http://paperless-office.westeurope.cloudapp.azure.com/api/uploadDocuments", fd, {
+                $http.post("/api/uploadDocuments", fd, {
                     //withCredentials: true,
                     headers: { 'Content-Type': undefined },
                     transformRequest: angular.identity
@@ -169,6 +169,21 @@ app.controller("uploadController", function ($scope, $http) {
         
     }
 
+});
+
+app.controller('deleteController', function ($scope, $http, $route) {
+    $scope.delete = function () {
+        
+        console.log(getDocName());
+
+        $http.post("/api/delete", { "docName": getDocName() }).then(function successCallback(response) {
+            console.log("delete was a success");
+        }, function errorCallback(response) {
+            console.log("delete was a failure");
+        });
+
+        $route.reload();
+    }
 });
 
 
