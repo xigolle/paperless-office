@@ -31,9 +31,11 @@
           $location.path('/register');
       };
       ////////////////////////////
-
+      
   }]);
-
+//app.config(['cfpLoadingBarProvider', function (cfpLoadingBarProvider) {
+//    cfpLoadingBarProvider.parentSelector = 'body';
+//}])
 angular.module('app').controller('logoutController',
   ['$scope', '$location', 'AuthService',
   function ($scope, $location, AuthService) {

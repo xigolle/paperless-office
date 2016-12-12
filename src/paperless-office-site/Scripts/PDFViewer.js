@@ -17,7 +17,7 @@ $(function () {
         hidearrows: false
     });
 
-
+  
 
     var number = 0;
     if (!PDFJS.workerSrc && typeof document !== 'undefined') {
@@ -118,6 +118,7 @@ $(function () {
                         console.log("sorry we do not support this file format!");
                         break;
                 }
+                addUploadStatus("upload-hasDocuments");
 
             }
         }
@@ -169,6 +170,7 @@ $(function () {
         });
     }
 });
+
 function showMultiplePDFDocument(url, canvasID, currentDoc) {
     var url = url;
     // Asynchronous download PDF
@@ -202,7 +204,7 @@ function showMultiplePDFDocument(url, canvasID, currentDoc) {
           //set on click listener
           $("#" + canvasID).parent().data("currentDoc", currentDoc).click(function () {
 
-              var SingleDocumentURL = encodeURIComponent("http://paperless-office.westeurope.cloudapp.azure.com/api/getDocumentURL/" + $(this).data("currentDoc"));
+              var SingleDocumentURL = encodeURIComponent("/api/getDocumentURL/" + $(this).data("currentDoc"));
               openSinglePDFReader(SingleDocumentURL);
               //bring doc name to angularscript
               getDocName(decodeURIComponent($(this).data("currentDoc")));

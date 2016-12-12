@@ -1,6 +1,6 @@
 ﻿angular.module('app').factory('AuthService',
-  ['$q', '$timeout', '$http',
-  function ($q, $timeout, $http) {
+  ['$q', '$timeout', '$http',"cfpLoadingBar",
+function ($q, $timeout, $http,cfpLoadingBar) {
 
       // create user variable
       var user = null;
@@ -23,7 +23,9 @@
       }
 
       function getUserStatus() {
-          return $http.get('/user/status')
+          return $http.get('/user/status', {
+              ignoreLoadingBar: true
+          })
           // handle success
           .success(function (data) {
               if (data.status) {
@@ -45,7 +47,7 @@
 
           // send a post request to the server
           $http.post('/user/login',
-            { username: username, password: password })
+            { username: username, password: password},{ ignoreLoadingBar: true})
             // handle success
             .success(function (data, status) {
                 if (status === 200 && data.status) {
@@ -73,7 +75,9 @@
           var deferred = $q.defer();
 
           // send a get request to the server
-          $http.get('/user/logout')
+          $http.get('/user/logout', {
+              ignoreLoadingBar: true
+          })
             // handle success
             .success(function (data) {
                 user = false;
@@ -97,7 +101,7 @@
 
           // send a post request to the server
           $http.post('/user/register',
-            { username: username, password: password })
+            { username: username, password: password },{ ignoreLoadingBar: true})
             // handle success
             .success(function (data, status) {
                 if (status === 200 && data.status) {

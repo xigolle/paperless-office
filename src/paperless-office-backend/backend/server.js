@@ -76,6 +76,7 @@ app.get("/api/getDocumentURL/:url", function (req, res) {
 app.get("/api/getDocument", function (req, res) {
     //console.log(req.params.name);
     //console.log(req.get('test'));
+	
     console.log(req.get('test'));
     blobSvc.createReadStream(routes.currentUser, req.get('test')).pipe(res)
 
@@ -83,18 +84,27 @@ app.get("/api/getDocument", function (req, res) {
 app.get("/api/getDocuments", function (req, res) {
     //console.log(routes.currentUser);
     //empty array
+    console.log("running api/getDocuments");
     testArray = [];
     //This can be used to 'pipe' ONE document directly to the site    
     //blobSvc.createReadStream("test", "Mathias/Knipsel.JPG").pipe(res);
 
     //Gets all the document names that are in the specified container
-    blobSvc.listBlobsSegmented(routes.currentUser, null, function(error, result, response){
-  	if(!error){
+    blobSvc.listBlobsSegmented(routes.currentUser, null, function (error, result, response) {
+        //console.log("error" + error);
+        //console.log("result" + result);
+        //console.log("response" + response);
+        console.log("currentUser " + routes.currentUser);
+
+        if (!error) {
+         
 	    //Will download all the documents in the specified container
   	    result.entries.forEach(function (name) {
             //commented out because else it downloads the whole file to the server
 	        //getDoc("test", name.name);
   	        //testArray.push(name.name);
+  	        //console.log("logging names");
+  	        //console.log(name);
   	        testArray.push({ "name": name.name, "date": name.lastModified });
             
    	        
@@ -102,7 +112,9 @@ app.get("/api/getDocuments", function (req, res) {
             
       	    // result.entries contains the entries
   	    // If not all blobs were returned, result.continuationToken has the continuation token. 
-	    res.send(testArray);
+  	    res.send(testArray);
+  	    //console.log("log testArray");
+  	    //console.log(testArray);
             //res.send(result.continuationToken);
 
   	} else res.send("Could not get names");  
@@ -345,6 +357,6 @@ app.use(function (err, req, res) {
     }));
 });
 
-app.listen(3000);
+app.listen(4000);
 
 
