@@ -39,13 +39,13 @@ var routes = require('./routes/api.js');
 
 //---------------------------
 
+app.use(bodyParser.json());
 
-//var bodyparser = require("body-parser");
-var app = express();
 //Let's us work with containers and blobs
 var blobSvc = azure.createBlobService(config.storageAccountName, config.primaryKey);
 
 var testArray = [];
+var mongoUrl = 'mongodb://localhost/mydb';
 //app.listen(3000);
 
 app.use(function (req, res, next) {
@@ -196,10 +196,10 @@ app.post("/api/uploadDocuments", function (req, res) {
             });
 
 
-            var url = 'mongodb://localhost/mydb';
+     
 
 
-            MongoClient.connect(url,function(err,db)
+            MongoClient.connect(mongoUrl,function(err,db)
             {
                 assert.equal(null,err);
                 console.log("Connected succesfully to server");
@@ -266,7 +266,45 @@ var getDoc = function (container, name) {
     });
 };
 
-//---------------------------------
+app.post("/api/delete", function (req, res) {
+    blobSvc.deleteBlob(routes.currentUser, req.body.docName, function (error, response) {
+        if (!error) {
+            // Blob has been deleted
+        }
+    });
+
+    MongoClient.connect(mongoUrl, function (err, db) {
+        assert.equal(null, err);
+        console.log("Connected succesfully to server");
+
+        var collection = db.collection(routes.currentUser);
+
+        collection.find().toArray(function (err, items) {
+            id = items;
+            console.log(id[0]['_id']);
+
+
+            collection.update(
+                {
+                    "_id": id[0]['_id']
+                },
+                {
+                    $pull: {
+                        "docs": {
+                            "name": req.body.docName
+                        }
+
+                    }
+                });
+        });
+
+
+        setTimeout(function () {db.close();}, 100);
+
+    });
+});
+
+//--------------login-------------------
 
 
 // define middleware

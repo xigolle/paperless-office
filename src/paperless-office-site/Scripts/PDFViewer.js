@@ -206,6 +206,8 @@ function showMultiplePDFDocument(url, canvasID, currentDoc) {
 
               var SingleDocumentURL = encodeURIComponent("/api/getDocumentURL/" + $(this).data("currentDoc"));
               openSinglePDFReader(SingleDocumentURL);
+              //bring doc name to angularscript
+              getDocName(decodeURIComponent($(this).data("currentDoc")));
           });
 
           // Render PDF page
@@ -219,7 +221,7 @@ function openListOfDocuments() {
     $("#DocumentIFrame").toggle();
     $("#SuggestedDocumentSection").toggle();
     $("#PDFDocumentWrapper").toggleClass("col-md-10");
-
+    $("#DeleteButton").toggleClass("hidden");
 }
 function openSinglePDFReader(url) {
     $("#Canvas-Document-Holder").toggle();
@@ -228,7 +230,15 @@ function openSinglePDFReader(url) {
 
     $("#SuggestedDocumentSection").toggle();
     $("#DocumentIFrame").attr('src', "/web/viewer.html?file=" + url).toggle();
-
+    $("#DeleteButton").toggleClass("hidden");
 }
 
-
+//AngularScript will us the url var to know which doc is being deleted
+function getDocName(url) {
+    if (url === undefined) {
+        console.log("in url undefined if statement");
+        return docName;
+    } else {
+        docName = url;
+    };
+}

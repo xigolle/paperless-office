@@ -191,6 +191,21 @@ app.controller("uploadController", function ($scope, $http) {
 
 });
 
+app.controller('deleteController', function ($scope, $http, $route) {
+    $scope.delete = function () {
+        
+        console.log(getDocName());
+
+        $http.post("/api/delete", { "docName": getDocName() }).then(function successCallback(response) {
+            console.log("delete was a success");
+        }, function errorCallback(response) {
+            console.log("delete was a failure");
+        });
+
+        $route.reload();
+    }
+});
+
 
 
 //--------------------------------
