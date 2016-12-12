@@ -1,5 +1,58 @@
 ﻿
-var app = angular.module("app", []);
+var app = angular.module("app", ["ngRoute", "angular-loading-bar"])
+.config(['cfpLoadingBarProvider', function (cfpLoadingBarProvider) {
+    cfpLoadingBarProvider.parentSelector = '#upload';
+    cfpLoadingBarProvider.spinnerTemplate = '<div id="loading-bar-spinner"><div class="spinner-icon"></div></div><div id="uploading-text" class="fa fa-spinner">Uploading...</div>';
+    cfpLoadingBarProvider.includeSpinner = true;
+}])
+
+function addUploadStatus(classname) {
+    var spanObject = "#submit span";
+    var SuccesfullyUploaded = false;
+    if ($(spanObject).hasClass("upload-succes")) SuccesfullyUploaded = true;  
+    else SuccesfullyUploaded = false;
+    
+
+
+    $(spanObject).removeClass("upload-noDocuments");
+    $(spanObject).removeClass("upload-error");
+    $(spanObject).removeClass("upload-hasDocuments");
+    $(spanObject).removeClass("upload-succes");
+    $(spanObject).removeClass("upload-progress");
+    $(spanObject).removeClass("glyphicon-ok-sign");
+    $(spanObject).removeClass("glyphicon-remove-circle");
+    $(spanObject).removeClass("glyphicon-ok-circle");
+    if (!SuccesfullyUploaded) {
+        switch (classname) {
+            case "upload-noDocuments":
+            case "upload-error":
+                $(spanObject).addClass("glyphicon-remove-circle");
+                break;
+            case "upload-progress":
+            case "upload-hasDocuments":
+                $(spanObject).addClass("glyphicon-ok-circle");
+
+                break;
+            case "upload-succes":
+                $(spanObject).addClass("glyphicon-ok-sign");
+                $("#previewDocuments").empty();
+
+                break;
+
+            default:
+
+        }
+        $(spanObject).addClass(classname);
+    } else {
+        console.log("else gets called");
+        //there are no documents and there is pressed on the upload button
+        $("#upload").removeClass("uploadToggled");
+        $(spanObject).addClass("upload-noDocuments");
+
+    }
+
+
+}
 Array.prototype.remove = function (from, to) {
     //Code from:
     //http://stackoverflow.com/questions/500606/deleting-array-elements-in-javascript-delete-vs-splice
@@ -18,7 +71,7 @@ app.service('DocumentService', function ($http) {
     this.getDocument = function () {
         $http({
             method: 'GET',
-            url: "http://paperless-office.westeurope.cloudapp.azure.com/api/getDocument",
+            url: "/api/getDocument",
             headers: {
                 "test": "Bedrijven.pdf"
             }
@@ -30,14 +83,14 @@ app.service('DocumentService', function ($http) {
         });
     }
     this.getAmountDocuments = function () {
-        return $http.get("http://paperless-office.westeurope.cloudapp.azure.com/api/getDocuments");
+        return $http.get("/api/getDocuments");
 
     }
 })
 
 
 
-app.controller("testCTRL", function ($scope, DocumentService) {
+app.controller("testCTRL", function ($scope, DocumentService, cfpLoadingBar) {
 
 
 
@@ -45,47 +98,50 @@ app.controller("testCTRL", function ($scope, DocumentService) {
     //makes sure it runs when the website starts
     showThumbnailOfDocuments();
 
-
     function showThumbnailOfDocuments() {
         var documentCallback = DocumentService.getAmountDocuments();
         documentCallback.then(function (documentNames) {
-            ////after the list of documents is collected start getting documents
-            function sortNumber(a, b) {
-                return b.date - a.date;
-            }
-            var test = Date.parse(documentNames.data[0].date);
-            for (var i = 0; i < documentNames.data.length; i++) {
-                documentNames.data[i].date = Date.parse(documentNames.data[i].date);
+            if (!(documentNames.length <= 0)) {
+                ////after the list of documents is collected start getting documents
+                function sortNumber(a, b) {
+                    return b.date - a.date;
+                }
+                var test = Date.parse(documentNames.data[0].date);
+                for (var i = 0; i < documentNames.data.length; i++) {
+                    documentNames.data[i].date = Date.parse(documentNames.data[i].date);
 
-            }
-          
+                }
 
-            documentNames.data.sort(sortNumber);
-            for (var i = 0; i < documentNames.data.length; i++) {
 
-                
-                var newDocumentHolder = document.createElement('div');
+                documentNames.data.sort(sortNumber);
+                for (var i = 0; i < documentNames.data.length; i++) {
 
-                var documentCanvas = document.createElement('canvas');
-                var documentIdentifier = document.createElement('span');
 
-                var documentIdentifierText = document.createTextNode(decodeURI(documentNames.data[i].name));
-                documentIdentifier.className = "document-identifier";
-                documentIdentifier.appendChild(documentIdentifierText);
+                    var newDocumentHolder = document.createElement('div');
 
-                newDocumentHolder.className = "Canvas-Document ";
-                documentCanvas.width = 306;
-                documentCanvas.height = 396;
-                documentCanvas.id = "canvass"+i;
-                var PDFWrapper = document.getElementById("Canvas-Document-Holder");
-                
-                newDocumentHolder.appendChild(documentIdentifier);
-                newDocumentHolder.appendChild(documentCanvas);
-                PDFWrapper.appendChild(newDocumentHolder);
-                var URLReadyDocument = encodeURI(documentNames.data[i].name);
-                
+                    var documentCanvas = document.createElement('canvas');
+                    var documentIdentifier = document.createElement('span');
 
-                showMultiplePDFDocument("http://paperless-office.westeurope.cloudapp.azure.com/api/getDocumentURL/" + URLReadyDocument, "canvass" + i, URLReadyDocument);
+                    var documentIdentifierText = document.createTextNode(decodeURI(documentNames.data[i].name));
+                    documentIdentifier.className = "document-identifier";
+                    documentIdentifier.appendChild(documentIdentifierText);
+
+                    newDocumentHolder.className = "Canvas-Document ";
+                    documentCanvas.width = 306;
+                    documentCanvas.height = 396;
+                    documentCanvas.id = "canvass" + i;
+                    var PDFWrapper = document.getElementById("Canvas-Document-Holder");
+
+                    newDocumentHolder.appendChild(documentIdentifier);
+                    newDocumentHolder.appendChild(documentCanvas);
+                    PDFWrapper.appendChild(newDocumentHolder);
+                    var URLReadyDocument = encodeURI(documentNames.data[i].name);
+
+
+                    showMultiplePDFDocument("/api/getDocumentURL/" + URLReadyDocument, "canvass" + i, URLReadyDocument);
+                    //cfpLoadingBar.start();
+
+                }
             }
         });
 
@@ -96,7 +152,7 @@ app.controller("testCTRL", function ($scope, DocumentService) {
 app.controller("uploadController", function ($scope, $http) {
 
     var fd = new FormData();
-    var userAdded = false;
+    var firstDocAdded = false;
     var docNameAdded = false;
 
     $scope.collapseDetails = "collapse";
@@ -107,7 +163,9 @@ app.controller("uploadController", function ($scope, $http) {
 
     $scope.upload = function () {
 
-        if (userAdded) {
+        console.log("calling upload function");
+        addUploadStatus("upload-progress");
+        if (firstDocAdded) {
             $scope.collapseDetails = "";
             $scope.collapseZone = "collapse";
             if ($scope.docName.split(' ').join('') != "") {
@@ -117,31 +175,35 @@ app.controller("uploadController", function ($scope, $http) {
                 $scope.docName = "";
             }
             if (docNameAdded) {
-                $http.post("http://paperless-office.westeurope.cloudapp.azure.com/api/uploadDocuments", fd, {
+                $http.post("/api/uploadDocuments", fd, {
                     //withCredentials: true,
                     headers: { 'Content-Type': undefined },
                     transformRequest: angular.identity
                 }).then(function successCallback(response) {
-                    console.log("success");                 
+                    console.log("success");
+
+                    addUploadStatus("upload-succes");
                 }, function errorCallback(response) {
                     console.log("failure");
+                    addUploadStatus("upload-error");
+
                 });
 
                 $scope.collapseDetails = "collapse";
                 $scope.collapseZone = "";
                 fd = new FormData();
-                userAdded = false;
+                firstDocAdded = false;
                 docNameAdded = false;
             } else {
                 $scope.myStyle = { "border-color": "red" };
             }
-            
+
         } else {
             $scope.myStyle = { "border-color": "darkred" };
         }
-        
+
     }
-     $scope.removeFromFormData = function (name) {
+    $scope.removeFromFormData = function (name) {
 
         var tempArray = fd.getAll("file");
         for (var i = 0; i < tempArray.length; i++) {
@@ -150,7 +212,12 @@ app.controller("uploadController", function ($scope, $http) {
             }
         }
         fd = new FormData();
+        if (tempArray.length <= 0) {
+            docNameAdded = false;
+            addUploadStatus("upload-noDocuments");
+        }
         for (var i = 0; i < tempArray.length; i++) {
+
             fd.append("file", tempArray[i]);
         }
 
@@ -158,17 +225,73 @@ app.controller("uploadController", function ($scope, $http) {
     $scope.addFile = function (files) {
         $scope.myStyle = { "border-color": "gray" };
         console.log($scope.myStyle);
-        if (!userAdded) {
+        if (!firstDocAdded) {
             //Met deze lijn kunnen we de user meegeven
-            fd.append("user", "mathiassamyn@hotmail.com");
-            userAdded = true;
+            //fd.append("user", "mathiassamyn@hotmail.com");
+            firstDocAdded = true;
         }
         angular.forEach(files, function (file) {
             fd.append("file", file);
         });
-        
+
     }
 
 });
 
+app.controller('deleteController', function ($scope, $http, $route) {
+    $scope.delete = function () {
+
+        console.log(getDocName());
+
+        $http.post("/api/delete", { "docName": getDocName() }).then(function successCallback(response) {
+            console.log("delete was a success");
+        }, function errorCallback(response) {
+            console.log("delete was a failure");
+        });
+
+        $route.reload();
+    }
+});
+
+
+
+//--------------------------------
+
+app.config(function ($routeProvider) {
+    $routeProvider
+      .when('/', {
+          templateUrl: 'partials/home.html',
+          access: { restricted: true }
+      })
+      .when('/login', {
+          templateUrl: 'partials/login.html',
+          controller: 'loginController',
+          access: { restricted: false }
+      })
+      .when('/logout', {
+          controller: 'logoutController',
+          access: { restricted: true }
+      })
+      .when('/register', {
+          templateUrl: 'partials/register.html',
+          controller: 'registerController',
+          access: { restricted: false }
+      })
+      .otherwise({
+          redirectTo: '/'
+      });
+});
+
+app.run(function ($rootScope, $location, $route, AuthService) {
+    $rootScope.$on('$routeChangeStart',
+      function (event, next, current) {
+          AuthService.getUserStatus()
+          .then(function () {
+              if (next.access.restricted && !AuthService.isLoggedIn()) {
+                  $location.path('/login');
+                  $route.reload();
+              }
+          });
+      });
+});
 

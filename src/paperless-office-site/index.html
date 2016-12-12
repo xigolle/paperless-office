@@ -4,125 +4,33 @@
     <link href="Content/bootstrap.css" rel="stylesheet" />
     <link href="css/Sidebar Style.css" rel="stylesheet" />
     <link href="css/liquidcarousel.css" rel="stylesheet" />
+    <link rel='stylesheet' href='//cdnjs.cloudflare.com/ajax/libs/angular-loading-bar/0.9.0/loading-bar.min.css' type='text/css' media='all' />
+
     <link href="css/style.css" rel="stylesheet" />
 
     <script src="Scripts/jquery-2.2.4.js"></script>
     <script src="Scripts/bootstrap.js"></script>
     <script src="Scripts/pdf.js"></script>
     <script src="Scripts/jquery.liquidcarousel.js"></script>
-    <script src="Scripts/PDFViewer.js"></script>
+    <!--<script src="Scripts/PDFViewer.js"></script>
     <script src="Scripts/sidebar.js"></script>
-    <script src="Scripts/uploadButton.js"></script>
+    <script src="Scripts/uploadButton.js"></script>-->
     <script src="Scripts/angular.js"></script>
     <script src="Scripts/AngularScript.js"></script>
+
+    <script src="./services.js"></script>
+    <script src="./controllers.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/angular.js/1.4.9/angular-route.min.js"></script>
+    <script type='text/javascript' src='//cdnjs.cloudflare.com/ajax/libs/angular-loading-bar/0.9.0/loading-bar.min.js'></script>
+
     
+
 
     <title></title>
     <meta charset="utf-8" />
 </head>
 <body ng-app="app">
-    <div id="wrapper">
-        <!-- Sidebar -->
-        <div id="sidebar-wrapper">
-            <ul class="sidebar-nav">
-                <li class="sidebar-brand">
-                    <a href="#">
-                        Option Menu
-                    </a>
-                </li>
-                <li>
-                    <a id="HomeButton" href="#">Home</a>
-                </li>
-                <li>
-                    <a href="#">Delete</a>
-                </li>
-                <li>
-                    <a href="#">Download</a>
-                </li>
-                <hr />
-                <li>
-                    <a href="#">Log out</a>
-                </li>
-
-            </ul>
-        </div>
-        <!-- /#sidebar-wrapper -->
-        <div id="navbar-wrapper">
-            <nav class="navbar navbar-inverse navbar-fixed-top">
-                <div class="container-fluid">
-                    <!-- Brand and toggle get grouped for better mobile display -->
-                    <div class="navbar-header">
-                        <a href="#menu-toggle" class="btn btn-default navbar-brand" id="menu-toggle"><span class="glyphicon glyphicon-menu-hamburger" aria-hidden="true"></span></a>
-                        <!--<a class="navbar-brand" href="#">test</a>-->
-                        <a class="navbar-brand" href="#">Paperless Office</a>
-                    </div>
-                    <!-- Collect the nav links, forms, and other content for toggling -->
-                    <form id="search-form" class="navbar-form navbar-right">
-                        <div class="form-group">
-                            <input type="text" id="search-bar" class="form-control" placeholder="Search">
-                        </div>
-                    </form>
-                    <!-- /.navbar-collapse -->
-                </div><!-- /.container-fluid -->
-            </nav>
-            <!-- Page Content -->
-            <div id="page-content-wrapper" ng-controller="testCTRL" class="row">
-                <!--<button ng-click="testfunction()">test function</button>-->
-                <div id="PDFDocumentWrapper" class="row col-md-10">
-                    
-                  
-                    <!-- need to col-md-10 to pdf document wrapper -->
-                    <!--<button id="loaddocuments">load documents</button>-->
-                    <!--<a href="/web/viewer.html?file=http%3A%2F%2Flocalhost%3A3000%2Fapi%2FgetDocumentURL%2FBedrijven.pdf" >View pfd</a>-->
-                    <iframe frameborder="0" name="documentFrame" id="DocumentIFrame"></iframe>
-                    <div id="Canvas-Document-Holder"></div>
-                </div>
-                <div id="SuggestedDocumentSection" class="col-md-2">
-                    <p>test</p>
-                </div>
-
-                <!-- Upload button Content-->
-                <div id="upload" class="navbar-fixed-bottom btn-block btn-lg" ng-controller="uploadController">
-                    <p>Upload something?</p>  
-                    <div id="upload-wrapper">            
-                        <div id="upload-zone-wrapper" ng-class="collapseZone" ng-style="myStyle">
-                            <label id="fileInput" class="btn btn-block btn-file">
-                                Click here to upload a file.
-                                <input type="file" id="inputUpload" multiple name="myFile" accept=".pdf, .png, .jpeg, .jpg" onchange="angular.element(this).scope().addFile(this.files)" />
-                            </label>
-                        </div>
-
-                        <div id="upload-details-wrapper" ng-class="collapseDetails">
-                            <p>File name:</p>
-                            <input id="docName" type="text" ng-model="docName" ng-style="myStyle"/>
-                            <p>Labels:</p>
-                            <textarea id="docLabels" name="textArea" placeholder="Seperate labels with ','" ng-model="docLabels"></textarea>
-                        </div>
-                    </div>
-                    <div id="previewArea">
-                        <div id="liquid" class="liquid" style="height: 129px; overflow: hidden;">
-                            <span class="previous glyphicon glyphicon-triangle-left"></span>
-                            <div class="wrapper" style="height: 129px; overflow: hidden; float: left; width: 1755px;">
-                                <ul id="previewDocuments" style="height: 129px; float: left; margin: 0px; padding: 0px; display: block;">
-                                  
-                                </ul>
-                            </div>
-                            <span class="next glyphicon glyphicon-triangle-right"></span>
-                            <button type="submit" id="submit" ng-click="upload()" class="pull-right">
-                                <span class="glyphicon glyphicon-ok-circle" ng-click="upload()"></span>
-                            </button>
-                        </div>
-
-                        
-                    </div>
-                </div>
-            </div>
-        </div>
-        <!-- /#page-content-wrapper -->
-    </div>
-
-
-    <!-- /#wrapper -->
-
+    
+    <div ng-view></div>
 </body>
 </html>
