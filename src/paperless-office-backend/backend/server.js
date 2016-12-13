@@ -259,20 +259,40 @@ app.post("/api/uploadDocuments", function (req, res) {
     
 });
 
-app.post('http://paperless-office.westeurope.cloudapp.azure.com/api/search', function(req,res){
+app.post('/api/search', function(req,res){
     
     var Query={};
     Query.searchLabel = new RegEXP(req.body.searchLabel, 'i');
     
     console.log(req.body.searchLabel);
     
-    SearchLabel.find({docs:{$elemMatch:{labels:Query}}}, function(error,searchLabels){
+    /*SearchLabel.find({docs:{$elemMatch:{labels:Query}}}, function(error,searchLabels){
         if(error){
             return res.status(400).send({msg:"error occured"});
         }
         return res.status(200).send(searchLabels);
         console.log(searchLabels);
-    })
+    })*/
+    
+                MongoClient.connect(mongoUrl,function(err,db)
+            {
+                assert.equal(null,err);
+                console.log("Connected succesfully to server");
+    
+                var collection = db.collection(routes.currentUser);
+                
+                collection.find({docs:{$elemMatch:{labels:req.body.searchLabel}}},["labels":true])
+                console.log(res);
+                
+
+              
+                setTimeout(function () {
+                  
+                    db.close();
+                }, 100);
+                
+            });
+    
 })
 //This function will convert images to pdf
 var makePDF = function (userFolder, fileName, pdfName) {
