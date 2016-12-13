@@ -71,7 +71,7 @@ app.use(express.static('../../paperless-office-site'));
 app.get("/api/getDocumentURL/:url", function (req, res) {
     console.log(req.params.url);
     blobSvc.createReadStream(routes.currentUser, req.params.url).pipe(res)
-})
+});
 
 app.get("/api/getDocument", function (req, res) {
     //console.log(req.params.name);
@@ -129,7 +129,7 @@ var mkdirSync = function (path) {
     } catch (e) {
         //if (e.code != 'EEXIST') console.log( e);
     }
-}
+};
 
 //This will define the full storage path for the uploaded files.
 var storage = multer.diskStorage({
@@ -396,7 +396,7 @@ app.use(function (err, req, res) {
         message: err.message,
         error: {}
     }));
-});
+})
 
 app.listen(5000);
 
