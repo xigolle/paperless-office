@@ -266,15 +266,15 @@ app.post('/api/search', function(req,res){
     
     console.log(req.body.searchLabel);
     
-    /*SearchLabel.find({docs:{$elemMatch:{labels:Query}}}, function(error,searchLabels){
+    SearchLabel.find({docs:{$elemMatch:{labels:Query}}}, function(error,searchLabels){
         if(error){
             return res.status(400).send({msg:"error occured"});
         }
         return res.status(200).send(searchLabels);
         console.log(searchLabels);
-    })*/
+    })
     
-                MongoClient.connect(mongoUrl,function(err,db)
+          /*      MongoClient.connect(mongoUrl,function(err,db)
             {
                 assert.equal(null,err);
                 console.log("Connected succesfully to server");
@@ -291,7 +291,7 @@ app.post('/api/search', function(req,res){
                     db.close();
                 }, 100);
                 
-            });
+            });*/
     
 })
 //This function will convert images to pdf
