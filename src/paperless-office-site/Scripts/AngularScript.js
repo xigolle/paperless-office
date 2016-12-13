@@ -1,4 +1,4 @@
-﻿
+
 var app = angular.module("app", ["ngRoute", "angular-loading-bar"])
 .config(['cfpLoadingBarProvider', function (cfpLoadingBarProvider) {
     cfpLoadingBarProvider.parentSelector = '#upload';
@@ -239,8 +239,7 @@ app.controller("uploadController", function ($scope, $http) {
 
 });
 
-app.controller('deleteController', function ($scope, $http, $route, cfpLoadingBar) {
-    $scope.delete = function () {
+
 app.controller("searchController", function( $scope, $http){
     
     $scope.searchLabel = "";
@@ -252,6 +251,8 @@ app.controller("searchController", function( $scope, $http){
     }
 });
 
+app.controller('deleteController', function ($scope, $http, $route, cfpLoadingBar) {
+    $scope.delete = function () {
         console.log(getDocName());
 
         $http.post("/api/delete", { "docName": getDocName() }, { ignoreLoadingBar: true }).then(function successCallback(response) {
