@@ -281,7 +281,7 @@ app.post('/api/search', function(req,res){
     
                 var collection = db.collection(routes.currentUser);
                 
-                collection.find({docs:{$elemMatch:{labels:req.body.searchLabel}}},["labels":true])
+                collection.find({docs:{$elemMatch:{labels:req.body.searchLabel}}})
                 console.log(res);
                 
 
