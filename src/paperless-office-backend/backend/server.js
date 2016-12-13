@@ -10,7 +10,7 @@ var merge = require('easy-pdf-merge');
 var MongoClient = require('mongodb').MongoClient;
 var assert = require('assert');
 var config = require("../config.json");
-
+var extract = require("pdf-text-extract");
 //---------------------
 // dependencies
 var debug = require('debug')('passport-mongo');
@@ -84,9 +84,10 @@ app.get("/api/getDocument", function (req, res) {
 app.get("/api/ocr/:url", function (req, res) {
     
     console.log("run ocr: " + req.params.url);
-    Tesseract.recognize(req.params.url).then(function (result) {
+    Tesseract.recognize("images/eng_bw.png").then(function (result) {
 
-        console.log(result);
+        console.log(result.text);
+        console.log("done?");
     })
 });
 app.get("/api/getDocuments", function (req, res) {
@@ -172,15 +173,41 @@ app.post("/api/uploadDocuments", function (req, res) {
             }
         });
         var fileArray = [];
+        var ocrTextArray = [];
         var fileExt;
         fs.readdir( userFolder, function( err, files ) {
             files.forEach(function (file, index) {
                 
                 fileExt = file.split(".");
-               
+                var completeFileUri = userFolder + file;
+
                 if (fileExt[fileExt.length - 1] != "pdf") {
-                    fileArray.push(makePDF(userFolder, file, fileExt[0]));
-                } else fileArray.push(userFolder + file);
+                    //images
+                    console.log("file URI" + completeFileUri);
+                    Tesseract.recognize(completeFileUri).then(function (result) {
+                        ocrTextArray.push(result.text);
+                        console.log(result.text);
+                        console.log("done?");
+                        console.log("logging images");
+                        console.log(userFolder + file);
+                        //file locatie = userFolder + file; 
+                        fileArray.push(makePDF(userFolder, file, fileExt[0]));
+                    })
+                    
+                } else {
+                    //pdfs
+                    console.log("getting pdfs");
+                    extract(completeFileUri, function (err, pages) {
+                        if (err) {
+                            console.dir(err);
+                            return
+                        }
+                        console.dir(pages);
+                    });
+                    fileArray.push(userFolder + file);
+                }
+
+
                 
                 
             });
