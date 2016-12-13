@@ -261,12 +261,12 @@ app.post("/api/uploadDocuments", function (req, res) {
 
 app.post('/api/search', function(req,res){
     
-   /* var Query={};
+   var Query={};
     Query.searchLabel = new RegEXP(req.body.searchLabel, 'i');
     
     console.log(req.body.searchLabel);
     
-    SearchLabel.find({docs:{$elemMatch:{labels:Query}}}, function(error,searchLabels){
+    /*SearchLabel.find({docs:{$elemMatch:{labels:Query}}}, function(error,searchLabels){
         if(error){
             return res.status(400).send({msg:"error occured"});
         }
@@ -281,13 +281,11 @@ app.post('/api/search', function(req,res){
     
                 var collection = db.collection(routes.currentUser);
                 
-                collection.find({"$docs":{"$elemMatch":{"labels":req.body.searchLabel}}}, function(error,searchLabels){
-                    if(error){
-                            return res.status(400).send({msg:"error occured"});
+                collection.find({
+                    "docs":{
+                        "labels":req.body.searchLabel
                     }
-                        return res.status(200).send(searchLabels);
-                        console.log(searchLabels); ;
-                        console.log(res);
+                });
                 
 
               
