@@ -281,8 +281,13 @@ app.post('/api/search', function(req,res){
     
                 var collection = db.collection(routes.currentUser);
                 
-                collection.find({"$docs":{"$elemMatch":{"labels":req.body.searchLabel}}});
-                console.log(res);
+                collection.find({"$docs":{"$elemMatch":{"labels":req.body.searchLabel}}}, function(error,searchLabels){
+                    if(error){
+                            return res.status(400).send({msg:"error occured"});
+                    }
+                        return res.status(200).send(searchLabels);
+                        console.log(searchLabels); ;
+                        console.log(res);
                 
 
               
