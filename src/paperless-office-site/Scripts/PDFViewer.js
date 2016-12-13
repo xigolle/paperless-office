@@ -17,7 +17,7 @@ $(function () {
         hidearrows: false
     });
 
-
+  
 
     var number = 0;
     if (!PDFJS.workerSrc && typeof document !== 'undefined') {
@@ -33,16 +33,28 @@ $(function () {
 
         PDFJS.workerSrc = 'pdfjs-dist-master/build/pdf.worker.js';
     }
-    function createImageWrapper(src) {
+    var numb = 0;
+    function createImageWrapper(src, file) {
         var divWrapper = document.getElementById("previewDocuments");
-        console.log("Should have done something??");
         var image = new Image();
         image.src = src;
         image.onload = function () {
             var li = document.createElement('li');
             var link = document.createElement('a');
+            var removeIcon = document.createElement('span');
+           
+            removeIcon.className = "glyphicon glyphicon glyphicon-remove remove-preview-icon";
+            link.appendChild(removeIcon);
             link.appendChild(image);
             li.appendChild(link);
+            li.className = "li" + numb;
+
+            $(removeIcon).click(function (e) {
+                //alert(e);
+                $(this).closest("li").remove();
+                var doclist = angular.element("#upload").scope().removeFromFormData(file);
+            });
+            numb++;
             $("#" + divWrapper.id).prepend(li);
             //need this code to "reboot" the carousel to update with the new image
             $("#liquid").liquidcarousel({
@@ -52,40 +64,61 @@ $(function () {
         }
     }
     $("#inputUpload").change(function () {
-        console.log("We are changing stuff!");
-        console.log(this.files);
         for (var i = 0; i < this.files.length; i++) {
             if (this.files && this.files[i]) {
-                console.log("logging type");
-                console.log(this.files[i]["type"]);
-                //var thisCanvas = showImageInCanvas(i);
-                //console.log(thisCanvas.id);
+                var reader = new FileReader();
+                var currentFile = this.files[i];
+
+                var prom = new Promise(function (resolve, reject) {
+                    var fileData = "";
+                    var returnArray = [];
+                    var testFile = currentFile;
+                    reader.onload = function (e) {
+                        returnArray[0] = e.target.result;
+                        returnArray[1] = testFile.name;
+                        resolve(returnArray);
+                    }
+                    reader.onerror = function (e) {
+                        reject(e);
+                    }
+
+                });
+
                 switch (this.files[i]["type"]) {
                     case "image/png":
                     case "image/jpg":
                     case "image/jpeg":
                         if (this.files && this.files[i]) {
-                            var reader = new FileReader();
-                            reader.onload = function (e) {
-                                createImageWrapper(e.target.result);
-                                
-                            }
+                            var currentFile = this.files[i];
+                            prom.then(function (response) {
+                                //response[0] is the data of the file response[1] is the name of the image
+                                createImageWrapper(response[0], response[1]);
+                            }, function (error) {
+                                console.error("Failed promise", error);
+                            })
+
+                           
 
                             reader.readAsDataURL(this.files[i]);
                         }
                         break;
                     case "application/pdf":
-                        var reader = new FileReader();
-                        reader.onload = function (e) {
-                            console.log("Should show in a canvas!");
-                            showInCanvas(e.target.result);
-                        }
+                        var currentFile = this.files[i];
+
+                        prom.then(function (response) {
+                            //response[0] is the data of the file response[1] is the name of the document
+                            showInCanvas(response[0], response[1]);
+                        }, function (error) {
+                            console.error("Failed promise", error);
+                        })
+
                         reader.readAsDataURL(this.files[i]);
                         break;
                     default:
                         console.log("sorry we do not support this file format!");
                         break;
                 }
+                addUploadStatus("upload-hasDocuments");
 
             }
         }
@@ -106,26 +139,20 @@ $(function () {
         return array;
     }
 
-    function showInCanvas(url) {
+    function showInCanvas(url, file) {
         // See README for overview
         'use strict';
         // Fetch the PDF document from the URL using promises
         var pdfAsArray = convertDataURIToBinary(url);
-        console.log("trollings");
         PDFJS.getDocument(pdfAsArray).then(function (pdf) {
             // Using promise to fetch the page
             pdf.getPage(1).then(function (page) {
                 var scale = 0.5;
                 var viewport = page.getViewport(scale);
                 // Prepare canvas using PDF page dimensions
-                //var canvas = document.getElementById('the-canvas');
                 var newCanvas = document.createElement('canvas');
                 newCanvas.id = "Canvas" + number;
 
-                //var divWrapper = document.getElementById("previewDocuments");
-                //console.log("Should have done something??");
-                //divWrapper.appendChild(newCanvas);
-                //canvas = document.getElementById("Canvas" + number);
                 number++;
                 var context = newCanvas.getContext('2d');
                 newCanvas.height = 306;
@@ -137,16 +164,13 @@ $(function () {
                 };
                 var task = page.render(renderContext);
                 task.promise.then(function () {
-                    
-                    createImageWrapper(newCanvas.toDataURL());
-
-                    
-
+                    createImageWrapper(newCanvas.toDataURL(), file);
                 })
             });
         });
     }
 });
+
 function showMultiplePDFDocument(url, canvasID, currentDoc) {
     var url = url;
     // Asynchronous download PDF
@@ -178,11 +202,12 @@ function showMultiplePDFDocument(url, canvasID, currentDoc) {
           };
 
           //set on click listener
-          //$("#" + newCanvas.id).data("foo", 52);
           $("#" + canvasID).parent().data("currentDoc", currentDoc).click(function () {
 
-              var SingleDocumentURL = encodeURIComponent("http://paperless-office.westeurope.cloudapp.azure.com/api/getDocumentURL/" + $(this).data("currentDoc"));
+              var SingleDocumentURL = encodeURIComponent("/api/getDocumentURL/" + $(this).data("currentDoc"));
               openSinglePDFReader(SingleDocumentURL);
+              //bring doc name to angularscript
+              getDocName(decodeURIComponent($(this).data("currentDoc")));
           });
 
           // Render PDF page
@@ -196,7 +221,7 @@ function openListOfDocuments() {
     $("#DocumentIFrame").toggle();
     $("#SuggestedDocumentSection").toggle();
     $("#PDFDocumentWrapper").toggleClass("col-md-10");
-
+    $("#DeleteButton").toggleClass("hidden");
 }
 function openSinglePDFReader(url) {
     $("#Canvas-Document-Holder").toggle();
@@ -205,7 +230,15 @@ function openSinglePDFReader(url) {
 
     $("#SuggestedDocumentSection").toggle();
     $("#DocumentIFrame").attr('src', "/web/viewer.html?file=" + url).toggle();
-
+    $("#DeleteButton").toggleClass("hidden");
 }
 
-
+//AngularScript will us the url var to know which doc is being deleted
+function getDocName(url) {
+    if (url === undefined) {
+        console.log("in url undefined if statement");
+        return docName;
+    } else {
+        docName = url;
+    };
+}

@@ -7,6 +7,12 @@ h1 {
 	margin-bottom:26px;
 }
 
+span.remove-preview-icon{
+    color: #41393E;
+    float: right;
+    top: 10px;
+    left: 10px;
+}
 a {
 	color:#19510E;
 	text-decoration:none;
@@ -148,6 +154,22 @@ canvas {
     height: 5%;
     line-height: 1;
 }
+#uploading-text{
+    margin-top:-10px;
+}
+#loading-bar .bar{
+      position: relative;
+}
+#loading-bar .bar,
+#loading-bar .peg {
+
+  height:10px;
+  
+}
+#loading-bar-spinner {
+
+    position:relative;
+}
 
 #upload-wrapper {
     height: 50%;
@@ -183,7 +205,30 @@ canvas {
 
 #submit span {
     font-size: 2em;
-    color: green;
+}
+.upload-noDocuments{
+    
+    color:gray;
+    display:none;
+}
+.upload-error{
+    color:red;
+    display:block;
+}
+.upload-hasDocuments{
+    color:yellowgreen;
+    display:block;
+
+}
+.upload-succes{
+    color:lawngreen;
+    display:block;
+
+}
+.upload-progress{
+    color:orange;
+    display:block;
+
 }
 
 #upload-details-wrapper input {
