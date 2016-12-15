@@ -65,21 +65,6 @@ passport.deserializeUser(User.deserializeUser());
 // routes
 app.use('/user/', routes.routes);
 
-// error handlers
-app.use(function (req, res, next) {
-    var err = new Error('Not Found');
-    err.status = 404;
-    next(err);
-});
-
-app.use(function (err, req, res) {
-    res.status(err.status || 500);
-    res.end(JSON.stringify({
-        message: err.message,
-        error: {}
-    }));
-});
-
 
 //Let's us work with containers and blobs
 var blobSvc = azure.createBlobService(config.storageAccountName, config.primaryKey);
@@ -353,6 +338,22 @@ app.post("/api/delete", function (req, res) {
         setTimeout(function () {db.close();}, 100);
 
     });
+});
+
+
+// error handlers
+app.use(function (req, res, next) {
+    var err = new Error('Not Found');
+    err.status = 404;
+    next(err);
+});
+
+app.use(function (err, req, res) {
+    res.status(err.status || 500);
+    res.end(JSON.stringify({
+        message: err.message,
+        error: {}
+    }));
 });
 
 app.listen(4000);
