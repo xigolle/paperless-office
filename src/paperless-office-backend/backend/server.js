@@ -37,9 +37,34 @@ var app = express();
 // require routes
 var routes = require('./routes/api.js');
 
-//---------------------------
 
+//--------------login-------------------
+
+
+// define middleware
+app.use(express.static(path.join(__dirname, '../../paperless-office-site')));
+app.use(logger('dev'));
 app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: false }));
+//app.use(cookieParser()); sinds versie 1.5.0 van express-session is deze niet meer nodig
+app.use(require('express-session')({
+    secret: 'keyboard cat',
+    resave: false,
+    saveUninitialized: false
+    //cookie: { secure: true } cookie werkt dan enkel bij https
+}));
+app.use(passport.initialize());
+app.use(passport.session());
+app.use(express.static(path.join(__dirname, 'public')));
+
+// configure passport
+passport.use(new localStrategy(User.authenticate()));
+passport.serializeUser(User.serializeUser());
+passport.deserializeUser(User.deserializeUser());
+
+// routes
+app.use('/user/', routes.routes);
+
 
 //Let's us work with containers and blobs
 var blobSvc = azure.createBlobService(config.storageAccountName, config.primaryKey);
@@ -70,7 +95,7 @@ app.use(express.static('../../paperless-office-site'));
 
 app.get("/api/getDocumentURL/:url", function (req, res) {
     console.log(req.params.url);
-    blobSvc.createReadStream(routes.currentUser, req.params.url).pipe(res)
+    blobSvc.createReadStream(req.user.username, req.params.url).pipe(res)
 })
 
 app.get("/api/getDocument", function (req, res) {
@@ -78,11 +103,11 @@ app.get("/api/getDocument", function (req, res) {
     //console.log(req.get('test'));
 	
     console.log(req.get('test'));
-    blobSvc.createReadStream(routes.currentUser, req.get('test')).pipe(res)
+    blobSvc.createReadStream(req.user.username, req.get('test')).pipe(res)
 
 });
 app.get("/api/getDocuments", function (req, res) {
-    //console.log(routes.currentUser);
+    //console.log(req.user.username);
     //empty array
     console.log("running api/getDocuments");
     testArray = [];
@@ -90,11 +115,11 @@ app.get("/api/getDocuments", function (req, res) {
     //blobSvc.createReadStream("test", "Mathias/Knipsel.JPG").pipe(res);
 
     //Gets all the document names that are in the specified container
-    blobSvc.listBlobsSegmented(routes.currentUser, null, function (error, result, response) {
+    blobSvc.listBlobsSegmented(req.user.username, null, function (error, result, response) {
         //console.log("error" + error);
         //console.log("result" + result);
         //console.log("response" + response);
-        console.log("currentUser " + routes.currentUser);
+        console.log("currentUser " + req.user.username);
 
         if (!error) {
          
@@ -134,8 +159,8 @@ var mkdirSync = function (path) {
 //This will define the full storage path for the uploaded files.
 var storage = multer.diskStorage({
     destination: function (req, file, callback) {
-        mkdirSync("./users/" + routes.currentUser);     
-        callback(null, "./users/"+ routes.currentUser);
+        mkdirSync("./users/" + req.user.username);     
+        callback(null, "./users/"+ req.user.username);
     },
     filename: function (req, file, callback) {
         callback(null, file.originalname)
@@ -153,7 +178,7 @@ app.post("/api/uploadDocuments", function (req, res) {
         
        
         console.log(req.body.docName + "    " + req.body.docLabels);
-        var userFolder = "./users/" + routes.currentUser + "/";
+        var userFolder = "./users/" + req.user.username + "/";
         var docName = req.body.docName + ".pdf";
         var docLabels = req.body.docLabels;
         var tempLabelArray = docLabels.split("#");
@@ -180,7 +205,7 @@ app.post("/api/uploadDocuments", function (req, res) {
             merge(fileArray, docName, function (err) {
 
                 if (err) {
-                    blobSvc.createBlockBlobFromLocalFile(routes.currentUser, docName, userFolder + fileExt[0] + ".pdf", function (error, result, response) {
+                    blobSvc.createBlockBlobFromLocalFile(req.user.username, docName, userFolder + fileExt[0] + ".pdf", function (error, result, response) {
                         if (!error) {
                             console.log("success");                        
                             fileArray.forEach(function (file, index) {
@@ -194,7 +219,7 @@ app.post("/api/uploadDocuments", function (req, res) {
                     
 
                 
-                blobSvc.createBlockBlobFromLocalFile(routes.currentUser, docName, docName, function (error, result, response) {
+                blobSvc.createBlockBlobFromLocalFile(req.user.username, docName, docName, function (error, result, response) {
                     if (!error) {
                         console.log("success");
                         fs.unlinkSync(docName);
@@ -215,7 +240,7 @@ app.post("/api/uploadDocuments", function (req, res) {
                 assert.equal(null,err);
                 console.log("Connected succesfully to server");
     
-                var collection = db.collection(routes.currentUser);
+                var collection = db.collection(req.user.username);
                 
                 collection.find().toArray(function (err, items) {
                     id = items;
@@ -278,7 +303,7 @@ var getDoc = function (container, name) {
 };
 
 app.post("/api/delete", function (req, res) {
-    blobSvc.deleteBlob(routes.currentUser, req.body.docName, function (error, response) {
+    blobSvc.deleteBlob(req.user.username, req.body.docName, function (error, response) {
         if (!error) {
             // Blob has been deleted
         }
@@ -288,7 +313,7 @@ app.post("/api/delete", function (req, res) {
         assert.equal(null, err);
         console.log("Connected succesfully to server");
 
-        var collection = db.collection(routes.currentUser);
+        var collection = db.collection(req.user.username);
 
         collection.find().toArray(function (err, items) {
             id = items;
@@ -315,32 +340,6 @@ app.post("/api/delete", function (req, res) {
     });
 });
 
-//--------------login-------------------
-
-
-// define middleware
-app.use(express.static(path.join(__dirname, '../../paperless-office-site')));
-app.use(logger('dev'));
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: false }));
-//app.use(cookieParser()); sinds versie 1.5.0 van express-session is deze niet meer nodig
-app.use(require('express-session')({
-    secret: 'keyboard cat',
-    resave: false,
-    saveUninitialized: false
-    //cookie: { secure: true } cookie werkt dan enkel bij https
-}));
-app.use(passport.initialize());
-app.use(passport.session());
-app.use(express.static(path.join(__dirname, 'public')));
-
-// configure passport
-passport.use(new localStrategy(User.authenticate()));
-passport.serializeUser(User.serializeUser());
-passport.deserializeUser(User.deserializeUser());
-
-// routes
-app.use('/user/', routes.routes);
 
 // error handlers
 app.use(function (req, res, next) {

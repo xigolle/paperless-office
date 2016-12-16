@@ -72,8 +72,6 @@ router.post('/login', function (req, res, next) {
             res.status(200).json({
                 status: 'Login successful!'
             });
-            //makes sure that we can use the username to determine which files to show
-            module.exports.currentUser = user.username;
         });
     })(req, res, next);
 });
