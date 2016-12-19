@@ -274,9 +274,11 @@ app.post('/api/search', function(req,res){
                     "docs":{
                         "labels":req.body.searchLabel
                     }
-                });
+                },function(err,searchLabels){
                     
+                    console.log("I FOUND SOMETHING");
                     console.log(searchLabels);
+                });
                 
 
               
