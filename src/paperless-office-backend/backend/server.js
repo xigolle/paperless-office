@@ -276,6 +276,7 @@ app.post('/api/search', function(req,res){
                     }
                 });
                     
+                    console.log(searchLabels);
                 
 
               
