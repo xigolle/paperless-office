@@ -123,7 +123,7 @@ app.controller("testCTRL", function ($scope, DocumentService, cfpLoadingBar) {
                     var documentCanvas = document.createElement('canvas');
                     var documentIdentifier = document.createElement('span');
 
-                    var documentIdentifierText = document.createTextNode(decodeURI(documentNames.data[i].name));
+                    var documentIdentifierText = document.createTextNode(decodeURI(documentNames.data[i].name).slice(13));
                     documentIdentifier.className = "document-identifier";
                     documentIdentifier.appendChild(documentIdentifierText);
 
@@ -171,7 +171,8 @@ app.controller("uploadController", function ($scope, $http) {
             $scope.collapseZone = "collapse";
             if ($scope.docName.split(' ').join('') != "") {
                 docNameAdded = true;
-                fd.append("docName", $scope.docName);
+                var timeStamp = new Date().getTime();
+                fd.append("docName", timeStamp + $scope.docName);
                 fd.append("docLabels", $scope.docLabels);
                 $scope.docName = "";
             }
