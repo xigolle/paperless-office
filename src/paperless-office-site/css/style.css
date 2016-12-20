@@ -50,12 +50,12 @@ pre, code {
 
 #DocumentIFrame {
     width: 100%;
-    height: 94vh;
+    height: 90vh;
 }
 
 #page-content-wrapper {
     padding: 0px;
-    
+    margin: 0;
 }
 
 canvas {
@@ -243,4 +243,17 @@ canvas {
 #docLabels {
     height: 70%;
     width: 100%;
+}
+
+#labelSection span {
+    border: solid;
+    border-color:bisque;
+    background-color:beige;
+    padding: 5px;
+    display: inline-block;
+}
+
+#PDFDocumentWrapper {
+    padding: 0;
+    margin: 0;
 }

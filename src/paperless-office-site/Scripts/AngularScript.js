@@ -264,6 +264,7 @@ app.controller('labelController', function ($scope, $http) {
                 var labelSpan = document.createElement('span');
                 $(labelSpan).click(function (e) {
                     //code to search on this label when clicked.
+                    console.log("klik op label");
                 });
                 var text = document.createTextNode(label)
                 labelSpan.appendChild(text);
@@ -276,6 +277,10 @@ app.controller('labelController', function ($scope, $http) {
             return "no labels found";
 
         });
+    }
+
+    $scope.destroyLabels = function () {
+        angular.element("#labelSection").empty();
     }
 });
 
