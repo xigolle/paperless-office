@@ -1,6 +1,47 @@
 ﻿html, body {
 }
+h1 {
+	font-size:28px;
+	font-weight:bold;
+	text-shadow: 2px 3px 5px #C2C7C2;
+	margin-bottom:26px;
+}
 
+span.remove-preview-icon{
+    color: #41393E;
+    float: right;
+    top: 10px;
+    left: 10px;
+}
+a {
+	color:#19510E;
+	text-decoration:none;
+	font-weight:bold;
+	font-size:22px;
+}
+
+.sac {
+	display:block;
+	width:100%;
+	text-align:right;
+	font-style:italic;
+	margin-bottom:45px;
+	font-size:12px;
+}
+
+pre, blockquote {
+	-moz-border-radius:10px 10px 10px 10px;
+	-webkit-border-radius:10px 10px 10px 10px;
+	border-radius:10px 10px 10px 10px;
+	background-color:#DFE7DD;
+	margin:15px 0;
+	padding:15px;
+}
+
+pre, code {
+	font-family:monospace;
+	font-size:12px;
+}
 #search-form {
     width: 80%;
     border: none;
@@ -109,15 +150,36 @@ canvas {
     height: 50%;
 }
 
-#upload.uploadToggled p {
+#upload.uploadToggled  p {
     height: 5%;
+    line-height: 1;
+}
+#uploading-text{
+    margin-top:-10px;
+}
+#loading-bar .bar{
+      position: relative;
+}
+#loading-bar .bar,
+#loading-bar .peg {
+
+  height:10px;
+  
+}
+#loading-bar-spinner {
+
+    position:relative;
+}
+
+#upload-wrapper {
+    height: 50%;
 }
 
 #upload-zone-wrapper {
     border: dashed thin;
     border-color: gray;
-    background-color: darkgrey;   
-    height: 80%;
+    background-color: darkgrey; 
+    height: 100%;
 }
 
 #fileInput {
@@ -135,13 +197,50 @@ canvas {
 
 #submit {
     height: 10%;
-    margin-top: 0.5%;
-    background: grey;
+    /*margin-bottom: 0.5%;*/
+    margin-top:-20px;
+    background: transparent;
     border: none;
 }
 
 #submit span {
     font-size: 2em;
-    color: green;
+}
+.upload-noDocuments{
+    
+    color:gray;
+    display:none;
+}
+.upload-error{
+    color:red;
+    display:block;
+}
+.upload-hasDocuments{
+    color:yellowgreen;
+    display:block;
+
+}
+.upload-succes{
+    color:lawngreen;
+    display:block;
+
+}
+.upload-progress{
+    color:orange;
+    display:block;
+
 }
 
+#upload-details-wrapper input {
+    width: 100%;
+    margin-bottom: 1%;
+}
+
+#upload-details-wrapper {
+    height: 100%;
+}
+
+#docLabels {
+    height: 70%;
+    width: 100%;
+}

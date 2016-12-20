@@ -16,7 +16,7 @@
 
 'use strict';
 
-var DEFAULT_URL = 'compressed.tracemonkey-pldi-09.pdf';
+var DEFAULT_URL = 'Files/test0.pdf';
 
   var pdfjsWebLibs = {
     pdfjsWebPDFJS: window.pdfjsDistBuildPdf
@@ -7926,7 +7926,7 @@ var PDFViewerApplication = {
 };
 
 var HOSTED_VIEWER_ORIGINS = ['null',
-  'http://mozilla.github.io',  'http://paperless-office.westeurope.cloudapp.azure.com', 'http://localhost:3000', 'http://13.94.234.60', 'http://localhost:38979', 'https://mozilla.github.io'];
+  'http://mozilla.github.io', 'http://paperless-office.westeurope.cloudapp.azure.com', 'http://localhost:3000','http://localhost:4000','http://localhost:5000', 'http://13.94.234.60', 'http://localhost:38979', 'https://mozilla.github.io'];
 function validateFileURL(file) {
   try {
     var viewerOrigin = new URL(window.location.href).origin || 'null';
