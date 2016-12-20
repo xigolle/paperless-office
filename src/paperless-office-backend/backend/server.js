@@ -340,23 +340,20 @@ app.post("/api/delete", function (req, res) {
     });
 });
 
-app.get("api/getLabels/:url", function (req, res) {
-    console.log(req.params.url);
+app.get("/api/getLabels/:url", function (req, res) {
+    console.log("in getLabels   " + req.params.url);
     MongoClient.connect(mongoUrl, function (err, db) {
         assert.equal(null, err);
         console.log("Connected succesfully to server");
 
         var collection = db.collection(req.user.username);
 
-        collection.find().toArray(function (err, items) {
-            id = items;
-            console.log(id[0]['_id']);
-
-
-         
-        });
-
-
+        collection.find({ "docs.name": req.params.url }, { "docs.$": 1 })
+            .toArray(function (err, items) {
+                console.log(items[0].docs[0].labels);
+                res.send(items[0].docs[0].labels);
+            });
+       
         setTimeout(function () { db.close(); }, 100);
 
     });

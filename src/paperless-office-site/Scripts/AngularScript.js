@@ -257,7 +257,25 @@ app.controller('deleteController', function ($scope, $http, $route, cfpLoadingBa
 
 app.controller('labelController', function ($scope, $http) {
     $scope.getLabels = function (docURL) {
-        return $http.get(docURL);
+        $http.get(docURL).then(function successCallback(response) {
+            console.log(response.data);
+            
+            angular.forEach(response.data, function (label) {
+                var labelSpan = document.createElement('span');
+                $(labelSpan).click(function (e) {
+                    //code to search on this label when clicked.
+                });
+                var text = document.createTextNode(label)
+                labelSpan.appendChild(text);
+                document.getElementById("labelSection").appendChild(labelSpan);
+            });
+            
+           
+        }, function errorCallback(response) {
+            console.log(response);
+            return "no labels found";
+
+        });
     }
 });
 
