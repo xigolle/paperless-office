@@ -255,6 +255,12 @@ app.controller('deleteController', function ($scope, $http, $route, cfpLoadingBa
     }
 });
 
+app.controller('labelController', function ($scope, $http) {
+    $scope.getLabels = function (docURL) {
+        return $http.get(docURL);
+    }
+});
+
 
 
 //--------------------------------

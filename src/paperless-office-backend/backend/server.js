@@ -340,6 +340,28 @@ app.post("/api/delete", function (req, res) {
     });
 });
 
+app.get("api/getLabels/:url", function (req, res) {
+    console.log(req.params.url);
+    MongoClient.connect(mongoUrl, function (err, db) {
+        assert.equal(null, err);
+        console.log("Connected succesfully to server");
+
+        var collection = db.collection(req.user.username);
+
+        collection.find().toArray(function (err, items) {
+            id = items;
+            console.log(id[0]['_id']);
+
+
+         
+        });
+
+
+        setTimeout(function () { db.close(); }, 100);
+
+    });
+});
+
 
 // error handlers
 app.use(function (req, res, next) {
