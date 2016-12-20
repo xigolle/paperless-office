@@ -160,7 +160,7 @@ app.post("/api/uploadDocuments", function (req, res) {
         var labelArray = [];
         tempLabelArray.forEach(function (label) {
             if (label != "") {
-                labelArray.push(label.trim());
+                labelArray.push("#" + label.trim());
             }
         });
         var fileArray = [];
