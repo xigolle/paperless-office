@@ -7,6 +7,11 @@
     $("#upload").children().not("p").click(function (e) {
         e.stopPropagation();
     })
+    $("#showLabels").click(function (e) {
+        e.preventDefault();
+        $("#labelSpans").toggleClass("labelsToggled");
+
+    });
 
 })
 

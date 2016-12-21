@@ -257,8 +257,6 @@ app.controller('deleteController', function ($scope, $http, $route, cfpLoadingBa
 
 app.controller('labelController', function ($scope, $http) {
 
-   
-
     $scope.getLabels = function (docURL) {
         $http.get(docURL).then(function successCallback(response) {
             console.log(response.data);
