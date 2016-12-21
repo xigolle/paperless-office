@@ -256,6 +256,9 @@ app.controller('deleteController', function ($scope, $http, $route, cfpLoadingBa
 });
 
 app.controller('labelController', function ($scope, $http) {
+
+   
+
     $scope.getLabels = function (docURL) {
         $http.get(docURL).then(function successCallback(response) {
             console.log(response.data);
@@ -268,7 +271,7 @@ app.controller('labelController', function ($scope, $http) {
                 });
                 var text = document.createTextNode(label)
                 labelSpan.appendChild(text);
-                document.getElementById("labelSection").appendChild(labelSpan);
+                document.getElementById("labelSpans").appendChild(labelSpan);
             });
             
            
@@ -280,7 +283,7 @@ app.controller('labelController', function ($scope, $http) {
     }
 
     $scope.destroyLabels = function () {
-        angular.element("#labelSection").empty();
+        angular.element("#labelSpans").empty();
     }
 });
 
