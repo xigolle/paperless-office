@@ -56,8 +56,13 @@
                 <div id="Canvas-Document-Holder"></div>
             </div>
             <div id="SuggestedDocumentSection" class="col-md-2">
-                <div id="labelSection" ng-controller="labelController">
+                <div id="labels" ng-controller="labelController">
+                    <input placeholder="Add label"/>
+                    <span id="addLabelButton" class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span>
+                    <div id="labelSection" ng-style="labelSectionStyle">
 
+                    </div>
+                    <a ng-click="showLabels()">{{buttonText}}</a>
                 </div>
             </div>
 
@@ -76,7 +81,7 @@
                         <p>File name:</p>
                         <input id="docName" type="text" ng-model="docName" ng-style="myStyle" />
                         <p>Labels:</p>
-                        <textarea id="docLabels" name="textArea" placeholder="Seperate labels with ','" ng-model="docLabels"></textarea>
+                        <textarea id="docLabels" name="textArea" placeholder="Seperate labels with '#'" ng-model="docLabels"></textarea>
                     </div>
                 </div>
                 <div id="previewArea">

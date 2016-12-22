@@ -280,7 +280,22 @@ app.controller('labelController', function ($scope, $http) {
     }
 
     $scope.destroyLabels = function () {
-        angular.element("#labelSection").empty();
+        //$scope.labelSectionStyle = ""; werkt niet :s wrm?     
+        angular.element("#labelSection").empty();       
+    }
+
+    $scope.labelSectionStyle = "";
+    $scope.buttonText = "See more";
+
+    $scope.showLabels = function () {              
+        if ($scope.labelSectionStyle === "") {
+            $scope.buttonText = "See less";
+            $scope.labelSectionStyle = { "overflow-y": "scroll", "max-height": "280px" };
+        } else {
+            $scope.buttonText = "See more";
+            angular.element("#labelSection").scrollTop(0);
+            $scope.labelSectionStyle = "";
+        }
     }
 });
 

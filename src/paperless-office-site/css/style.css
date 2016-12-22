@@ -18,6 +18,7 @@ a {
 	text-decoration:none;
 	font-weight:bold;
 	font-size:22px;
+    cursor: pointer;
 }
 
 .sac {
@@ -246,14 +247,41 @@ canvas {
 }
 
 #labelSection span {
-    border: solid;
-    border-color:bisque;
-    background-color:beige;
-    padding: 5px;
+    padding: 2.5px 5px 2.5px 5px;
     display: inline-block;
+    border: solid 1px black;
+    background-color: gainsboro;
+    margin: 0 1px 1px 1px;
+}
+
+#labelSection {
+    overflow: hidden;
+    max-height: 28px;
+    margin-top: 5px;
 }
 
 #PDFDocumentWrapper {
     padding: 0;
     margin: 0;
+}
+
+#labels a {
+	color: black;
+	font-size: 14px;
+    
+}
+
+#labels input {
+    padding: 0 7px 0 7px;
+    margin-top: 5px;
+    border: none;
+    border-bottom: solid black 1px;
+    width: 90%;
+}
+
+#addLabelButton {
+    width: 7%;
+    vertical-align: middle;
+    text-align: center;
+    cursor: pointer;
 }
