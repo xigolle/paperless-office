@@ -259,17 +259,21 @@ app.controller('labelController', function ($scope, $http) {
     $scope.getLabels = function (docURL) {
         $http.get(docURL).then(function successCallback(response) {
             console.log(response.data);
-            
-            angular.forEach(response.data, function (label) {
-                var labelSpan = document.createElement('span');
-                $(labelSpan).click(function (e) {
-                    //code to search on this label when clicked.
-                    console.log("klik op label");
+            if (response.data.length != 0) {
+                angular.forEach(response.data, function (label) {
+                    var labelSpan = document.createElement('span');
+                    $(labelSpan).click(function (e) {
+                        //code to search on this label when clicked.
+                        console.log("klik op label");
+                    });
+                    var text = document.createTextNode(label)
+                    labelSpan.appendChild(text);
+                    document.getElementById("labelSection").appendChild(labelSpan);
                 });
-                var text = document.createTextNode(label)
-                labelSpan.appendChild(text);
-                document.getElementById("labelSection").appendChild(labelSpan);
-            });
+            } else {
+                var text = document.createTextNode("No labels");
+                document.getElementById("labelSection").appendChild(text);
+            }
             
            
         }, function errorCallback(response) {
@@ -285,14 +289,14 @@ app.controller('labelController', function ($scope, $http) {
     }
 
     $scope.labelSectionStyle = "";
-    $scope.buttonText = "See more";
+    $scope.buttonText = "View more";
 
     $scope.showLabels = function () {              
         if ($scope.labelSectionStyle === "") {
-            $scope.buttonText = "See less";
+            $scope.buttonText = "View less";
             $scope.labelSectionStyle = { "overflow-y": "scroll", "max-height": "280px" };
         } else {
-            $scope.buttonText = "See more";
+            $scope.buttonText = "View more";
             angular.element("#labelSection").scrollTop(0);
             $scope.labelSectionStyle = "";
         }
