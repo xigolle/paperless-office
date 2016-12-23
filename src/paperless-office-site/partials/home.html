@@ -57,8 +57,8 @@
             </div>
             <div id="SuggestedDocumentSection" class="col-md-2">
                 <div id="labels" ng-controller="labelController">
-                    <input placeholder="Add label"/>
-                    <span id="addLabelButton" class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span>
+                    <input ng-model="newLabel" placeholder="Add label"/>
+                    <span id="addLabelButton" ng-click="addLabel()" class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span>
                     <div id="labelSection" ng-style="labelSectionStyle">
 
                     </div>

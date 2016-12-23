@@ -301,6 +301,10 @@ app.controller('labelController', function ($scope, $http) {
             $scope.labelSectionStyle = "";
         }
     }
+
+    $scope.addLabel = function () {
+
+    }
 });
 
 

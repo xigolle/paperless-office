@@ -359,6 +359,36 @@ app.get("/api/getLabels/:url", function (req, res) {
     });
 });
 
+app.post("/api/addLabels/:url", function (req, res) {
+    MongoClient.connect(mongoUrl, function (err, db) {
+        assert.equal(null, err);
+        console.log("Connected succesfully to server");
+
+        var collection = db.collection(req.user.username);
+
+        collection.find().toArray(function (err, items) {
+            id = items;
+            console.log(id[0]['_id']);
+       
+                  
+            collection.update(
+                {
+                    "_id": id[0]['_id']
+                },
+                {
+                    /*$push: {
+                        "docs": {
+                            "name": docName,
+                            "labels": labelArray,
+                            "ocrOutput": "OCR_output"
+                        }
+                                                                  
+                    }*/
+                });
+        });
+    })
+});
+
 
 // error handlers
 app.use(function (req, res, next) {
