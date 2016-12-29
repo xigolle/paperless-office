@@ -268,20 +268,25 @@ app.controller('deleteController', function ($scope, $http, $route, cfpLoadingBa
 });
 
 app.controller('labelController', function ($scope, $http) {
+
+    var createLabels = function (labels) {
+        angular.forEach(labels, function (label) {
+            var labelSpan = document.createElement('span');
+            $(labelSpan).click(function (e) {
+                //code to search on this label when clicked.
+                console.log("klik op label");
+            });
+            var text = document.createTextNode(label)
+            labelSpan.appendChild(text);
+            document.getElementById("labelSection").appendChild(labelSpan);
+        });
+    };
+
     $scope.getLabels = function (docURL) {
         $http.get(docURL).then(function successCallback(response) {
             console.log(response.data);
             if (response.data.length != 0) {
-                angular.forEach(response.data, function (label) {
-                    var labelSpan = document.createElement('span');
-                    $(labelSpan).click(function (e) {
-                        //code to search on this label when clicked.
-                        console.log("klik op label");
-                    });
-                    var text = document.createTextNode(label)
-                    labelSpan.appendChild(text);
-                    document.getElementById("labelSection").appendChild(labelSpan);
-                });
+                createLabels(response.data);
             } else {
                 var text = document.createTextNode("No labels");
                 document.getElementById("labelSection").appendChild(text);
@@ -315,7 +320,13 @@ app.controller('labelController', function ($scope, $http) {
     }
 
     $scope.addLabel = function () {
-
+        $http.post("/api/addLabels", { "newLabel": $scope.newLabel, "docName": getDocName() }, { ignoreLoadingBar: true }).then(function successCallback(response) {
+            console.log("add was a success");
+            $scope.newLabel = "";
+            createLabels(response.data);
+        }, function errorCallback(response) {
+            console.log("add was a failure");
+        });
     }
 });
 

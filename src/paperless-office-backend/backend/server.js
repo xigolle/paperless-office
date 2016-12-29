@@ -169,6 +169,18 @@ var storage = multer.diskStorage({
 
 var upload = multer({ storage: storage }).any("myFile");
 
+var getLabelArray = function (docLabels) {
+    
+    var tempLabelArray = docLabels.split("#");
+    var labelArray = [];
+    tempLabelArray.forEach(function (label) {
+        if (label != "") {
+            labelArray.push("#" + label.trim());
+        }
+    });
+    return labelArray;
+}
+
 app.post("/api/uploadDocuments", function (req, res) {
    upload(req, res, function (err) {
         if (err) {
@@ -180,14 +192,15 @@ app.post("/api/uploadDocuments", function (req, res) {
         console.log(req.body.docName + "    " + req.body.docLabels);
         var userFolder = "./users/" + req.user.username + "/";
         var docName = req.body.docName + ".pdf";
-        var docLabels = req.body.docLabels;
-        var tempLabelArray = docLabels.split("#");
+        //var docLabels = req.body.docLabels;
+        /*var tempLabelArray = docLabels.split("#");
         var labelArray = [];
         tempLabelArray.forEach(function (label) {
             if (label != "") {
                 labelArray.push("#" + label.trim());
             }
-        });
+        });*/
+        var labelArray = getLabelArray(req.body.docLabels);
         var fileArray = [];
         var fileExt;
         fs.readdir( userFolder, function( err, files ) {
@@ -359,7 +372,9 @@ app.get("/api/getLabels/:url", function (req, res) {
     });
 });
 
-app.post("/api/addLabels/:url", function (req, res) {
+app.post("/api/addLabels", function (req, res) {
+   
+    var labelArray = getLabelArray(req.body.newLabel);
     MongoClient.connect(mongoUrl, function (err, db) {
         assert.equal(null, err);
         console.log("Connected succesfully to server");
@@ -370,21 +385,20 @@ app.post("/api/addLabels/:url", function (req, res) {
             id = items;
             console.log(id[0]['_id']);
        
-                  
-            collection.update(
-                {
-                    "_id": id[0]['_id']
-                },
-                {
-                    /*$push: {
-                        "docs": {
-                            "name": docName,
-                            "labels": labelArray,
-                            "ocrOutput": "OCR_output"
+            labelArray.forEach(function (label) {
+                collection.update(
+                    {
+                        "_id": id[0]['_id'],
+                        "docs.name": req.body.docName
+                    },
+                    {
+                        $push: {
+                            "docs.$.labels": label
+
                         }
-                                                                  
-                    }*/
-                });
+                    });
+            });
+            res.send(labelArray);
         });
     })
 });
