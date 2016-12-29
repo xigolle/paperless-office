@@ -89,6 +89,18 @@ app.service('DocumentService', function ($http, cfpLoadingBar) {
     }
 })
 
+app.directive('disallowSpaces', function () {
+    return {
+        restrict: 'A',
+
+        link: function ($scope, $element) {
+            $element.bind('input', function () {
+                $(this).val($(this).val().replace(/ /g, ''));
+            });
+        }
+    };
+});
+
 
 
 app.controller("testCTRL", function ($scope, DocumentService, cfpLoadingBar) {
