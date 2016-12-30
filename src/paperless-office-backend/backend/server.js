@@ -101,13 +101,13 @@ app.get("/api/getDocumentURL/:url", function (req, res) {
 app.get("/api/getDocument", function (req, res) {
     //console.log(req.params.name);
     //console.log(req.get('test'));
-	
+
     console.log(req.get('test'));
     blobSvc.createReadStream(req.user.username, req.get('test')).pipe(res)
 
 });
 app.get("/api/ocr/:url", function (req, res) {
-    
+
     console.log("run ocr: " + req.params.url);
     Tesseract.recognize("images/eng_bw.png").then(function (result) {
 
@@ -131,29 +131,29 @@ app.get("/api/getDocuments", function (req, res) {
         console.log("currentUser " + req.user.username);
 
         if (!error) {
-         
-	    //Will download all the documents in the specified container
-  	    result.entries.forEach(function (name) {
-            //commented out because else it downloads the whole file to the server
-	        //getDoc("test", name.name);
-  	        //testArray.push(name.name);
-  	        //console.log("logging names");
-  	        //console.log(name);
-  	        testArray.push({ "name": name.name, "date": name.lastModified });
-            
-   	        
-	    });
-            
-      	    // result.entries contains the entries
-  	    // If not all blobs were returned, result.continuationToken has the continuation token. 
-  	    res.send(testArray);
-  	    //console.log("log testArray");
-  	    //console.log(testArray);
+
+            //Will download all the documents in the specified container
+            result.entries.forEach(function (name) {
+                //commented out because else it downloads the whole file to the server
+                //getDoc("test", name.name);
+                //testArray.push(name.name);
+                //console.log("logging names");
+                //console.log(name);
+                testArray.push({ "name": name.name, "date": name.lastModified });
+
+
+            });
+
+            // result.entries contains the entries
+            // If not all blobs were returned, result.continuationToken has the continuation token. 
+            res.send(testArray);
+            //console.log("log testArray");
+            //console.log(testArray);
             //res.send(result.continuationToken);
 
-  	} else res.send("Could not get names");  
+        } else res.send("Could not get names");
     });
-    
+
 });
 
 //Tries to make a user folder, and catches the error if it already exists. Bad code --> needs to be fixed: empty catch.
@@ -168,8 +168,8 @@ var mkdirSync = function (path) {
 //This will define the full storage path for the uploaded files.
 var storage = multer.diskStorage({
     destination: function (req, file, callback) {
-        mkdirSync("./users/" + req.user.username);     
-        callback(null, "./users/"+ req.user.username);
+        mkdirSync("./users/" + req.user.username);
+        callback(null, "./users/" + req.user.username);
     },
     filename: function (req, file, callback) {
         callback(null, file.originalname)
@@ -198,13 +198,13 @@ function cleanOCROutput(text) {
     return newArray;
 }
 app.post("/api/uploadDocuments", function (req, res) {
-   upload(req, res, function (err) {
+    upload(req, res, function (err) {
         if (err) {
             console.log("Error Occured: " + err);
             return;
-        }  
-        
-       
+        }
+
+
         console.log(req.body.docName + "    " + req.body.docLabels);
         var userFolder = "./users/" + req.user.username + "/";
         var docName = req.body.docName + ".pdf";
@@ -221,40 +221,85 @@ app.post("/api/uploadDocuments", function (req, res) {
 
         var ocrTextString;
         var fileExt;
-        fs.readdir( userFolder, function( err, files ) {
+        fs.readdir(userFolder, function (err, files) {
             files.forEach(function (file, index) {
-                
+
                 fileExt = file.split(".");
                 var completeFileUri = userFolder + file;
 
                 if (fileExt[fileExt.length - 1] != "pdf") {
                     //images
                     console.log("file URI" + completeFileUri);
-                    Tesseract.recognize(completeFileUri).then(function (result) {
-                        ocrTextArray.push(result.text);
-                        //console.log(result.text);
-                        //console.log("done?");
-                        //console.log("logging images");
-                        //console.log(userFolder + file);
-                        //file locatie = userFolder + file; 
-                        fileArray.push(makePDF(userFolder, file, fileExt[0]));
-                        //console.log("logging ocr array images");
-                        //console.dir(ocrTextArray);
-                        var strippedResult = result.text;
-                        strippedResult = strippedResult.toString().replace(/\r?\n|\r/g, "");
-                        ocrTextArray.push(cleanOCROutput(result.text));
-                        ocrTextString += cleanOCROutput(result.text);
-                        console.log("log ocrTextString");
-                        console.log(ocrTextArray);
-                        //console.log(ocrTextArray.length);
-                        //console.log(ocrTextString);
+                    Tesseract.recognize(completeFileUri)
+                        .progress(function (prog) {
+                            console.dir(prog);
+                        })
+                        .then(function (result) {
+                            console.log("current working doc");
+                            console.log(docName);
 
-                    })
-                    
+
+                            ocrTextArray.push(result.text);
+                            //console.log(result.text);
+                            //console.log("done?");
+                            //console.log("logging images");
+                            //console.log(userFolder + file);
+                            //file locatie = userFolder + file; 
+                            fileArray.push(makePDF(userFolder, file, fileExt[0]));
+                            //console.log("logging ocr array images");
+                            //console.dir(ocrTextArray);
+                            var strippedResult = result.text;
+                            strippedResult = strippedResult.toString().replace(/\r?\n|\r/g, "");
+                            ocrTextArray.push(cleanOCROutput(result.text));
+                            ocrTextString += cleanOCROutput(result.text);
+                            MongoClient.connect(mongoUrl, function (err, db) {
+                                var ocrOutput;
+                                assert.equal(null, err);
+                                console.log("Connected succesfully to server");
+
+                                var collection = db.collection(req.user.username);
+
+                                collection.find().toArray(function (err, items) {
+                                    id = items;
+                                    console.log('return items');
+                                    console.dir(items[0]);
+                                    console.log("logging ID!");
+                                    console.log(id[0]['_id']);
+                                    console.log("logging Docname");
+                                    ocrOutput = cleanOCROutput(result.text);
+                                    console.log("log return value");
+                                    //console.log(returnValue)
+                                    collection.update(
+                                        {
+                                            "_id": id[0]['_id'],
+                                            "docs.name":req.body.docName
+                                        },
+                                        {
+
+                                            $push: {
+                                                "docs.$.labels":"lolz"
+                                            }
+                                        });
+                                });
+
+
+                                setTimeout(function () {
+
+                                    db.close();
+                                }, 100);
+
+                            });
+                            console.log("log ocrTextString");
+                            console.log(ocrTextArray);
+                            //console.log(ocrTextArray.length);
+                            //console.log(ocrTextString);
+
+                        })
+
                 } else {
                     //pdfs
                     console.log("getting pdfs");
-                    extract(completeFileUri,{splitPages:false}, function (err, result) {
+                    extract(completeFileUri, { splitPages: false }, function (err, result) {
                         if (err) {
                             console.dir(err);
                             return
@@ -272,14 +317,14 @@ app.post("/api/uploadDocuments", function (req, res) {
 
                     });
                     fileArray.push(userFolder + file);
-                    
+
                 }
 
                 //console.log("logging ocr array");
                 //console.dir(ocrTextArray);
                 //console.log(ocrTextArray.length);
 
-                
+
             });
 
             merge(fileArray, docName, function (err) {
@@ -287,7 +332,7 @@ app.post("/api/uploadDocuments", function (req, res) {
                 if (err) {
                     blobSvc.createBlockBlobFromLocalFile(req.user.username, docName, userFolder + fileExt[0] + ".pdf", function (error, result, response) {
                         if (!error) {
-                            console.log("success");                        
+                            console.log("success");
                             fileArray.forEach(function (file, index) {
                                 fs.unlinkSync(file);
                             });
@@ -296,9 +341,9 @@ app.post("/api/uploadDocuments", function (req, res) {
                     });
                     return console.log("Not enough files to merge");
                 }
-                    
 
-                
+
+
                 blobSvc.createBlockBlobFromLocalFile(req.user.username, docName, docName, function (error, result, response) {
                     if (!error) {
                         console.log("success");
@@ -306,27 +351,26 @@ app.post("/api/uploadDocuments", function (req, res) {
                         fileArray.forEach(function (file, index) {
                             fs.unlinkSync(file);
                         });
-                      
+
                     } else console.log(error);
                 });
             });
 
 
-     
 
 
-            MongoClient.connect(mongoUrl,function(err,db)
-            {
-                assert.equal(null,err);
+
+            MongoClient.connect(mongoUrl, function (err, db) {
+                assert.equal(null, err);
                 console.log("Connected succesfully to server");
-    
+
                 var collection = db.collection(req.user.username);
-                
+
                 collection.find().toArray(function (err, items) {
                     id = items;
                     console.log(id[0]['_id']);
-       
-                  
+
+
                     collection.update(
                         {
                             "_id": id[0]['_id']
@@ -336,30 +380,30 @@ app.post("/api/uploadDocuments", function (req, res) {
                                 "docs": [{
                                     "name": docName,
                                     "labels": labelArray,
-                                    "ocrOutput": ocrTextArray
-                                    
+                                    "ocrOutput": []
+
                                 }]
-                                                                  
+
                             }
                         });
                 });
 
-              
+
                 setTimeout(function () {
-                  
+
                     db.close();
                 }, 100);
-                
+
             });
-            
-            
+
+
         });
-        
+
 
 
         res.end();
     })
-    
+
 });
 
 //This function will convert images to pdf
@@ -416,7 +460,7 @@ app.post("/api/delete", function (req, res) {
         });
 
 
-        setTimeout(function () {db.close();}, 100);
+        setTimeout(function () { db.close(); }, 100);
 
     });
 });
@@ -437,6 +481,6 @@ app.use(function (err, req, res) {
     }));
 });
 
-app.listen(3000);
+app.listen(4000);
 
 
