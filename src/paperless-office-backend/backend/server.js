@@ -168,8 +168,8 @@ var mkdirSync = function (path) {
 //This will define the full storage path for the uploaded files.
 var storage = multer.diskStorage({
     destination: function (req, file, callback) {
-        mkdirSync("./users/" + req.user.username);     
-        callback(null, "./users/"+ req.user.username);
+        mkdirSync("./users/" + req.user.username);
+        callback(null, "./users/" + req.user.username);
     },
     filename: function (req, file, callback) {
         callback(null, file.originalname)
@@ -192,9 +192,12 @@ function cleanOCROutput(text) {
         //if (splitResult[i] ) {
         //    newArray.push[i];
         //}
+    }
+    return newArray;
+}
 
 var getLabelArray = function (docLabels) {
-    
+
     var tempLabelArray = docLabels.split("#");
     var labelArray = [];
     tempLabelArray.forEach(function (label) {
@@ -281,12 +284,12 @@ app.post("/api/uploadDocuments", function (req, res) {
                                     collection.update(
                                         {
                                             "_id": id[0]['_id'],
-                                            "docs.name":req.body.docName
+                                            "docs.name": docName
                                         },
                                         {
 
                                             $push: {
-                                                "docs.$.labels":"lolz"
+                                                "docs.$.ocrOutput": ocrOutput
                                             }
                                         });
                                 });
@@ -351,7 +354,7 @@ app.post("/api/uploadDocuments", function (req, res) {
                     return console.log("Not enough files to merge");
                 }
 
-                
+
                 blobSvc.createBlockBlobFromLocalFile(req.user.username, docName, docName, function (error, result, response) {
                     if (!error) {
                         console.log("success");
@@ -371,29 +374,28 @@ app.post("/api/uploadDocuments", function (req, res) {
             MongoClient.connect(mongoUrl, function (err, db) {
                 assert.equal(null, err);
                 console.log("Connected succesfully to server");
-    
+
                 var collection = db.collection(req.user.username);
-                
+
                 collection.find().toArray(function (err, items) {
                     id = items;
                     console.log(id[0]['_id']);
 
 
                     collection.update(
-                        {
-                            "_id": id[0]['_id']
-                        },
-                        {
-                            $push: {
-                                "docs": [{
-                                    "name": docName,
-                                    "labels": labelArray,
-                                    "ocrOutput": []
+                {
+                    "_id": id[0]['_id']
+                },
+                {
+                    $push: {
+                        "docs": {
+                            "name": docName,
+                            "labels": labelArray,
+                            "ocrOutput": ocrTextArray
+                        }
 
-                                }]
-
-                            }
-                        });
+                    }
+                });
                 });
 
 
@@ -486,14 +488,14 @@ app.get("/api/getLabels/:url", function (req, res) {
                 console.log(items[0].docs[0].labels);
                 res.send(items[0].docs[0].labels);
             });
-       
+
         setTimeout(function () { db.close(); }, 100);
 
     });
 });
 
 app.post("/api/addLabels", function (req, res) {
-   
+
     var labelArray = getLabelArray(req.body.newLabel);
     MongoClient.connect(mongoUrl, function (err, db) {
         assert.equal(null, err);
@@ -504,7 +506,7 @@ app.post("/api/addLabels", function (req, res) {
         collection.find().toArray(function (err, items) {
             id = items;
             console.log(id[0]['_id']);
-       
+
             labelArray.forEach(function (label) {
                 collection.update(
                     {
@@ -539,6 +541,4 @@ app.use(function (err, req, res) {
     }));
 });
 
-app.listen(3000);
-
-
+app.listen(4000);
