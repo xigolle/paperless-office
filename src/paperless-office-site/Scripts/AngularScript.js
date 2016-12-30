@@ -89,6 +89,18 @@ app.service('DocumentService', function ($http, cfpLoadingBar) {
     }
 })
 
+app.directive('disallowSpaces', function () {
+    return {
+        restrict: 'A',
+
+        link: function ($scope, $element) {
+            $element.bind('input', function () {
+                $(this).val($(this).val().replace(/ /g, ''));
+            });
+        }
+    };
+});
+
 
 
 app.controller("testCTRL", function ($scope, DocumentService, cfpLoadingBar) {
@@ -252,6 +264,69 @@ app.controller('deleteController', function ($scope, $http, $route, cfpLoadingBa
         });
 
         $route.reload();
+    }
+});
+
+app.controller('labelController', function ($scope, $http) {
+
+    var createLabels = function (labels) {
+        angular.forEach(labels, function (label) {
+            var labelSpan = document.createElement('span');
+            $(labelSpan).click(function (e) {
+                //code to search on this label when clicked.
+                console.log("klik op label");
+            });
+            var text = document.createTextNode(label)
+            labelSpan.appendChild(text);
+            document.getElementById("labelSection").appendChild(labelSpan);
+        });
+    };
+
+    $scope.getLabels = function (docURL) {
+        $http.get(docURL).then(function successCallback(response) {
+            console.log(response.data);
+            if (response.data.length != 0) {
+                createLabels(response.data);
+            } else {
+                var text = document.createTextNode("No labels");
+                document.getElementById("labelSection").appendChild(text);
+            }
+            
+           
+        }, function errorCallback(response) {
+            console.log(response);
+            return "no labels found";
+
+        });
+    }
+
+    $scope.destroyLabels = function () {
+        //$scope.labelSectionStyle = ""; werkt niet :s wrm?     
+        angular.element("#labelSection").empty();       
+    }
+
+    $scope.labelSectionStyle = "";
+    $scope.buttonText = "View more";
+
+    $scope.showLabels = function () {              
+        if ($scope.labelSectionStyle === "") {
+            $scope.buttonText = "View less";
+            $scope.labelSectionStyle = { "overflow-y": "scroll", "max-height": "280px" };
+        } else {
+            $scope.buttonText = "View more";
+            angular.element("#labelSection").scrollTop(0);
+            $scope.labelSectionStyle = "";
+        }
+    }
+
+    $scope.addLabel = function () {
+        $http.post("/api/addLabels", { "newLabel": $scope.newLabel, "docName": getDocName() }, { ignoreLoadingBar: true }).then(function successCallback(response) {
+            console.log("add was a success");
+            $scope.newLabel = "";
+            createLabels(response.data);
+        }, function errorCallback(response) {
+            console.log("add was a failure");
+        });
     }
 });
 

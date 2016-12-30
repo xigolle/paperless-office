@@ -206,6 +206,9 @@ function showMultiplePDFDocument(url, canvasID, currentDoc) {
 
               var SingleDocumentURL = encodeURIComponent("/api/getDocumentURL/" + $(this).data("currentDoc"));
               openSinglePDFReader(SingleDocumentURL);
+              
+              angular.element("#labelSection").scope().getLabels("/api/getLabels/" + $(this).data("currentDoc"));       
+
               //bring doc name to angularscript
               getDocName(decodeURIComponent($(this).data("currentDoc")));
           });
