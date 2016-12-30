@@ -168,8 +168,8 @@ var mkdirSync = function (path) {
 //This will define the full storage path for the uploaded files.
 var storage = multer.diskStorage({
     destination: function (req, file, callback) {
-        mkdirSync("./users/" + req.user.username);
-        callback(null, "./users/" + req.user.username);
+        mkdirSync("./users/" + req.user.username);     
+        callback(null, "./users/"+ req.user.username);
     },
     filename: function (req, file, callback) {
         callback(null, file.originalname)
@@ -193,10 +193,18 @@ function cleanOCROutput(text) {
         //    newArray.push[i];
         //}
 
-    }
-    //console.log(newArray);
-    return newArray;
+var getLabelArray = function (docLabels) {
+    
+    var tempLabelArray = docLabels.split("#");
+    var labelArray = [];
+    tempLabelArray.forEach(function (label) {
+        if (label != "") {
+            labelArray.push("#" + label.trim());
+        }
+    });
+    return labelArray;
 }
+
 app.post("/api/uploadDocuments", function (req, res) {
     upload(req, res, function (err) {
         if (err) {
@@ -208,14 +216,15 @@ app.post("/api/uploadDocuments", function (req, res) {
         console.log(req.body.docName + "    " + req.body.docLabels);
         var userFolder = "./users/" + req.user.username + "/";
         var docName = req.body.docName + ".pdf";
-        var docLabels = req.body.docLabels;
-        var tempLabelArray = docLabels.split("#");
+        //var docLabels = req.body.docLabels;
+        /*var tempLabelArray = docLabels.split("#");
         var labelArray = [];
         tempLabelArray.forEach(function (label) {
             if (label != "") {
-                labelArray.push(label.trim());
+                labelArray.push("#" + label.trim());
             }
-        });
+        });*/
+        var labelArray = getLabelArray(req.body.docLabels);
         var fileArray = [];
         var ocrTextArray = [];
 
@@ -342,8 +351,7 @@ app.post("/api/uploadDocuments", function (req, res) {
                     return console.log("Not enough files to merge");
                 }
 
-
-
+                
                 blobSvc.createBlockBlobFromLocalFile(req.user.username, docName, docName, function (error, result, response) {
                     if (!error) {
                         console.log("success");
@@ -363,9 +371,9 @@ app.post("/api/uploadDocuments", function (req, res) {
             MongoClient.connect(mongoUrl, function (err, db) {
                 assert.equal(null, err);
                 console.log("Connected succesfully to server");
-
+    
                 var collection = db.collection(req.user.username);
-
+                
                 collection.find().toArray(function (err, items) {
                     id = items;
                     console.log(id[0]['_id']);
@@ -465,6 +473,56 @@ app.post("/api/delete", function (req, res) {
     });
 });
 
+app.get("/api/getLabels/:url", function (req, res) {
+    console.log("in getLabels   " + req.params.url);
+    MongoClient.connect(mongoUrl, function (err, db) {
+        assert.equal(null, err);
+        console.log("Connected succesfully to server");
+
+        var collection = db.collection(req.user.username);
+
+        collection.find({ "docs.name": req.params.url }, { "docs.$": 1 })
+            .toArray(function (err, items) {
+                console.log(items[0].docs[0].labels);
+                res.send(items[0].docs[0].labels);
+            });
+       
+        setTimeout(function () { db.close(); }, 100);
+
+    });
+});
+
+app.post("/api/addLabels", function (req, res) {
+   
+    var labelArray = getLabelArray(req.body.newLabel);
+    MongoClient.connect(mongoUrl, function (err, db) {
+        assert.equal(null, err);
+        console.log("Connected succesfully to server");
+
+        var collection = db.collection(req.user.username);
+
+        collection.find().toArray(function (err, items) {
+            id = items;
+            console.log(id[0]['_id']);
+       
+            labelArray.forEach(function (label) {
+                collection.update(
+                    {
+                        "_id": id[0]['_id'],
+                        "docs.name": req.body.docName
+                    },
+                    {
+                        $push: {
+                            "docs.$.labels": label
+
+                        }
+                    });
+            });
+            res.send(labelArray);
+        });
+    })
+});
+
 
 // error handlers
 app.use(function (req, res, next) {
@@ -481,6 +539,6 @@ app.use(function (err, req, res) {
     }));
 });
 
-app.listen(4000);
+app.listen(3000);
 
 

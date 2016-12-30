@@ -3,12 +3,12 @@
     <div id="sidebar-wrapper">
         <ul class="sidebar-nav">
             <li class="sidebar-brand">
-                <a href="#/">
+                <a>
                     Option Menu
                 </a>
             </li>
             <li>
-                <a id="HomeButton" href="#/">Home</a>
+                <a id="HomeButton" href="#/" ng-controller="labelController" ng-click="destroyLabels()">Home</a>
             </li>
             <li>
                 <a id="DeleteButton" ng-click="delete()" ng-controller="deleteController" href="#/" class="hidden">Delete</a>
@@ -56,7 +56,14 @@
                 <div id="Canvas-Document-Holder"></div>
             </div>
             <div id="SuggestedDocumentSection" class="col-md-2">
-                <p>test</p>
+                <div id="labels" ng-controller="labelController">
+                    <input ng-model="newLabel" placeholder="Add label" disallow-spaces/>
+                    <span id="addLabelButton" ng-click="addLabel()" class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span>
+                    <div id="labelSection" ng-style="labelSectionStyle">
+
+                    </div>
+                    <a ng-click="showLabels()">{{buttonText}}</a>
+                </div>
             </div>
 
             <!-- Upload button Content-->
@@ -74,7 +81,7 @@
                         <p>File name:</p>
                         <input id="docName" type="text" ng-model="docName" ng-style="myStyle" />
                         <p>Labels:</p>
-                        <textarea id="docLabels" name="textArea" placeholder="Seperate labels with ','" ng-model="docLabels"></textarea>
+                        <textarea id="docLabels" name="textArea" placeholder="Seperate labels with '#'" ng-model="docLabels" disallow-spaces></textarea>
                     </div>
                 </div>
                 <div id="previewArea">
