@@ -390,6 +390,9 @@ app.get("/api/getLabels/:url", function (req, res) {
 app.post("/api/addLabels", function (req, res) {
    
     var labelArray = getLabelArray(req.body.newLabel);
+    var labelArraySuccess = [];
+    var i = 0;
+
     MongoClient.connect(mongoUrl, function (err, db) {
         assert.equal(null, err);
         console.log("Connected succesfully to server");
@@ -414,11 +417,14 @@ app.post("/api/addLabels", function (req, res) {
                     },
                     function (err, result) {
                         if (err) {
-                            res.status(500).send("Internal server error.");
-                            return;
+                            //adding this label failed, so it won't be send back with the other labels that succeeded.
                         }
                         if (result) {
-                            res.status(200).send(labelArray);
+                            labelArraySuccess.push(label);
+                        }
+                        i++;
+                        if (i === labelArray.length) {
+                            res.status(200).send(labelArraySuccess);
                         }
                     });
             });
