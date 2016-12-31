@@ -57,10 +57,10 @@
             </div>
             <div id="SuggestedDocumentSection" class="col-md-2">
                 <div id="labels" ng-controller="labelController">
-                    <input ng-model="newLabel" placeholder="Add label" disallow-spaces/>
+                    <input ng-model="newLabel" placeholder="Add label" disallow-spaces ng-keyup="$event.keyCode == 13 && addLabel()"/>
                     <span id="addLabelButton" ng-click="addLabel()" class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span>
                     <div id="labelSection" ng-style="labelSectionStyle">
-
+                        {{labelText}}
                     </div>
                     <a ng-click="showLabels()">{{buttonText}}</a>
                 </div>
