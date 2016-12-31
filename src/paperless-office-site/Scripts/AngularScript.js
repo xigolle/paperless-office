@@ -194,11 +194,11 @@ app.controller("uploadController", function ($scope, $http) {
                     headers: { 'Content-Type': undefined },
                     transformRequest: angular.identity
                 }).then(function successCallback(response) {
-                    console.log("success");
+                    console.log("Document upload was a success.");
 
                     addUploadStatus("upload-succes");
                 }, function errorCallback(response) {
-                    console.log("failure");
+                    console.log("Document upload failed.");
                     addUploadStatus("upload-error");
 
                 });
@@ -258,9 +258,9 @@ app.controller('deleteController', function ($scope, $http, $route, cfpLoadingBa
         console.log(getDocName());
 
         $http.post("/api/delete", { "docName": getDocName() }, { ignoreLoadingBar: true }).then(function successCallback(response) {
-            console.log("delete was a success");
+            console.log("Document was successfully deleted.");
         }, function errorCallback(response) {
-            console.log("delete was a failure");
+            console.log("Document could not be deleted.");
         });
 
         $route.reload();
@@ -272,11 +272,18 @@ app.controller('labelController', function ($scope, $http) {
     var createLabels = function (labels) {
         angular.forEach(labels, function (label) {
             var labelSpan = document.createElement('span');
+            var labelDeleteSpan = document.createElement('span');
+            labelDeleteSpan.setAttribute("class", "glyphicon glyphicon-remove");
             $(labelSpan).click(function (e) {
+                if (e.target !== e.currentTarget) return;
                 //code to search on this label when clicked.
                 console.log("klik op label");
             });
+            $(labelDeleteSpan).click(function (e) {               
+                deleteLabel($(this).parent().text(), $(this).parent());
+            });
             var text = document.createTextNode(label)
+            labelSpan.appendChild(labelDeleteSpan);
             labelSpan.appendChild(text);
             document.getElementById("labelSection").appendChild(labelSpan);
         });
@@ -286,23 +293,24 @@ app.controller('labelController', function ($scope, $http) {
         $http.get(docURL).then(function successCallback(response) {
             console.log(response.data);
             if (response.data.length != 0) {
+                $scope.labelText = "";
                 createLabels(response.data);
             } else {
-                var text = document.createTextNode("No labels");
-                document.getElementById("labelSection").appendChild(text);
+                $scope.labelText = "No labels";
             }
             
            
         }, function errorCallback(response) {
-            console.log(response);
-            return "no labels found";
+            console.log(response.data);
+            //return "no labels found";
 
         });
     }
 
     $scope.destroyLabels = function () {
         //$scope.labelSectionStyle = ""; werkt niet :s wrm?     
-        angular.element("#labelSection").empty();       
+        //angular.element("#labelSection").empty(); verwijderd ook de tekstbinding, daarom doen we via jquery.
+        $("#labelSection").children("span").remove();
     }
 
     $scope.labelSectionStyle = "";
@@ -319,13 +327,26 @@ app.controller('labelController', function ($scope, $http) {
         }
     }
 
+    $scope.newLabel = "";
+
     $scope.addLabel = function () {
-        $http.post("/api/addLabels", { "newLabel": $scope.newLabel, "docName": getDocName() }, { ignoreLoadingBar: true }).then(function successCallback(response) {
-            console.log("add was a success");
-            $scope.newLabel = "";
-            createLabels(response.data);
+        if ($scope.newLabel != "") {
+            $http.post("/api/addLabels", { "newLabel": $scope.newLabel, "docName": getDocName() }, { ignoreLoadingBar: true }).then(function successCallback(response) {
+                console.log("add was a success");
+                $scope.newLabel = "";
+                $scope.labelText = "";
+                createLabels(response.data);
+            }, function errorCallback(response) {
+                console.log(response.data);
+            });
+        }
+    }
+
+    var deleteLabel = function (labelText, label) {
+        $http.post("/api/deleteLabel", { "deleteLabel": labelText, "docName": getDocName() }, { ignoreLoadingBar: true }).then(function successCallback(response) {
+            label.remove();
         }, function errorCallback(response) {
-            console.log("add was a failure");
+            console.log(response.data);
         });
     }
 });

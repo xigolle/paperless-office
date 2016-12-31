@@ -192,14 +192,7 @@ app.post("/api/uploadDocuments", function (req, res) {
         console.log(req.body.docName + "    " + req.body.docLabels);
         var userFolder = "./users/" + req.user.username + "/";
         var docName = req.body.docName + ".pdf";
-        //var docLabels = req.body.docLabels;
-        /*var tempLabelArray = docLabels.split("#");
-        var labelArray = [];
-        tempLabelArray.forEach(function (label) {
-            if (label != "") {
-                labelArray.push("#" + label.trim());
-            }
-        });*/
+
         var labelArray = getLabelArray(req.body.docLabels);
         var fileArray = [];
         var fileExt;
@@ -220,12 +213,15 @@ app.post("/api/uploadDocuments", function (req, res) {
                 if (err) {
                     blobSvc.createBlockBlobFromLocalFile(req.user.username, docName, userFolder + fileExt[0] + ".pdf", function (error, result, response) {
                         if (!error) {
-                            console.log("success");                        
+                            console.log("success");
                             fileArray.forEach(function (file, index) {
                                 fs.unlinkSync(file);
                             });
 
-                        } else console.log(error);
+                        } else {
+                            res.status(500).send("Internal server error.");
+                            return;
+                        };
                     });
                     return console.log("Not enough files to merge");
                 }
@@ -239,8 +235,11 @@ app.post("/api/uploadDocuments", function (req, res) {
                         fileArray.forEach(function (file, index) {
                             fs.unlinkSync(file);
                         });
-                      
-                    } else console.log(error);
+
+                    } else {
+                        res.status(500).send("Internal server error.");
+                        return;
+                    };
                 });
             });
 
@@ -273,6 +272,12 @@ app.post("/api/uploadDocuments", function (req, res) {
                                 }
                                                                   
                             }
+                        },
+                        function (err, result) {
+                            if (err) {
+                                res.status(500).send("Internal server error.");
+                                return;
+                            };
                         });
                 });
 
@@ -311,14 +316,15 @@ var getDoc = function (container, name) {
         if (!error) {
             console.log("blob retrieved");
             //res.sendFile('/home/PaperlessOffice/node-server/output.pdf');
-        } else res.send("Could not retrieve file");
+        } else res.status(500).send("Could not retrieve file");
     });
 };
 
 app.post("/api/delete", function (req, res) {
     blobSvc.deleteBlob(req.user.username, req.body.docName, function (error, response) {
-        if (!error) {
-            // Blob has been deleted
+        if (error) {
+            res.status(500).send("Internal server error.");
+            return;
         }
     });
 
@@ -343,6 +349,15 @@ app.post("/api/delete", function (req, res) {
                             "name": req.body.docName
                         }
 
+                    }
+                },
+                function (err, result) {
+                    if (err) {
+                        res.status(500).send("Internal server error.");
+                        return;
+                    }
+                    if (result) {
+                        res.status(200).send("OK");
                     }
                 });
         });
@@ -396,16 +411,64 @@ app.post("/api/addLabels", function (req, res) {
                             "docs.$.labels": label
 
                         }
+                    },
+                    function (err, result) {
+                        if (err) {
+                            res.status(500).send("Internal server error.");
+                            return;
+                        }
+                        if (result) {
+                            res.status(200).send(labelArray);
+                        }
                     });
             });
-            res.send(labelArray);
         });
+    })
+});
+
+app.post("/api/deleteLabel", function (req, res) {
+    console.log(req.body.deleteLabel);
+    MongoClient.connect(mongoUrl, function (err, db) {
+        assert.equal(null, err);
+        console.log("Connected succesfully to server");
+
+        var collection = db.collection(req.user.username);
+
+        collection.find().toArray(function (err, items) {
+
+            id = items;
+            console.log(id[0]['_id']);
+
+            
+            collection.update(
+                {
+                    "_id": id[0]['_id'],
+                    "docs.name": req.body.docName
+                },
+                {
+                    $pull: {
+                        "docs.$.labels": req.body.deleteLabel
+
+                    }
+                },
+                function (err, result) {
+                    if (err) {
+                        res.status(500).send("Internal server error.");
+                        return;
+                    }
+                    if (result) {
+                        res.status(200).send("OK.");
+                    }
+                });
+        });
+
+        setTimeout(function () { db.close(); }, 100);
     })
 });
 
 
 // error handlers
-app.use(function (req, res, next) {
+/*app.use(function (req, res, next) {
     var err = new Error('Not Found');
     err.status = 404;
     next(err);
@@ -417,7 +480,7 @@ app.use(function (err, req, res) {
         message: err.message,
         error: {}
     }));
-});
+});*/
 
 app.listen(3000);
 
