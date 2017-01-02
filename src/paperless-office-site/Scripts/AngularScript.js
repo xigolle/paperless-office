@@ -351,6 +351,13 @@ app.controller('labelController', function ($scope, $http) {
     }
 });
 
+app.controller('searchController', function ($scope, $http) {
+    $scope.searchInput = "";
+    $scope.search = function () {
+        console.log("search: " + $scope.searchInput);
+    };
+});
+
 
 
 //--------------------------------
