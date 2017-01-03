@@ -297,3 +297,8 @@ canvas {
     text-align: center;
     cursor: pointer;
 }
+
+.glyphicon-search {
+      pointer-events: all;
+      cursor: pointer;
+}

@@ -268,7 +268,7 @@ app.post("/api/uploadDocuments", function (req, res) {
                                 "docs": {
                                     "name": docName,
                                     "labels": labelArray,
-                                    "ocrOutput": "OCR_output"
+                                    "ocrOutput": ["test","werkt","dit"]
                                 }
                                                                   
                             }
@@ -470,6 +470,98 @@ app.post("/api/deleteLabel", function (req, res) {
 
         setTimeout(function () { db.close(); }, 100);
     })
+});
+
+app.get("/api/search/:url", function (req, res) {
+    console.log("in search   " + req.params.url);
+    MongoClient.connect(mongoUrl, function (err, db) {
+        assert.equal(null, err);
+        console.log("Connected succesfully to server");
+
+        var collection = db.collection(req.user.username);
+
+        var firstSplit = req.params.url.match(/\S+/g);
+        var secondSplit = [];
+        var labelArray = [];
+        var textArray = [];
+        var finalArray = [];
+        var labelDocsArray = [];
+        var textDocsArray = [];
+
+        firstSplit.forEach(function (text) {
+            secondSplit.push(text.split("#"));
+        })
+
+        secondSplit.forEach(function (text) {
+            if (text.length > 1) {
+                text.forEach(function (label) {                  
+                    if (label !== "") {
+                        labelArray.push("#" + label);
+                    }
+                })
+            } else {
+                textArray.push(text[0]);
+            }
+        })
+
+        let inputLabels = labelArray;
+        console.log(inputLabels);
+        collection.aggregate([
+            { "$match": { "docs.labels": { "$all": inputLabels }}}, 
+            { "$project": { 
+                "docs": { 
+                    "$filter": { 
+                        "input": "$docs", 
+                        "as": "doc", 
+                        "cond": { "$setIsSubset": [inputLabels, "$$doc.labels"]}
+                    }
+                }
+            }}
+        ]).toArray(function (err, items) {
+            if (items.length > 0) {
+                labelDocsArray = items[0].docs;
+                //console.log(labelArray);
+            };
+            let inputText = textArray;
+            console.log(inputText);
+            collection.aggregate([
+                { "$match": { "docs.ocrOutput": { "$all": inputText } } },
+                {
+                    "$project": {
+                        "docs": {
+                            "$filter": {
+                                "input": "$docs",
+                                "as": "doc",
+                                "cond": { "$setIsSubset": [inputText, "$$doc.ocrOutput"] }
+                            }
+                        }
+                    }
+                }
+            ]).toArray(function (err, items) {
+                if (items.length > 0) {
+                    textDocsArray = items[0].docs;
+                    //console.log(textArray);
+                };
+                if (labelArray.length === 0) {
+                    res.send(textDocsArray);
+                } else if (textArray.length === 0) {
+                    res.send(labelDocsArray);
+                } else {
+                    textDocsArray.forEach(function (text) {
+                        labelDocsArray.forEach(function (label) {
+                            if (text.name === label.name) {
+                                finalArray.push(label);
+                            }
+                        });
+                    });
+                    res.send(finalArray);
+                }
+            });
+        });        
+
+        setTimeout(function () { db.close(); }, 100);
+
+    });
 });
 
 

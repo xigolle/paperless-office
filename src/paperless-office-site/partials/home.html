@@ -34,9 +34,10 @@
                     <a class="navbar-brand" href="#">Paperless Office</a>
                 </div>
                 <!-- Collect the nav links, forms, and other content for toggling -->
-                <form id="search-form" class="navbar-form navbar-right">
-                    <div class="form-group">
-                        <input type="text" id="search-bar" class="form-control" placeholder="Search">
+                <form id="search-form" class="navbar-form navbar-right" ng-controller="searchController">
+                    <div class="form-group has-feedback">
+                        <input type="text" id="search-bar" class="form-control" placeholder="Search" ng-model="searchInput" ng-keyup="$event.keyCode == 13 && search()">
+                        <i class="form-control-feedback glyphicon glyphicon-search" ng-click="search()"></i>
                     </div>
                 </form>
                 <!-- /.navbar-collapse -->
