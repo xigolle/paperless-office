@@ -20,6 +20,11 @@
             <li>
                 <a ng-click='logout()' ng-controller="logoutController">Logout</a>
             </li>
+            <li>
+                <button type="button" class="btn btn-danger btn-sm" data-toggle="modal" data-target="#myModal">
+                    Delete Account
+                </button>
+            </li>
 
         </ul>
     </div>
@@ -103,6 +108,30 @@
         </div>
     </div>
     <!-- /#page-content-wrapper -->
+    <!-- Delete Modal -->
+    <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                    <h4 class="modal-title" id="myModalLabel"><span style="color:red" class="glyphicon glyphicon-exclamation-sign"></span>Delete user account</h4>
+                </div>
+                <div class="modal-body">
+                    <p>
+                        With pressing yes you will make sure that the current user gets deleted with all the files and photo's included.
+                        <b class="bg-danger">This choice is final and cannot be reverted!</b>
+                    </p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal"><span class="glyphicon glyphicon-remove"></span>No</button>
+                    <button type="button" id="btnDeleteAccount" class="btn btn-primary"><span class="glyphicon glyphicon-ok"></span>Yes</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- /Delete Modal -->
 </div>
 
 

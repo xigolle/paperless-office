@@ -5,6 +5,9 @@
         $("#upload").toggleClass("toggled");
     });
 })
+$("#btnDeleteAccount").click(function (e) {
+    
+})
 
 //$(document).ready(function () {
 //    setTimeout(function () {
