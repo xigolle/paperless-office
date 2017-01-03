@@ -688,6 +688,13 @@ app.get("/api/search/:url", function (req, res) {
     });
 });
 
+app.get("/api/deleteUser", function (req,res) {
+    blobSvc.listBlobsSegmented(req.user.username, null, function (error, result, response) {
+        if (!error) {
+            res.send(result.entries);
+        }
+    })
+});
 
 // error handlers
 /*app.use(function (req, res, next) {
