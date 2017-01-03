@@ -363,7 +363,11 @@ app.controller('searchController', function ($scope, $http) {
             }, function errorCallback(response) {
                 console.log(response.data);
             });
-        };
+        } else {
+            $("#Canvas-Document-Holder > div").each(function () {
+                $(this).removeClass("hidden");
+            });
+        }
     };
 
     var hideFiles = function (docs) {
