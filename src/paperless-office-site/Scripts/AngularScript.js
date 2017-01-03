@@ -140,6 +140,7 @@ app.controller("testCTRL", function ($scope, DocumentService, cfpLoadingBar) {
                     documentIdentifier.appendChild(documentIdentifierText);
 
                     newDocumentHolder.className = "Canvas-Document ";
+                    newDocumentHolder.setAttribute("id", decodeURI(documentNames.data[i].name));
                     documentCanvas.width = 306;
                     documentCanvas.height = 396;
                     documentCanvas.id = "canvass" + i;
@@ -354,7 +355,27 @@ app.controller('labelController', function ($scope, $http) {
 app.controller('searchController', function ($scope, $http) {
     $scope.searchInput = "";
     $scope.search = function () {
-        console.log("search: " + $scope.searchInput);
+        console.log($scope.searchInput);
+        if ($scope.searchInput.trim() != "") {
+            $http.get("/api/search/" + encodeURIComponent($scope.searchInput), { ignoreLoadingBar: true }).then(function successCallback(response) {
+                hideFiles(response.data[0].docs);
+            }, function errorCallback(response) {
+                console.log(response.data);
+            });
+        };
+    };
+
+    var hideFiles = function (docs) {
+        $("#Canvas-Document-Holder > div").each(function () {
+            $(this).addClass("hidden");
+        });
+        for (var i = 0; i < docs.length; i++) {          
+            $("#Canvas-Document-Holder > div").each(function () {
+                if (docs[i].name === $(this).attr("id")) {
+                    $(this).removeClass("hidden");
+                };
+            });
+        };       
     };
 });
 

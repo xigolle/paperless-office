@@ -472,6 +472,59 @@ app.post("/api/deleteLabel", function (req, res) {
     })
 });
 
+app.get("/api/search/:url", function (req, res) {
+    console.log("in search   " + req.params.url);
+    MongoClient.connect(mongoUrl, function (err, db) {
+        assert.equal(null, err);
+        console.log("Connected succesfully to server");
+
+        var collection = db.collection(req.user.username);
+
+        var firstSplit = req.params.url.match(/\S+/g);
+        var secondSplit = [];
+        var labelArray = [];
+        var textArray = [];
+
+        firstSplit.forEach(function (text) {
+            secondSplit.push(text.split("#"));
+        })
+
+        secondSplit.forEach(function (text) {
+            if (text.length > 1) {
+                text.forEach(function (label) {                  
+                    if (label !== "") {
+                        labelArray.push("#" + label);
+                    }
+                })
+            } else {
+                textArray.push(text);
+            }
+        })
+
+        let inputLabels = labelArray;
+
+        collection.aggregate([
+            { "$match": { "docs.labels": { "$all": inputLabels }}}, 
+            { "$project": { 
+                "docs": { 
+                    "$filter": { 
+                        "input": "$docs", 
+                        "as": "doc", 
+                        "cond": { "$setIsSubset": [ inputLabels, "$$doc.labels" ] }
+                    }
+                }
+            }}
+        ]).toArray(function (err, items) {
+            if (items.length > 0) {
+                res.status(200).send(items);
+            } else res.status(500).send("no items found");
+        });
+
+        setTimeout(function () { db.close(); }, 100);
+
+    });
+});
+
 
 // error handlers
 /*app.use(function (req, res, next) {
