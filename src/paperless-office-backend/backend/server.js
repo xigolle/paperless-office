@@ -266,16 +266,19 @@ app.post("/api/uploadDocuments", function (req, res) {
         //var ocrTextString;
         var fileExt;
         fs.readdir(userFolder, function (err, files) {
+            console.dir(files);
             files.forEach(function (file, index) {
                 
-                console.dir(files);
+              
                 fileExt = file.split(".");
                 var completeFileUri = userFolder + file;
-
+                console.log("completeFileURI " + completeFileUri);
+                console.log("docName" + docName);
+                
                 if (fileExt[fileExt.length - 1] != "pdf") {
                     //images
                     console.log("file URI" + completeFileUri);
-                    tesseract.process(completeFileUri, function (err, text) {
+                    tesseract.process(completeFileUri.replace(" ","\\ "), function (err, text) {
 
                         if (err) {
                             console.error("err" + err);
