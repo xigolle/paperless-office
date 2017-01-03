@@ -6,6 +6,7 @@ var fs = require("fs");
 var multer = require("multer");
 var PDF = require('pdfkit');
 var Tesseract = require('tesseract.js');
+var tesseract = require('node-tesseract');
 var merge = require('easy-pdf-merge');
 var MongoClient = require('mongodb').MongoClient;
 var assert = require('assert');
@@ -207,7 +208,43 @@ var getLabelArray = function (docLabels) {
     });
     return labelArray;
 }
+function addOcrMongo(text, username, docName) {
+    console.log("add extracted text to Mongo");
+    MongoClient.connect(mongoUrl, function (err, db) {
+        var ocrOutput;
+        assert.equal(null, err);
+        console.log("Connected succesfully to server");
 
+        var collection = db.collection(username);
+
+        collection.find().toArray(function (err, items) {
+            id = items;
+            ocrOutput = cleanOCROutput(text);
+
+            ocrOutput.forEach(function (ocrWord) {
+                collection.update(
+               {
+                   "_id": id[0]['_id'],
+                   "docs.name": docName
+               },
+               {
+
+                   $push: {
+                       "docs.$.ocrOutput": ocrWord
+                   }
+               });
+            })
+
+        });
+
+
+        setTimeout(function () {
+
+            db.close();
+        }, 100);
+
+    });
+}
 app.post("/api/uploadDocuments", function (req, res) {
     upload(req, res, function (err) {
         if (err) {
@@ -235,106 +272,44 @@ app.post("/api/uploadDocuments", function (req, res) {
         var fileExt;
         fs.readdir(userFolder, function (err, files) {
             files.forEach(function (file, index) {
-
+                console.dir(files);
                 fileExt = file.split(".");
                 var completeFileUri = userFolder + file;
 
                 if (fileExt[fileExt.length - 1] != "pdf") {
                     //images
                     console.log("file URI" + completeFileUri);
-                    Tesseract.recognize(completeFileUri)
-                        .progress(function (prog) {
-                            console.dir(prog);
-                        })
-                        .then(function (result) {
-                            console.log("current working doc");
-                            console.log(docName);
-
-
-                            ocrTextArray.push(result.text);
-                            //console.log(result.text);
-                            //console.log("done?");
-                            //console.log("logging images");
-                            //console.log(userFolder + file);
-                            //file locatie = userFolder + file; 
+                    tesseract.process(completeFileUri, function (err, text) {
+                        if (err) {
+                            console.error("err" + err);
+                        } else {
                             fileArray.push(makePDF(userFolder, file, fileExt[0]));
-                            //console.log("logging ocr array images");
-                            //console.dir(ocrTextArray);
-                            var strippedResult = result.text;
-                            strippedResult = strippedResult.toString().replace(/\r?\n|\r/g, "");
-                            ocrTextArray.push(cleanOCROutput(result.text));
-                            ocrTextString += cleanOCROutput(result.text);
-                            MongoClient.connect(mongoUrl, function (err, db) {
-                                var ocrOutput;
-                                assert.equal(null, err);
-                                console.log("Connected succesfully to server");
-
-                                var collection = db.collection(req.user.username);
-
-                                collection.find().toArray(function (err, items) {
-                                    id = items;
-                                    console.log('return items');
-                                    console.dir(items[0]);
-                                    console.log("logging ID!");
-                                    console.log(id[0]['_id']);
-                                    console.log("logging Docname");
-                                    ocrOutput = cleanOCROutput(result.text);
-                                    console.log("log return value");
-                                    //console.log(returnValue)
-                                    collection.update(
-                                        {
-                                            "_id": id[0]['_id'],
-                                            "docs.name": docName
-                                        },
-                                        {
-
-                                            $push: {
-                                                "docs.$.ocrOutput": ocrOutput
-                                            }
-                                        });
-                                });
+                            //addOcrMongo(text, req.user.username, docName);
 
 
-                                setTimeout(function () {
+                        }
+                    });
 
-                                    db.close();
-                                }, 100);
 
-                            });
-                            console.log("log ocrTextString");
-                            console.log(ocrTextArray);
-                            //console.log(ocrTextArray.length);
-                            //console.log(ocrTextString);
-
-                        })
 
                 } else {
                     //pdfs
-                    console.log("getting pdfs");
                     extract(completeFileUri, { splitPages: false }, function (err, result) {
+                        console.log("start extracting PDF text");
                         if (err) {
                             console.dir(err);
                             return
                         }
-                        ocrTextArray.push(cleanOCROutput(result));
-                        ocrTextString += cleanOCROutput(result);
-                        //console.log(splitResult);
-                        //ocrTextString += strippedResult;
-                        //console.log("ocrTextString");
 
-                        //console.log(ocrTextString);
-                        //console.dir(ocrTextArray);
-                        //console.log(ocrTextArray.length);
-                        //console.log(ocrTextString);
+                        //addOcrMongo(result, req.user.username, docName);
+
 
                     });
                     fileArray.push(userFolder + file);
 
                 }
 
-                //console.log("logging ocr array");
-                //console.dir(ocrTextArray);
-                //console.log(ocrTextArray.length);
+
 
 
             });
@@ -391,7 +366,7 @@ app.post("/api/uploadDocuments", function (req, res) {
                         "docs": {
                             "name": docName,
                             "labels": labelArray,
-                            "ocrOutput": ocrTextArray
+                            "ocrOutput": []
                         }
 
                     }
