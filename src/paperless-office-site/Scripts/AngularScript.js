@@ -355,9 +355,8 @@ app.controller('labelController', function ($scope, $http) {
 app.controller('searchController', function ($scope, $http) {
     $scope.searchInput = "";
     $scope.search = function () {
-        console.log($scope.searchInput);
         if ($scope.searchInput.trim() != "") {
-            $http.get("/api/search/" + encodeURIComponent($scope.searchInput), { ignoreLoadingBar: true }).then(function successCallback(response) {
+            $http.get("/api/search/" + encodeURIComponent($scope.searchInput.toLowerCase()), { ignoreLoadingBar: true }).then(function successCallback(response) {
                 console.log(response.data);
                 hideFiles(response.data);
             }, function errorCallback(response) {
