@@ -358,7 +358,8 @@ app.controller('searchController', function ($scope, $http) {
         console.log($scope.searchInput);
         if ($scope.searchInput.trim() != "") {
             $http.get("/api/search/" + encodeURIComponent($scope.searchInput), { ignoreLoadingBar: true }).then(function successCallback(response) {
-                hideFiles(response.data[0].docs);
+                console.log(response.data);
+                hideFiles(response.data);
             }, function errorCallback(response) {
                 console.log(response.data);
             });
