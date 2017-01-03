@@ -34,9 +34,10 @@
                     <a class="navbar-brand" href="#">Paperless Office</a>
                 </div>
                 <!-- Collect the nav links, forms, and other content for toggling -->
-                <form id="search-form" class="navbar-form navbar-right">
-                    <div class="form-group">
-                        <input type="text" id="search-bar" class="form-control" placeholder="Search">
+                <form id="search-form" class="navbar-form navbar-right" ng-controller="searchController">
+                    <div class="form-group has-feedback">
+                        <input type="text" id="search-bar" class="form-control" placeholder="Search" ng-model="searchInput" ng-keyup="$event.keyCode == 13 && search()">
+                        <i class="form-control-feedback glyphicon glyphicon-search" ng-click="search()"></i>
                     </div>
                 </form>
                 <!-- /.navbar-collapse -->
@@ -57,10 +58,10 @@
             </div>
             <div id="SuggestedDocumentSection" class="col-md-2">
                 <div id="labels" ng-controller="labelController">
-                    <input ng-model="newLabel" placeholder="Add label" disallow-spaces/>
+                    <input ng-model="newLabel" placeholder="Add label" disallow-spaces ng-keyup="$event.keyCode == 13 && addLabel()"/>
                     <span id="addLabelButton" ng-click="addLabel()" class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span>
                     <div id="labelSection" ng-style="labelSectionStyle">
-
+                        {{labelText}}
                     </div>
                     <a ng-click="showLabels()">{{buttonText}}</a>
                 </div>
