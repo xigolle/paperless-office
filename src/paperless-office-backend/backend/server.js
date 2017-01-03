@@ -245,7 +245,9 @@ function addOcrMongo(text, username, docName) {
 
     });
 }
+
 app.post("/api/uploadDocuments", function (req, res) {
+    var aSyncCounter = 0;
     upload(req, res, function (err) {
         if (err) {
             console.log("Error Occured: " + err);
@@ -261,10 +263,11 @@ app.post("/api/uploadDocuments", function (req, res) {
         var fileArray = [];
         var ocrTextArray = [];
 
-        var ocrTextString;
+        //var ocrTextString;
         var fileExt;
         fs.readdir(userFolder, function (err, files) {
             files.forEach(function (file, index) {
+                
                 console.dir(files);
                 fileExt = file.split(".");
                 var completeFileUri = userFolder + file;
@@ -273,12 +276,23 @@ app.post("/api/uploadDocuments", function (req, res) {
                     //images
                     console.log("file URI" + completeFileUri);
                     tesseract.process(completeFileUri, function (err, text) {
+
                         if (err) {
                             console.error("err" + err);
                         } else {
                             fileArray.push(makePDF(userFolder, file, fileExt[0]));
+                            var ocrResult = cleanOCROutput(text);
+                            ocrResult.forEach(function (ocrWord) {
+                                ocrTextArray.push(ocrWord);
+                            });
+                            aSyncCounter++;
                             //addOcrMongo(text, req.user.username, docName);
+                           
+                            if (aSyncCounter === files.length) {
+                                //console.dir(ocrTextArray);
 
+                               oCRAsyncCallback()
+                            }
 
                         }
                     });
@@ -293,26 +307,51 @@ app.post("/api/uploadDocuments", function (req, res) {
                             console.dir(err);
                             return
                         }
-
+                        var ocrResult = cleanOCROutput(result);
+                        ocrResult.forEach(function (ocrWord) {
+                            ocrTextArray.push(ocrWord);
+                        });
+                        aSyncCounter++;
                         //addOcrMongo(result, req.user.username, docName);
 
-
+                        if (aSyncCounter === files.length) {
+                            console.log("We are at the end lets do a callback!");
+                            //console.dir(ocrTextArray);
+                            oCRAsyncCallback();
+                        }
                     });
                     fileArray.push(userFolder + file);
 
                 }
 
 
-
-
+               
+                
             });
+            function oCRAsyncCallback() {
+                merge(fileArray, docName, function (err) {
 
-            merge(fileArray, docName, function (err) {
+                    if (err) {
+                        blobSvc.createBlockBlobFromLocalFile(req.user.username, docName, userFolder + fileExt[0] + ".pdf", function (error, result, response) {
+                            if (!error) {
+                                console.log("success");
+                                fileArray.forEach(function (file, index) {
+                                    fs.unlinkSync(file);
+                                });
 
-                if (err) {
-                    blobSvc.createBlockBlobFromLocalFile(req.user.username, docName, userFolder + fileExt[0] + ".pdf", function (error, result, response) {
+                            } else {
+                                res.status(500).send("Internal server error.");
+                                return;
+                            };
+                        });
+                        return console.log("Not enough files to merge");
+                    }
+
+
+                    blobSvc.createBlockBlobFromLocalFile(req.user.username, docName, docName, function (error, result, response) {
                         if (!error) {
                             console.log("success");
+                            fs.unlinkSync(docName);
                             fileArray.forEach(function (file, index) {
                                 fs.unlinkSync(file);
                             });
@@ -322,69 +361,56 @@ app.post("/api/uploadDocuments", function (req, res) {
                             return;
                         };
                     });
-                    return console.log("Not enough files to merge");
-                }
-
-
-                blobSvc.createBlockBlobFromLocalFile(req.user.username, docName, docName, function (error, result, response) {
-                    if (!error) {
-                        console.log("success");
-                        fs.unlinkSync(docName);
-                        fileArray.forEach(function (file, index) {
-                            fs.unlinkSync(file);
-                        });
-
-                    } else {
-                        res.status(500).send("Internal server error.");
-                        return;
-                    };
                 });
-            });
 
 
 
 
 
-            MongoClient.connect(mongoUrl, function (err, db) {
-                assert.equal(null, err);
-                console.log("Connected succesfully to server");
+                MongoClient.connect(mongoUrl, function (err, db) {
+                    assert.equal(null, err);
+                    console.log("Connected succesfully to server");
 
-                var collection = db.collection(req.user.username);
+                    var collection = db.collection(req.user.username);
 
-                collection.find().toArray(function (err, items) {
-                    id = items;
-                    console.log(id[0]['_id']);
+                    collection.find().toArray(function (err, items) {
+                        id = items;
+                        console.log(id[0]['_id']);
 
 
-                    collection.update(
-                {
-                    "_id": id[0]['_id']
-                },
-                {
-                    $push: {
-                        "docs": {
-                            "name": docName,
-                            "labels": labelArray,
-                            "ocrOutput": []
-                        }
+                        collection.update(
+                    {
+                        "_id": id[0]['_id']
+                    },
+                    {
+                        $push: {
+                            "docs": {
+                                "name": docName,
+                                "labels": labelArray,
+                                "ocrOutput": ocrTextArray
+                            }
 
                         },
                         function (err, result) {
                             if (err) {
                                 return;
                                 res.status(500).send("Internal server error.");
-                            };
+                            }
+                        }
+                    });
+                    });
+
+
+
+
+
+                    setTimeout(function () {
+
+                        db.close();
+                    }, 100);
+
                 });
-                });
-
-
-                setTimeout(function () {
-
-                    db.close();
-                }, 100);
-
-            });
-
+            }
 
         });
 
@@ -541,7 +567,7 @@ app.post("/api/deleteLabel", function (req, res) {
             id = items;
             console.log(id[0]['_id']);
 
-            
+
             collection.update(
                 {
                     "_id": id[0]['_id'],
@@ -590,7 +616,7 @@ app.get("/api/search/:url", function (req, res) {
 
         secondSplit.forEach(function (text) {
             if (text.length > 1) {
-                text.forEach(function (label) {                  
+                text.forEach(function (label) {
                     if (label !== "") {
                         labelArray.push("#" + label);
                     }
@@ -603,16 +629,18 @@ app.get("/api/search/:url", function (req, res) {
         let inputLabels = labelArray;
         console.log(inputLabels);
         collection.aggregate([
-            { "$match": { "docs.labels": { "$all": inputLabels }}}, 
-            { "$project": { 
-                "docs": { 
-                    "$filter": { 
-                        "input": "$docs", 
-                        "as": "doc", 
-                        "cond": { "$setIsSubset": [inputLabels, "$$doc.labels"]}
+            { "$match": { "docs.labels": { "$all": inputLabels } } },
+            {
+                "$project": {
+                    "docs": {
+                        "$filter": {
+                            "input": "$docs",
+                            "as": "doc",
+                            "cond": { "$setIsSubset": [inputLabels, "$$doc.labels"] }
+                        }
                     }
                 }
-            }}
+            }
         ]).toArray(function (err, items) {
             if (items.length > 0) {
                 labelDocsArray = items[0].docs;
@@ -653,7 +681,7 @@ app.get("/api/search/:url", function (req, res) {
                     res.send(finalArray);
                 }
             });
-        });        
+        });
 
         setTimeout(function () { db.close(); }, 100);
 
