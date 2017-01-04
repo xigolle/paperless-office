@@ -89,6 +89,18 @@ app.service('DocumentService', function ($http, cfpLoadingBar) {
     }
 })
 
+app.directive('disallowSpaces', function () {
+    return {
+        restrict: 'A',
+
+        link: function ($scope, $element) {
+            $element.bind('input', function () {
+                $(this).val($(this).val().replace(/ /g, ''));
+            });
+        }
+    };
+});
+
 
 
 app.controller("testCTRL", function ($scope, DocumentService, cfpLoadingBar) {
@@ -128,6 +140,7 @@ app.controller("testCTRL", function ($scope, DocumentService, cfpLoadingBar) {
                     documentIdentifier.appendChild(documentIdentifierText);
 
                     newDocumentHolder.className = "Canvas-Document ";
+                    newDocumentHolder.setAttribute("id", decodeURI(documentNames.data[i].name));
                     documentCanvas.width = 306;
                     documentCanvas.height = 396;
                     documentCanvas.id = "canvass" + i;
@@ -182,11 +195,11 @@ app.controller("uploadController", function ($scope, $http) {
                     headers: { 'Content-Type': undefined },
                     transformRequest: angular.identity
                 }).then(function successCallback(response) {
-                    console.log("success");
+                    console.log("Document upload was a success.");
 
                     addUploadStatus("upload-succes");
                 }, function errorCallback(response) {
-                    console.log("failure");
+                    console.log("Document upload failed.");
                     addUploadStatus("upload-error");
 
                 });
@@ -246,13 +259,141 @@ app.controller('deleteController', function ($scope, $http, $route, cfpLoadingBa
         console.log(getDocName());
 
         $http.post("/api/delete", { "docName": getDocName() }, { ignoreLoadingBar: true }).then(function successCallback(response) {
-            console.log("delete was a success");
+            console.log("Document was successfully deleted.");
         }, function errorCallback(response) {
-            console.log("delete was a failure");
+            console.log("Document could not be deleted.");
         });
 
         $route.reload();
     }
+});
+
+app.controller('labelController', function ($scope, $http) {
+
+    var createLabels = function (labels) {
+        angular.forEach(labels, function (label) {
+            var labelSpan = document.createElement('span');
+            var labelDeleteSpan = document.createElement('span');
+            labelDeleteSpan.setAttribute("class", "glyphicon glyphicon-remove");
+            $(labelSpan).click(function (e) {
+                if (e.target !== e.currentTarget) return;
+                //code to search on this label when clicked.
+                console.log("klik op label");
+            });
+            $(labelDeleteSpan).click(function (e) {               
+                deleteLabel($(this).parent().text(), $(this).parent());
+            });
+            var text = document.createTextNode(label)
+            labelSpan.appendChild(labelDeleteSpan);
+            labelSpan.appendChild(text);
+            document.getElementById("labelSection").appendChild(labelSpan);
+        });
+    };
+
+    $scope.getLabels = function (docURL) {
+        $http.get(docURL).then(function successCallback(response) {
+            console.log(response.data);
+            if (response.data.length != 0) {
+                $scope.labelText = "";
+                createLabels(response.data);
+            } else {
+                $scope.labelText = "No labels";
+            }       
+        }, function errorCallback(response) {
+            console.log(response.data);
+        });
+
+    }
+
+    $("#labels input").autocomplete({
+        minLength: 0,
+        select: function (event, ui) { $scope.newLabel = ui.item.value; }
+    }).focus(function () {
+        $(this).autocomplete("search");
+    });
+
+    $scope.getLabelSuggestions = function (docURL) {
+        $http.get(docURL).then(function successCallback(response) {
+            console.log(response.data);
+            $("#labels input").autocomplete("option", "source", response.data);
+        }, function errorCallback(response) {
+            console.log(response.data);
+        });
+    }
+
+    $scope.destroyLabels = function () {
+        //$scope.labelSectionStyle = ""; werkt niet :s wrm?     
+        //angular.element("#labelSection").empty(); verwijderd ook de tekstbinding, daarom doen we via jquery.
+        $("#labelSection").children("span").remove();
+    }
+
+    $scope.labelSectionStyle = "";
+    $scope.buttonText = "View more";
+
+    $scope.showLabels = function () {              
+        if ($scope.labelSectionStyle === "") {
+            $scope.buttonText = "View less";
+            $scope.labelSectionStyle = { "overflow-y": "auto", "max-height": "280px" };
+        } else {
+            $scope.buttonText = "View more";
+            angular.element("#labelSection").scrollTop(0);
+            $scope.labelSectionStyle = "";
+        }
+    }
+
+    $scope.newLabel = "";
+
+    $scope.addLabel = function () {
+        if ($scope.newLabel != "") {
+            $http.post("/api/addLabels", { "newLabel": $scope.newLabel, "docName": getDocName() }, { ignoreLoadingBar: true }).then(function successCallback(response) {
+                console.log("add was a success");
+                $scope.newLabel = "";
+                $scope.labelText = "";
+                createLabels(response.data);
+            }, function errorCallback(response) {
+                console.log(response.data);
+            });
+        }
+    }
+
+    var deleteLabel = function (labelText, label) {
+        $http.post("/api/deleteLabel", { "deleteLabel": labelText, "docName": getDocName() }, { ignoreLoadingBar: true }).then(function successCallback(response) {
+            label.remove();
+        }, function errorCallback(response) {
+            console.log(response.data);
+        });
+    }
+});
+
+app.controller('searchController', function ($scope, $http) {
+    $scope.searchInput = "";
+    $scope.search = function () {
+        if ($scope.searchInput.trim() != "") {
+            $http.get("/api/search/" + encodeURIComponent($scope.searchInput.toLowerCase()), { ignoreLoadingBar: true }).then(function successCallback(response) {
+                console.log(response.data);
+                hideFiles(response.data);
+            }, function errorCallback(response) {
+                console.log(response.data);
+            });
+        } else {
+            $("#Canvas-Document-Holder > div").each(function () {
+                $(this).removeClass("hidden");
+            });
+        }
+    };
+
+    var hideFiles = function (docs) {
+        $("#Canvas-Document-Holder > div").each(function () {
+            $(this).addClass("hidden");
+        });
+        for (var i = 0; i < docs.length; i++) {          
+            $("#Canvas-Document-Holder > div").each(function () {
+                if (docs[i].name === $(this).attr("id")) {
+                    $(this).removeClass("hidden");
+                };
+            });
+        };       
+    };
 });
 
 

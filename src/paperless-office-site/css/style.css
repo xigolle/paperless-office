@@ -18,6 +18,7 @@ a {
 	text-decoration:none;
 	font-weight:bold;
 	font-size:22px;
+    cursor: pointer;
 }
 
 .sac {
@@ -50,12 +51,12 @@ pre, code {
 
 #DocumentIFrame {
     width: 100%;
-    height: 94vh;
+    height: 90vh;
 }
 
 #page-content-wrapper {
     padding: 0px;
-    
+    margin: 0;
 }
 
 canvas {
@@ -244,3 +245,71 @@ canvas {
     height: 70%;
     width: 100%;
 }
+
+#labelSection > span {
+    padding: 2.5px 5px 2.5px 5px;
+    display: inline-block;
+    border: solid 1px black;
+    background-color: gainsboro;
+    margin: 0 1px 1px 1px;
+}
+
+#labelSection > span > span {
+    font-size: x-small;
+    /*height: 15px;
+    vertical-align: middle;*/
+    margin-right: 4px;
+    cursor: pointer;
+}
+
+#labelSection > span > span:hover {
+    background: lightgray;
+}
+
+#labelSection {
+    overflow: hidden;
+    max-height: 27px;
+    margin-top: 5px;
+}
+
+#PDFDocumentWrapper {
+    padding: 0;
+    margin: 0;
+}
+
+#labels a {
+	color: black;
+	font-size: 14px;
+    
+}
+
+#labels input {
+    padding: 0 7px 0 7px;
+    margin-top: 5px;
+    border: none;
+    border-bottom: solid black 1px;
+    width: 90%;
+}
+
+#addLabelButton {
+    width: 7%;
+    vertical-align: middle;
+    text-align: center;
+    cursor: pointer;
+}
+
+.glyphicon-search {
+      pointer-events: all;
+      cursor: pointer;
+}
+
+.ui-menu .ui-menu-item {
+    font-family: inherit;
+    font-size: small;
+}
+
+.ui-autocomplete { 
+    max-height: 200px; 
+    overflow-y: auto;
+    overflow-x: hidden; 
+}    
