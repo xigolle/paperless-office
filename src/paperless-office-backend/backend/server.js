@@ -1,5 +1,3 @@
-
-
 var express = require("express");
 var azure = require("azure-storage");
 var fs = require("fs");
@@ -12,6 +10,7 @@ var MongoClient = require('mongodb').MongoClient;
 var assert = require('assert');
 var config = require("../config.json");
 var extract = require("pdf-text-extract");
+var commonWords = require("./models/commonWords.js");
 //---------------------
 // dependencies
 var debug = require('debug')('passport-mongo');
@@ -512,6 +511,70 @@ app.get("/api/getLabels/:url", function (req, res) {
     });
 });
 
+app.get("/api/getLabelSuggestions/:url", function (req, res) {
+    MongoClient.connect(mongoUrl, function (err, db) {
+        assert.equal(null, err);
+        console.log("Connected succesfully to server");
+
+        var collection = db.collection(req.user.username);
+
+        collection.aggregate([
+            { "$unwind": "$docs" },
+            { "$unwind": "$docs.ocrOutput" },
+            { "$match": { "docs.name": req.params.url } },
+            {
+                "$group": {
+                    "_id": "$docs.ocrOutput",
+                    "id": { "$first": "$_id" },
+                    "count": { "$sum": 1 }
+                }
+            },
+            {
+                "$group": {
+                    "_id": "$id",
+                    "counts": {
+                        "$push": {
+                            "item": "$_id",
+                            "count": "$count"
+                        }
+                    }
+                }
+            }
+        ]).toArray(function (err, items) {
+            for (j = 0; j < commonWords.length; j++) {
+                for (i = 0; i < commonWords[j].words.length; i++) {
+                    items[0].counts.forEach(function (count) {
+                        if (count.item.toLowerCase() === commonWords[j].words[i].toLowerCase()) {
+                            var index = items[0].counts.indexOf(count);
+                            items[0].counts.splice(index, 1);
+                        };
+                    });
+                };
+            };
+
+            var highest = 0;
+            items[0].counts.forEach(function (count) {
+                if (count.count > highest) {
+                    highest = count.count;
+                };
+            });
+            console.log(highest);
+            var sortedArray = [];
+            for (i = highest; i > 0; i--) {
+                items[0].counts.forEach(function (count) {
+                    if (count.count === i) {
+                        sortedArray.push(count.item);
+                    };
+                });
+            }
+            res.send(sortedArray.slice(0, 20));
+        });
+
+        setTimeout(function () { db.close(); }, 100);
+
+    });
+});
+
 app.post("/api/addLabels", function (req, res) {
 
     var labelArray = getLabelArray(req.body.newLabel);
@@ -707,4 +770,4 @@ app.use(function (err, req, res) {
     }));
 });*/
 
-app.listen(4000);
+app.listen(3000);

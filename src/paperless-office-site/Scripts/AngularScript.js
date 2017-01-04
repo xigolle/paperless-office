@@ -298,13 +298,26 @@ app.controller('labelController', function ($scope, $http) {
                 createLabels(response.data);
             } else {
                 $scope.labelText = "No labels";
-            }
-            
-           
+            }       
         }, function errorCallback(response) {
             console.log(response.data);
-            //return "no labels found";
+        });
 
+    }
+
+    $("#labels input").autocomplete({
+        minLength: 0,
+        select: function (event, ui) { $scope.newLabel = ui.item.value; }
+    }).focus(function () {
+        $(this).autocomplete("search");
+    });
+
+    $scope.getLabelSuggestions = function (docURL) {
+        $http.get(docURL).then(function successCallback(response) {
+            console.log(response.data);
+            $("#labels input").autocomplete("option", "source", response.data);
+        }, function errorCallback(response) {
+            console.log(response.data);
         });
     }
 
@@ -320,7 +333,7 @@ app.controller('labelController', function ($scope, $http) {
     $scope.showLabels = function () {              
         if ($scope.labelSectionStyle === "") {
             $scope.buttonText = "View less";
-            $scope.labelSectionStyle = { "overflow-y": "scroll", "max-height": "280px" };
+            $scope.labelSectionStyle = { "overflow-y": "auto", "max-height": "280px" };
         } else {
             $scope.buttonText = "View more";
             angular.element("#labelSection").scrollTop(0);
