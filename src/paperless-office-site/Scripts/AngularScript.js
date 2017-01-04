@@ -308,6 +308,9 @@ app.controller('labelController', function ($scope, $http) {
     $scope.getLabelSuggestions = function (docURL) {
         $http.get(docURL).then(function successCallback(response) {
             console.log(response.data);
+            $("#labels input").autocomplete({
+                source: response.data
+            });
         }, function errorCallback(response) {
             console.log(response.data);
         });
