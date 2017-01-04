@@ -180,7 +180,7 @@ var storage = multer.diskStorage({
 var upload = multer({ storage: storage }).any("myFile");
 function cleanOCROutput(text) {
     var newArray = [];
-    strippedResult = text.toString().replace(/[.,\/#!$%\^&\*;:{}=\`~()\r?\n|\r]/g, "").toLowerCase();
+    strippedResult = text.toString().replace(/[^\wàäâôéèëêïîçùûüÿæœÀÂÄÔÉÈËÊÏÎŸÇÙÛÜÆŒ'`"´^Çç]/g, "").toLowerCase();
     var splitResult = strippedResult.split(" ");
     //console.log("split result length");
     for (var i = 0; i < splitResult.length; i++) {
