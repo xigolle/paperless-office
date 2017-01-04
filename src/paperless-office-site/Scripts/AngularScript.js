@@ -309,7 +309,11 @@ app.controller('labelController', function ($scope, $http) {
         $http.get(docURL).then(function successCallback(response) {
             console.log(response.data);
             $("#labels input").autocomplete({
-                source: response.data
+                source: response.data,
+                minLength: 0,
+                select: function (event, ui) { $scope.newLabel = ui.item.value; }
+            }).focus(function () {
+                $(this).autocomplete("search");
             });
         }, function errorCallback(response) {
             console.log(response.data);
@@ -328,7 +332,7 @@ app.controller('labelController', function ($scope, $http) {
     $scope.showLabels = function () {              
         if ($scope.labelSectionStyle === "") {
             $scope.buttonText = "View less";
-            $scope.labelSectionStyle = { "overflow-y": "scroll", "max-height": "280px" };
+            $scope.labelSectionStyle = { "overflow-y": "auto", "max-height": "280px" };
         } else {
             $scope.buttonText = "View more";
             angular.element("#labelSection").scrollTop(0);
