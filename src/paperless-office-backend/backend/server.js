@@ -1,5 +1,3 @@
-
-
 var express = require("express");
 var azure = require("azure-storage");
 var fs = require("fs");
@@ -12,6 +10,7 @@ var MongoClient = require('mongodb').MongoClient;
 var assert = require('assert');
 var config = require("../config.json");
 var extract = require("pdf-text-extract");
+var commonWords = require("./models/commonWords.js");
 //---------------------
 // dependencies
 var debug = require('debug')('passport-mongo');
@@ -542,6 +541,17 @@ app.get("/api/getLabelSuggestions/:url", function (req, res) {
                 }
             }
         ]).toArray(function (err, items) {
+            for (j = 0; j < commonWords.length; j++) {
+                for (i = 0; i < commonWords[j].words.length; i++) {
+                    items[0].counts.forEach(function (count) {
+                        if (count.item.toLowerCase() === commonWords[j].words[i].toLowerCase()) {
+                            var index = items[0].counts.indexOf(count);
+                            items[0].counts.splice(index, 1);
+                        };
+                    });
+                };
+            };
+
             var highest = 0;
             items[0].counts.forEach(function (count) {
                 if (count.count > highest) {
