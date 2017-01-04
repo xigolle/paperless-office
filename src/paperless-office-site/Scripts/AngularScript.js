@@ -305,16 +305,17 @@ app.controller('labelController', function ($scope, $http) {
 
     }
 
+    $("#labels input").autocomplete({
+        minLength: 0,
+        select: function (event, ui) { $scope.newLabel = ui.item.value; }
+    }).focus(function () {
+        $(this).autocomplete("search");
+    });
+
     $scope.getLabelSuggestions = function (docURL) {
         $http.get(docURL).then(function successCallback(response) {
             console.log(response.data);
-            $("#labels input").autocomplete({
-                source: response.data,
-                minLength: 0,
-                select: function (event, ui) { $scope.newLabel = ui.item.value; }
-            }).focus(function () {
-                $(this).autocomplete("search");
-            });
+            $("#labels input").autocomplete("option", "source", response.data);
         }, function errorCallback(response) {
             console.log(response.data);
         });
