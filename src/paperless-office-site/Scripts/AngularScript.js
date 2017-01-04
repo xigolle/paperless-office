@@ -298,13 +298,18 @@ app.controller('labelController', function ($scope, $http) {
                 createLabels(response.data);
             } else {
                 $scope.labelText = "No labels";
-            }
-            
-           
+            }       
         }, function errorCallback(response) {
             console.log(response.data);
-            //return "no labels found";
+        });
 
+    }
+
+    $scope.getLabelSuggestions = function (docURL) {
+        $http.get(docURL).then(function successCallback(response) {
+            console.log(response.data);
+        }, function errorCallback(response) {
+            console.log(response.data);
         });
     }
 
