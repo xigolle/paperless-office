@@ -21,7 +21,7 @@
                 <a ng-click='logout()' ng-controller="logoutController">Logout</a>
             </li>
             <li>
-                <button type="button" class="btn btn-danger btn-sm" data-toggle="modal" data-target="#myModal">
+                <button type="button" class="btn btn-danger btn-sm" data-toggle="modal" data-target="#modalDeleteUserAccount">
                     Delete Account
                 </button>
             </li>
@@ -109,7 +109,7 @@
     </div>
     <!-- /#page-content-wrapper -->
     <!-- Delete Modal -->
-    <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal fade" id="modalDeleteUserAccount" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
@@ -126,7 +126,7 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal"><span class="glyphicon glyphicon-remove"></span>No</button>
-                    <button type="button" id="btnDeleteAccount" class="btn btn-primary"><span class="glyphicon glyphicon-ok"></span>Yes</button>
+                    <button type="button" ng-controller="deleteUserCtrl" id="btnDeleteAccount" class="btn btn-primary"><span class="glyphicon glyphicon-ok"></span>Yes</button>
                 </div>
             </div>
         </div>

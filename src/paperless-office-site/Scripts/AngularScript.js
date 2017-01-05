@@ -162,7 +162,26 @@ app.controller("testCTRL", function ($scope, DocumentService, cfpLoadingBar) {
     }
 });
 
+app.controller("deleteUserCtrl", function ($scope, $http) {
+    $scope.deleteUser = function () {
+        console.log("delete User function called!");
+        $http({
+            method: 'GET',
+            url: "/api/deleteUser",
+            ignoreLoadingBar: true
+            //headers: {
+            //    "test": "Bedrijven.pdf"
+            //}
 
+        }).then(function successCallback(response) {
+            console.log("succes" + response);
+            console.dir(response);
+        }, function errorCallback(response) {
+            console.log("error" + response);
+        });
+    }
+   
+});
 app.controller("uploadController", function ($scope, $http) {
 
     var fd = new FormData();
