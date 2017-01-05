@@ -790,13 +790,37 @@ app.get("/api/getDocumentSuggestions/:url", function (req, res) {
                         };
                     };                                     
                     if (counter === labelArray.length) {
-                        var docCount = docArray.reduce(function (prev, cur) {
-                            prev[cur] = (prev[cur] || 0) + 1;
-                            return prev;
-                        }, {});
-
-                        // map is an associative array mapping the elements to their frequency:
-                        res.send(docCount);
+                        docArray.sort();
+                        var docCountArray = [];
+                        var current = null;
+                        var cnt = 0;
+                        for (var i = 0; i <= docArray.length; i++) {
+                            if (docArray[i] != current) {
+                                if (cnt > 0) {
+                                    docCountArray.push({"count": cnt, "name":current})
+                                    console.log(current + ' comes --> ' + cnt + ' times');
+                                }
+                                current = docArray[i];
+                                cnt = 1;
+                            } else {
+                                cnt++;
+                            }
+                        }
+                        var highest = 0;
+                        docCountArray.forEach(function (count) {
+                            if (count.count > highest) {
+                                highest = count.count;
+                            };
+                        });
+                        docArray = [];
+                        for (i = highest; i > 0; i--) {
+                            docCountArray.forEach(function (count) {
+                                if (count.count === i) {
+                                    docArray.push(count.name);
+                                };
+                            });
+                        }
+                        res.send(docArray);
                     }
                     counter++;
                 });
