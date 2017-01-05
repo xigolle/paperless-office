@@ -9,9 +9,9 @@ var app = angular.module("app", ["ngRoute", "angular-loading-bar"])
 function addUploadStatus(classname) {
     var spanObject = "#submit span";
     var SuccesfullyUploaded = false;
-    if ($(spanObject).hasClass("upload-succes")) SuccesfullyUploaded = true;  
+    if ($(spanObject).hasClass("upload-succes")) SuccesfullyUploaded = true;
     else SuccesfullyUploaded = false;
-    
+
 
 
     $(spanObject).removeClass("upload-noDocuments");
@@ -162,7 +162,28 @@ app.controller("testCTRL", function ($scope, DocumentService, cfpLoadingBar) {
     }
 });
 
+app.controller("deleteUserCtrl", function ($scope, $http, $route) {
+    $scope.deleteUser = function () {
+        console.log("delete User function called!");
+        $http({
+            method: 'GET',
+            url: "/api/deleteUser",
+            ignoreLoadingBar: true
+            //headers: {
+            //    "test": "Bedrijven.pdf"
+            //}
 
+        }).then(function successCallback(response) {
+            if (response.data == "succes") {
+                $route.reload();
+            }
+            console.dir(response);
+        }, function errorCallback(response) {
+            console.dir("error" + response);
+        });
+    }
+
+});
 app.controller("uploadController", function ($scope, $http) {
 
     var fd = new FormData();
@@ -280,7 +301,7 @@ app.controller('labelController', function ($scope, $http) {
                 //code to search on this label when clicked.
                 console.log("klik op label");
             });
-            $(labelDeleteSpan).click(function (e) {               
+            $(labelDeleteSpan).click(function (e) {
                 deleteLabel($(this).parent().text(), $(this).parent());
             });
             var text = document.createTextNode(label)
@@ -298,7 +319,7 @@ app.controller('labelController', function ($scope, $http) {
                 createLabels(response.data);
             } else {
                 $scope.labelText = "No labels";
-            }       
+            }
         }, function errorCallback(response) {
             console.log(response.data);
         });
@@ -330,7 +351,7 @@ app.controller('labelController', function ($scope, $http) {
     $scope.labelSectionStyle = "";
     $scope.buttonText = "View more";
 
-    $scope.showLabels = function () {              
+    $scope.showLabels = function () {
         if ($scope.labelSectionStyle === "") {
             $scope.buttonText = "View less";
             $scope.labelSectionStyle = { "overflow-y": "auto", "max-height": "280px" };
@@ -386,13 +407,13 @@ app.controller('searchController', function ($scope, $http) {
         $("#Canvas-Document-Holder > div").each(function () {
             $(this).addClass("hidden");
         });
-        for (var i = 0; i < docs.length; i++) {          
+        for (var i = 0; i < docs.length; i++) {
             $("#Canvas-Document-Holder > div").each(function () {
                 if (docs[i].name === $(this).attr("id")) {
                     $(this).removeClass("hidden");
                 };
             });
-        };       
+        };
     };
 });
 

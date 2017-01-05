@@ -48,7 +48,13 @@ pre, code {
     border: none;
     box-shadow: none;
 }
+#DeleteAccount li{
 
+}
+#DeleteAccount{
+    color:red;
+
+}
 #DocumentIFrame {
     width: 100%;
     height: 90vh;

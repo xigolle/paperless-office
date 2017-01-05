@@ -5,6 +5,10 @@
         $("#upload").toggleClass("toggled");
     });
 })
+$("#btnDeleteAccount").click(function (e) {
+    $("#modalDeleteUserAccount").modal('hide');
+    angular.element("#btnDeleteAccount").scope().deleteUser();
+})
 
 //$(document).ready(function () {
 //    setTimeout(function () {
