@@ -755,29 +755,31 @@ app.get("/api/search/:url", function (req, res) {
 });
 
 app.get("/api/deleteUser", function (req, res) {
-    //blobSvc.deleteContainerIfExists(req.user.username, function (error, result, response) {
-    //    if (!error) {
-    //        console.log('container deleted!');
-    //    }
-    //});
-    //MongoClient.connect(mongoUrl, function (err, db) {
-    //    assert.equal(null, err);
-    //    console.log("Connected succesfully to server for deleting user");
-    //    var collection = db.collection(req.user.username);
-    //    var usercollection = db.collection("users");
-    //    //remove user collection
-    //    collection.drop();
-    //    console.log("user collection dropped!");
-    //    //remove user from user collection
-    //    usercollection.remove({ "username": req.user.username });
-    //    console.log("user removed from user collection");
-    //    setTimeout(function () {
+    blobSvc.deleteContainerIfExists(req.user.username, function (error, result, response) {
+        if (!error) {
+            console.log('container deleted!');
+        }
+        MongoClient.connect(mongoUrl, function (err, db) {
+            assert.equal(null, err);
+            console.log("Connected succesfully to server for deleting user");
+            var collection = db.collection(req.user.username);
+            var usercollection = db.collection("users");
+            //remove user collection
+            collection.drop();
+            console.log("user collection dropped!");
+            //remove user from user collection
+            usercollection.remove({ "username": req.user.username });
+            console.log("user removed from user collection");
+            setTimeout(function () {
+                res.send("succes");
+                db.close();
+                
+            }, 100);
 
-    //        db.close();
-    //    }, 100);
-
-    //});
-    res.send("yolo");
+        });
+    });
+    
+    
 });
 
 // error handlers
