@@ -147,6 +147,7 @@ canvas {
 
 #upload p {
     height: 100%;
+    line-height: 100%;
 }
 
 #upload.uploadToggled {
@@ -328,4 +329,8 @@ body > div {
     padding-bottom: 100px;
     background: gainsboro;
     text-align: center;
+}
+
+#Canvas-Document-Holder {
+    padding-bottom: 5%;
 }
