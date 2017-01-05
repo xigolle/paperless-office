@@ -166,7 +166,7 @@ app.controller("deleteUserCtrl", function ($scope, $http, $route) {
     $scope.deleteUser = function () {
         console.log("delete User function called!");
         $http({
-            method: 'GET',
+            method: 'DELETE',
             url: "/api/deleteUser",
             ignoreLoadingBar: true
             //headers: {
