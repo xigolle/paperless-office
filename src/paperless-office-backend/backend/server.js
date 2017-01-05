@@ -754,7 +754,7 @@ app.get("/api/search/:url", function (req, res) {
     });
 });
 
-app.get("/api/deleteUser", function (req, res) {
+app.delete("/api/deleteUser", function (req, res) {
     blobSvc.deleteContainerIfExists(req.user.username, function (error, result, response) {
         if (!error) {
             console.log('container deleted!');
