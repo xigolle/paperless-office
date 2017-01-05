@@ -761,11 +761,50 @@ app.get("/api/getDocumentSuggestions/:url", function (req, res) {
 
         var collection = db.collection(req.user.username);
 
-        collection.find({ "docs.name": req.params.url }, { "docs.$": 1 })
-            .toArray(function (err, items) {
-                console.log(items[0].docs[0]);
-                res.send(items[0].docs[0]);
-            });
+        collection.find({ "docs.name": req.params.url }, { "docs.$": 1 }).toArray(function (err, items) {
+            
+            var docArray = [];
+            var counter = 1;
+            var labelArray = items[0].docs[0].labels;
+
+            for (i = 0; i < labelArray.length; i++) {
+                let label = [labelArray[i]];
+                collection.aggregate([
+                    // Get just the docs that contain a shapes element where color is 'red'
+                    { "$match": { "docs.labels": { "$all": label } } },
+                    {
+                        "$project": {
+                            "docs": {
+                                "$filter": {
+                                    "input": "$docs",
+                                    "as": "doc",
+                                    "cond": { "$setIsSubset": [label, "$$doc.labels"] }
+                                }
+                            }
+                        }
+                    }
+                ]).toArray(function (err, items) {
+                    for (j = 0; j < items[0].docs.length; j++) {
+                        if (items[0].docs[j].name !== req.params.url) {
+                            docArray.push(items[0].docs[j].name);
+                        };
+                    };                                     
+                    if (counter === labelArray.length) {
+                        var docCount = docArray.reduce(function (prev, cur) {
+                            prev[cur] = (prev[cur] || 0) + 1;
+                            return prev;
+                        }, {});
+
+                        // map is an associative array mapping the elements to their frequency:
+                        res.send(docCount);
+                    }
+                    counter++;
+                });
+               
+            };
+            
+           
+        });
 
         setTimeout(function () { db.close(); }, 100);
 
