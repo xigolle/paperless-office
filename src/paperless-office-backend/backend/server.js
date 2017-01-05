@@ -820,7 +820,7 @@ app.get("/api/getDocumentSuggestions/:url", function (req, res) {
                                 };
                             });
                         }
-                        res.send(docArray);
+                        res.send(docArray.slice(0,4));
                     }
                     counter++;
                 });
