@@ -1,4 +1,6 @@
 ﻿html, body {
+    height: 100%;
+    width: 100%;
 }
 h1 {
 	font-size:28px;
@@ -313,3 +315,17 @@ canvas {
     overflow-y: auto;
     overflow-x: hidden; 
 }    
+
+body > div {
+    display: flex;
+    /*height: 100%;*/
+    width: 100%;
+    /*background: darkgrey;*/
+}
+
+#loginWrapper, #registerWrapper {
+    margin: auto;
+    padding-bottom: 100px;
+    background: gainsboro;
+    text-align: center;
+}
