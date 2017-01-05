@@ -754,6 +754,23 @@ app.get("/api/search/:url", function (req, res) {
     });
 });
 
+app.get("/api/getDocumentSuggestions/:url", function (req, res) {
+    MongoClient.connect(mongoUrl, function (err, db) {
+        assert.equal(null, err);
+        console.log("Connected succesfully to server");
+
+        var collection = db.collection(req.user.username);
+
+        collection.find({ "docs.name": req.params.url }, { "docs.$": 1 })
+            .toArray(function (err, items) {
+                console.log(items[0].docs[0]);
+                res.send(items[0].docs[0]);
+            });
+
+        setTimeout(function () { db.close(); }, 100);
+
+    });
+});
 
 // error handlers
 /*app.use(function (req, res, next) {

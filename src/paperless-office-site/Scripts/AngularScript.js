@@ -396,7 +396,17 @@ app.controller('searchController', function ($scope, $http) {
     };
 });
 
-
+app.controller('docsSuggestionController', function ($scope, $http) {
+    $scope.getDocumentSuggestions = function (docURL) {
+        console.log("in suggestions");
+        $http.get(docURL).then(function successCallback(response) {
+            console.log(response.data);
+           
+        }, function errorCallback(response) {
+            console.log(response.data);
+        });
+    };
+});
 
 //--------------------------------
 

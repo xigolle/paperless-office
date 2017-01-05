@@ -209,6 +209,7 @@ function showMultiplePDFDocument(url, canvasID, currentDoc) {
               
               angular.element("#labelSection").scope().getLabels("/api/getLabels/" + $(this).data("currentDoc"));       
               angular.element("#labelSection").scope().getLabelSuggestions("/api/getLabelSuggestions/" + $(this).data("currentDoc"));
+              angular.element("#docs").scope().getDocumentSuggestions("/api/getDocumentSuggestions/" + $(this).data("currentDoc"));
 
               //bring doc name to angularscript
               getDocName(decodeURIComponent($(this).data("currentDoc")));
