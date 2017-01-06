@@ -101,8 +101,6 @@ app.directive('disallowSpaces', function () {
     };
 });
 
-
-
 app.controller("testCTRL", function ($scope, DocumentService, cfpLoadingBar) {
 
 
@@ -396,16 +394,48 @@ app.controller('searchController', function ($scope, $http) {
     };
 });
 
-app.controller('docsSuggestionController', function ($scope, $http) {
+app.controller('docsSuggestionController', function ($scope, $http, $window) {
     $scope.getDocumentSuggestions = function (docURL) {
         console.log("in suggestions");
         $http.get(docURL).then(function successCallback(response) {
             console.log(response.data);
-           
+            setDocuments(response.data);
         }, function errorCallback(response) {
             console.log(response.data);
         });
     };
+
+    var setDocuments = function (data) {
+        for (var i = 0; i < data.length; i++) {
+
+
+            var newDocumentHolder = document.createElement('div');
+
+            var documentCanvas = document.createElement('canvas');
+            var documentIdentifier = document.createElement('span');
+
+            var documentIdentifierText = document.createTextNode(data[i].slice(13));
+            documentIdentifier.className = "document-identifier";
+            documentIdentifier.appendChild(documentIdentifierText);
+
+            newDocumentHolder.className = "Canvas-Document ";
+            newDocumentHolder.setAttribute("id", decodeURI(data[i]));
+            //documentCanvas.width = 100;
+            //documentCanvas.height = 100;
+            documentCanvas.id = "suggestionCanvas" + i;         
+            var PDFWrapper = document.getElementById("docs");
+
+            newDocumentHolder.appendChild(documentIdentifier);
+            newDocumentHolder.appendChild(documentCanvas);
+            PDFWrapper.appendChild(newDocumentHolder);
+            var URLReadyDocument = encodeURI(data[i]);
+
+
+            showMultiplePDFDocument("/api/getDocumentURL/" + URLReadyDocument, "suggestionCanvas" + i, URLReadyDocument);
+            //cfpLoadingBar.start();
+
+        }
+    }
 });
 
 //--------------------------------

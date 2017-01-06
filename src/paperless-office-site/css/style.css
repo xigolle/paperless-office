@@ -51,7 +51,10 @@ pre, code {
 
 #DocumentIFrame {
     width: 100%;
-    height: 90vh;
+    /*height: 90vh;*/
+    height: 100vh;
+    padding-top: 50px;
+    padding-bottom: 40px;
 }
 
 #page-content-wrapper {
@@ -139,7 +142,8 @@ canvas {
     transition: all 0.5s ease;
     background-color: grey;
     text-align: center;
-    height: 5%; 
+    /*height: 5%;*/
+    height: 40px; 
     border-radius: 0;
 }
 
@@ -313,3 +317,13 @@ canvas {
     overflow-y: auto;
     overflow-x: hidden; 
 }    
+
+#docs > div > canvas {
+    width: 100%;
+    height: 100%;
+}
+
+#docs > div {
+    width: 100%;
+    height: 287px;
+}
