@@ -48,7 +48,13 @@ pre, code {
     border: none;
     box-shadow: none;
 }
+#DeleteAccount li{
 
+}
+#DeleteAccount{
+    color:red;
+
+}
 #DocumentIFrame {
     width: 100%;
     height: 90vh;
@@ -302,3 +308,14 @@ canvas {
       pointer-events: all;
       cursor: pointer;
 }
+
+.ui-menu .ui-menu-item {
+    font-family: inherit;
+    font-size: small;
+}
+
+.ui-autocomplete { 
+    max-height: 200px; 
+    overflow-y: auto;
+    overflow-x: hidden; 
+}    

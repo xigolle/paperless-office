@@ -1,5 +1,3 @@
-
-
 var express = require("express");
 var azure = require("azure-storage");
 var fs = require("fs");
@@ -12,6 +10,7 @@ var MongoClient = require('mongodb').MongoClient;
 var assert = require('assert');
 var config = require("../config.json");
 var extract = require("pdf-text-extract");
+var commonWords = require("./models/commonWords.js");
 //---------------------
 // dependencies
 var debug = require('debug')('passport-mongo');
@@ -512,6 +511,70 @@ app.get("/api/getLabels/:url", function (req, res) {
     });
 });
 
+app.get("/api/getLabelSuggestions/:url", function (req, res) {
+    MongoClient.connect(mongoUrl, function (err, db) {
+        assert.equal(null, err);
+        console.log("Connected succesfully to server");
+
+        var collection = db.collection(req.user.username);
+
+        collection.aggregate([
+            { "$unwind": "$docs" },
+            { "$unwind": "$docs.ocrOutput" },
+            { "$match": { "docs.name": req.params.url } },
+            {
+                "$group": {
+                    "_id": "$docs.ocrOutput",
+                    "id": { "$first": "$_id" },
+                    "count": { "$sum": 1 }
+                }
+            },
+            {
+                "$group": {
+                    "_id": "$id",
+                    "counts": {
+                        "$push": {
+                            "item": "$_id",
+                            "count": "$count"
+                        }
+                    }
+                }
+            }
+        ]).toArray(function (err, items) {
+            for (j = 0; j < commonWords.length; j++) {
+                for (i = 0; i < commonWords[j].words.length; i++) {
+                    items[0].counts.forEach(function (count) {
+                        if (count.item.toLowerCase() === commonWords[j].words[i].toLowerCase()) {
+                            var index = items[0].counts.indexOf(count);
+                            items[0].counts.splice(index, 1);
+                        };
+                    });
+                };
+            };
+
+            var highest = 0;
+            items[0].counts.forEach(function (count) {
+                if (count.count > highest) {
+                    highest = count.count;
+                };
+            });
+            console.log(highest);
+            var sortedArray = [];
+            for (i = highest; i > 0; i--) {
+                items[0].counts.forEach(function (count) {
+                    if (count.count === i) {
+                        sortedArray.push(count.item);
+                    };
+                });
+            }
+            res.send(sortedArray.slice(0, 20));
+        });
+
+        setTimeout(function () { db.close(); }, 100);
+
+    });
+});
+
 app.post("/api/addLabels", function (req, res) {
 
     var labelArray = getLabelArray(req.body.newLabel);
@@ -691,6 +754,33 @@ app.get("/api/search/:url", function (req, res) {
     });
 });
 
+app.delete("/api/deleteUser", function (req, res) {
+    blobSvc.deleteContainerIfExists(req.user.username, function (error, result, response) {
+        if (!error) {
+            console.log('container deleted!');
+        }
+        MongoClient.connect(mongoUrl, function (err, db) {
+            assert.equal(null, err);
+            console.log("Connected succesfully to server for deleting user");
+            var collection = db.collection(req.user.username);
+            var usercollection = db.collection("users");
+            //remove user collection
+            collection.drop();
+            console.log("user collection dropped!");
+            //remove user from user collection
+            usercollection.remove({ "username": req.user.username });
+            console.log("user removed from user collection");
+            setTimeout(function () {
+                res.send("succes");
+                db.close();
+                
+            }, 100);
+
+        });
+    });
+    
+    
+});
 
 // error handlers
 /*app.use(function (req, res, next) {
