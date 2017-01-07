@@ -179,7 +179,7 @@ var storage = multer.diskStorage({
 var upload = multer({ storage: storage }).any("myFile");
 function cleanOCROutput(text) {
     var newArray = [];
-    strippedResult = text.toString().replace(/[^\wàäâôéèëêïîçùûüÿæœÀÂÄÔÉÈËÊÏÎŸÇÙÛÜÆŒ'`´^Çç]/g, "").toLowerCase();
+    strippedResult = text.toString().replace(/[^\wï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ÎŸï¿½ï¿½ï¿½ï¿½ÆŒ'`ï¿½^ï¿½ï¿½]/g, "").toLowerCase();
     var splitResult = strippedResult.split(" ");
     //console.log("split result length");
     for (var i = 0; i < splitResult.length; i++) {
@@ -782,6 +782,87 @@ app.delete("/api/deleteUser", function (req, res) {
     
 });
 
+app.get("/api/getDocumentSuggestions/:url", function (req, res) {
+    MongoClient.connect(mongoUrl, function (err, db) {
+        assert.equal(null, err);
+        console.log("Connected succesfully to server");
+
+        var collection = db.collection(req.user.username);
+
+        collection.find({ "docs.name": req.params.url }, { "docs.$": 1 }).toArray(function (err, items) {
+            
+            var docArray = [];
+            var counter = 1;
+            var labelArray = items[0].docs[0].labels;
+
+            for (i = 0; i < labelArray.length; i++) {
+                let label = [labelArray[i]];
+                collection.aggregate([
+                    // Get just the docs that contain a shapes element where color is 'red'
+                    { "$match": { "docs.labels": { "$all": label } } },
+                    {
+                        "$project": {
+                            "docs": {
+                                "$filter": {
+                                    "input": "$docs",
+                                    "as": "doc",
+                                    "cond": { "$setIsSubset": [label, "$$doc.labels"] }
+                                }
+                            }
+                        }
+                    }
+                ]).toArray(function (err, items) {
+                    for (j = 0; j < items[0].docs.length; j++) {
+                        if (items[0].docs[j].name !== req.params.url) {
+                            docArray.push(items[0].docs[j].name);
+                        };
+                    };                                     
+                    if (counter === labelArray.length) {
+                        docArray.sort();
+                        var docCountArray = [];
+                        var current = null;
+                        var cnt = 0;
+                        for (var i = 0; i <= docArray.length; i++) {
+                            if (docArray[i] != current) {
+                                if (cnt > 0) {
+                                    docCountArray.push({"count": cnt, "name":current})
+                                    console.log(current + ' comes --> ' + cnt + ' times');
+                                }
+                                current = docArray[i];
+                                cnt = 1;
+                            } else {
+                                cnt++;
+                            }
+                        }
+                        var highest = 0;
+                        docCountArray.forEach(function (count) {
+                            if (count.count > highest) {
+                                highest = count.count;
+                            };
+                        });
+                        docArray = [];
+                        for (i = highest; i > 0; i--) {
+                            docCountArray.forEach(function (count) {
+                                if (count.count === i) {
+                                    docArray.push(count.name);
+                                };
+                            });
+                        }
+                        res.send(docArray.slice(0,4));
+                    }
+                    counter++;
+                });
+               
+            };
+            
+           
+        });
+
+        setTimeout(function () { db.close(); }, 100);
+
+    });
+});
+
 // error handlers
 /*app.use(function (req, res, next) {
     var err = new Error('Not Found');
@@ -797,4 +878,4 @@ app.use(function (err, req, res) {
     }));
 });*/
 
-app.listen(4000);
+app.listen(3000);
