@@ -186,14 +186,11 @@ function cleanOCROutput(text) {
 
             newArray.push(splitResult[i]);
         }
-        //console.log("inside for loops");
+
         splitResult[i].length;
-        //if (splitResult[i] ) {
-        //    newArray.push[i];
-        //}
+
     }
-    console.log("return value new Array");
-    console.dir(newArray);
+
     return newArray;
 }
 
@@ -265,27 +262,16 @@ app.post("/api/uploadDocuments", function (req, res) {
         //var ocrTextString;
         var fileExt;
         fs.readdir(userFolder, function (err, files) {
-            console.log("fs.readdir read files");
-            console.dir(files);
             
             files.forEach(function (file, index) {
                 
-                console.log("seperate files");
-                console.log(file);
                 fileExt = file.split(".");
                 var completeFileUri = userFolder + file;
-                console.log("completeFileURI " + completeFileUri);
-                console.log("docName" + docName);
                 
                 if (fileExt[fileExt.length - 1] != "pdf") {
                     //images
-                    console.log("file URI" + completeFileUri);
                     imageArray.push(userFolder + file);
-                    console.log("Log imageArray");
-                    console.dir(imageArray);
                     fileArray.push(makePDF(userFolder, file, fileExt[0]));
-                    console.log("Filearray push log");
-                    console.dir(fileArray);
                     tesseract.process(completeFileUri.replace(" ","\\ "), function (err, text) {
 
                         if (err) {
@@ -304,7 +290,6 @@ app.post("/api/uploadDocuments", function (req, res) {
                                 imageArray.forEach(function (file, index) {
                                     fs.unlinkSync(file);
                                 });
-                                console.log("We are at the end lets do a callback!");
                                oCRAsyncCallback()
                             }
 
@@ -329,7 +314,6 @@ app.post("/api/uploadDocuments", function (req, res) {
                         //addOcrMongo(result, req.user.username, docName);
 
                         if (aSyncCounter === files.length) {
-                            console.log("We are at the end lets do a callback!");
                             //console.dir(ocrTextArray);
                             oCRAsyncCallback();
                         }
