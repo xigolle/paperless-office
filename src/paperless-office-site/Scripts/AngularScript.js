@@ -225,6 +225,8 @@ app.controller("uploadController", function ($scope, $http) {
                 $scope.docName = "";
             }
             if (docNameAdded) {
+                console.log("logging fd");
+                console.dir(fd.getAll("file"));
                 $http.post("/api/uploadDocuments", fd, {
                     //withCredentials: true,
                     headers: { 'Content-Type': undefined },
