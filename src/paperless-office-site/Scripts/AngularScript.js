@@ -166,7 +166,7 @@ app.controller("testCTRL", function ($scope, DocumentService, cfpLoadingBar) {
                     var URLReadyDocument = encodeURI(documentNames.data[i].name);
 
 
-                    showMultiplePDFDocument("/api/getDocumentURL/" + URLReadyDocument, "canvass" + i, URLReadyDocument);
+                    showMultiplePDFDocument("/api/getDocumentURL/" + URLReadyDocument, "canvass" + i, URLReadyDocument, false);
                     //cfpLoadingBar.start();
 
                 }
@@ -442,7 +442,7 @@ app.controller('docsSuggestionController', function ($scope, $http, $window) {
             var URLReadyDocument = encodeURI(data[i]);
 
 
-            showMultiplePDFDocument("/api/getDocumentURL/" + URLReadyDocument, "suggestionCanvas" + i, URLReadyDocument);
+            showMultiplePDFDocument("/api/getDocumentURL/" + URLReadyDocument, "suggestionCanvas" + i, URLReadyDocument, true);
             //cfpLoadingBar.start();
 
         }
