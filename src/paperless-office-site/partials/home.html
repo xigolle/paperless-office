@@ -1,4 +1,4 @@
-﻿<div id="wrapper" ng-init="changeStyle(true)">
+﻿<div id="wrapper" ng-init="changeStyle(true, false)">
     <!-- Sidebar -->
     <div id="sidebar-wrapper">
         <ul class="sidebar-nav">
@@ -8,15 +8,15 @@
                 </a>
             </li>
             <li>
-                <a id="HomeButton" href="#/" ng-controller="labelController" ng-click="destroyLabels()">Home</a>
+                <a id="HomeButton" href="#/" ng-controller="labelController" ng-click="destroyLabels(); changeStyle(true,false)" class="hidden">Home</a>
             </li>
             <li>
                 <a id="DeleteButton" ng-click="delete()" ng-controller="deleteController" href="#/" class="hidden">Delete</a>
             </li>
-            <li>
+            <!--<li>
                 <a href="#" class="hidden">Download</a>
-            </li>
-            <hr />
+            </li>-->
+            <hr class="hidden" />
             <li>
                 <a ng-click='logout(); changeStyle(false)' ng-controller="logoutController">Logout</a>
             </li>
@@ -31,7 +31,7 @@
                 <div class="navbar-header">
                     <a href="#menu-toggle" class="btn btn-default navbar-brand" id="menu-toggle"><span class="glyphicon glyphicon-menu-hamburger" aria-hidden="true"></span></a>
                     <!--<a class="navbar-brand" href="#">test</a>-->
-                    <a class="navbar-brand" href="#">Paperless Office</a>
+                    <a class="navbar-brand" href="#/">Paperless Office</a>
                 </div>
                 <!-- Collect the nav links, forms, and other content for toggling -->
                 <form id="search-form" class="navbar-form navbar-right" ng-controller="searchController">
@@ -57,16 +57,18 @@
                 <div id="Canvas-Document-Holder"></div>
             </div>
             <div id="SuggestedDocumentSection" class="col-md-2">
-                <div id="labels" ng-controller="labelController">
-                    <input ng-model="newLabel" placeholder="Add label" disallow-spaces ng-keyup="$event.keyCode == 13 && addLabel()"/>
-                    <span id="addLabelButton" ng-click="addLabel()" class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span>
-                    <div id="labelSection" ng-style="labelSectionStyle">
-                        {{labelText}}
+                <div id="SuggestedDocumentSectionWrapper">
+                    <div id="labels" ng-controller="labelController">
+                        <input ng-model="newLabel" placeholder="Add label" disallow-spaces ng-keyup="$event.keyCode == 13 && addLabel()"/>
+                        <span id="addLabelButton" ng-click="addLabel()" class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span>
+                        <div id="labelSection" ng-style="labelSectionStyle">
+                            {{labelText}}
+                        </div>
+                        <a ng-click="showLabels()">{{buttonText}}</a>
                     </div>
-                    <a ng-click="showLabels()">{{buttonText}}</a>
-                </div>
-                <div id="docs" ng-controller="docsSuggestionController">
+                    <div id="docs" ng-controller="docsSuggestionController">
 
+                    </div>
                 </div>
             </div>
 

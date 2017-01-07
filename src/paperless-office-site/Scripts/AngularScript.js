@@ -103,10 +103,12 @@ app.directive('disallowSpaces', function () {
 
 app.controller("styleController", function ($scope) {
     
-    $scope.changeStyle = function (login) {
+    $scope.changeStyle = function (login, readDoc) {
         if (login) {
             $scope.divStyle = { "background": "white", "height": "0" };
-            $scope.bodyStyle = { "background": "white" };
+            $scope.bodyStyle = { "background": "white", "overflow-y": "auto" };
+        } else if (readDoc) {
+            $scope.bodyStyle = { "overflow": "hidden" };
         } else {
             $scope.divStyle = { "background": "darkgrey", "height": "100%" };
             $scope.bodyStyle = { "background": "black" };
@@ -444,6 +446,11 @@ app.controller('docsSuggestionController', function ($scope, $http, $window) {
             //cfpLoadingBar.start();
 
         }
+    }
+
+    $scope.destroyDocSuggestions = function () {
+        console.log("destroy docsuggestions");
+        $("#docs").children("div").remove();
     }
 });
 

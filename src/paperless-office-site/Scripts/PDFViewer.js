@@ -210,7 +210,8 @@ function showMultiplePDFDocument(url, canvasID, currentDoc) {
               angular.element("#labelSection").scope().getLabels("/api/getLabels/" + $(this).data("currentDoc"));       
               angular.element("#labelSection").scope().getLabelSuggestions("/api/getLabelSuggestions/" + $(this).data("currentDoc"));
               angular.element("#docs").scope().getDocumentSuggestions("/api/getDocumentSuggestions/" + $(this).data("currentDoc"));
-
+              angular.element("body").scope().changeStyle(false, true);
+              angular.element("#docs").scope().destroyDocSuggestions();
               //bring doc name to angularscript
               getDocName(decodeURIComponent($(this).data("currentDoc")));
           });
@@ -226,7 +227,7 @@ function openListOfDocuments() {
     $("#DocumentIFrame").toggle();
     $("#SuggestedDocumentSection").toggle();
     $("#PDFDocumentWrapper").toggleClass("col-md-10");
-    $("#DeleteButton").toggleClass("hidden");
+    $("#DeleteButton, #HomeButton, hr").toggleClass("hidden");
 }
 function openSinglePDFReader(url) {
     $("#Canvas-Document-Holder").toggle();
@@ -235,7 +236,7 @@ function openSinglePDFReader(url) {
 
     $("#SuggestedDocumentSection").toggle();
     $("#DocumentIFrame").attr('src', "/web/viewer.html?file=" + url).toggle();
-    $("#DeleteButton").toggleClass("hidden");
+    $("#DeleteButton, #HomeButton, hr").toggleClass("hidden");
 }
 
 //AngularScript will us the url var to know which doc is being deleted

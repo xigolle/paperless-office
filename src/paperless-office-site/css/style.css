@@ -324,19 +324,36 @@ canvas {
 #docs > div > canvas {
     width: 100%;
     height: 100%;
+    position: relative;
 }
 
 #docs > div {
     width: 100%;
-    height: 287px;
+    height: auto;
+    margin: 0;
+    margin-bottom: 2%;
+    box-shadow: none;
 }
 
-#Canvas-Document-Holder, #SuggestedDocumentSection {
+#docs {
+    padding-top: 10px;
+}
+
+#Canvas-Document-Holder{
     padding: 50px 15px 50px 15px;
-    height: 100vh;
-    overflow-y: hidden;
 }
 
+#SuggestedDocumentSection {
+    height: 100vh;
+    padding: 50px 0 40px;
+}
+
+#SuggestedDocumentSectionWrapper {
+    height: 100%;
+    overflow-y:scroll;
+    overflow-x: hidden;
+    padding: 0 15px;
+}
 
 body > div {
     display: flex;
@@ -350,6 +367,4 @@ body > div {
     padding-bottom: 100px;
     background: gainsboro;
     text-align: center;
-}
-
 }
