@@ -101,7 +101,21 @@ app.directive('disallowSpaces', function () {
     };
 });
 
-
+app.controller("styleController", function ($scope) {
+    
+    $scope.changeStyle = function (login, readDoc) {
+        if (login) {
+            $scope.divStyle = { "background": "white", "height": "0" };
+            $scope.bodyStyle = { "background": "white", "overflow-y": "auto" };
+        } else if (readDoc) {
+            $scope.bodyStyle = { "overflow": "hidden" };
+        } else {
+            console.log("in login style");
+            $scope.divStyle = { "background": "darkgrey", "height": "100%" };
+            $scope.bodyStyle = { "background": "black" };
+        }
+    };
+})
 
 app.controller("testCTRL", function ($scope, DocumentService, cfpLoadingBar) {
 
@@ -152,7 +166,7 @@ app.controller("testCTRL", function ($scope, DocumentService, cfpLoadingBar) {
                     var URLReadyDocument = encodeURI(documentNames.data[i].name);
 
 
-                    showMultiplePDFDocument("/api/getDocumentURL/" + URLReadyDocument, "canvass" + i, URLReadyDocument);
+                    showMultiplePDFDocument("/api/getDocumentURL/" + URLReadyDocument, "canvass" + i, URLReadyDocument, false);
                     //cfpLoadingBar.start();
 
                 }
@@ -232,12 +246,8 @@ app.controller("uploadController", function ($scope, $http) {
                 fd = new FormData();
                 firstDocAdded = false;
                 docNameAdded = false;
-            } else {
-                $scope.myStyle = { "border-color": "red" };
             }
 
-        } else {
-            $scope.myStyle = { "border-color": "darkred" };
         }
 
     }
@@ -261,7 +271,6 @@ app.controller("uploadController", function ($scope, $http) {
 
     }
     $scope.addFile = function (files) {
-        $scope.myStyle = { "border-color": "gray" };
         console.log($scope.myStyle);
         if (!firstDocAdded) {
             //Met deze lijn kunnen we de user meegeven
@@ -300,8 +309,9 @@ app.controller('labelController', function ($scope, $http) {
             labelDeleteSpan.setAttribute("class", "glyphicon glyphicon-remove");
             $(labelSpan).click(function (e) {
                 if (e.target !== e.currentTarget) return;
-                //code to search on this label when clicked.
-                console.log("klik op label");
+                angular.element("#search-bar").scope().searchInput = $(this).text();
+                angular.element(".glyphicon-search").click();
+                openListOfDocuments();               
             });
             $(labelDeleteSpan).click(function (e) {
                 deleteLabel($(this).parent().text(), $(this).parent());
@@ -391,6 +401,7 @@ app.controller('labelController', function ($scope, $http) {
 app.controller('searchController', function ($scope, $http) {
     $scope.searchInput = "";
     $scope.search = function () {
+        console.log("in search: " + $scope.searchInput);
         if ($scope.searchInput.trim() != "") {
             $http.get("/api/search/" + encodeURIComponent($scope.searchInput.toLowerCase()), { ignoreLoadingBar: true }).then(function successCallback(response) {
                 console.log(response.data);
@@ -419,7 +430,54 @@ app.controller('searchController', function ($scope, $http) {
     };
 });
 
+app.controller('docsSuggestionController', function ($scope, $http, $window) {
+    $scope.getDocumentSuggestions = function (docURL) {
+        console.log("in suggestions");
+        $http.get(docURL).then(function successCallback(response) {
+            console.log(response.data);
+            setDocuments(response.data);
+        }, function errorCallback(response) {
+            console.log(response.data);
+        });
+    };
 
+    var setDocuments = function (data) {
+        for (var i = 0; i < data.length; i++) {
+
+
+            var newDocumentHolder = document.createElement('div');
+
+            var documentCanvas = document.createElement('canvas');
+            var documentIdentifier = document.createElement('span');
+
+            var documentIdentifierText = document.createTextNode(data[i].slice(13));
+            documentIdentifier.className = "document-identifier";
+            documentIdentifier.appendChild(documentIdentifierText);
+
+            newDocumentHolder.className = "Canvas-Document ";
+            newDocumentHolder.setAttribute("id", decodeURI(data[i]));
+            //documentCanvas.width = 100;
+            //documentCanvas.height = 100;
+            documentCanvas.id = "suggestionCanvas" + i;         
+            var PDFWrapper = document.getElementById("docs");
+
+            newDocumentHolder.appendChild(documentIdentifier);
+            newDocumentHolder.appendChild(documentCanvas);
+            PDFWrapper.appendChild(newDocumentHolder);
+            var URLReadyDocument = encodeURI(data[i]);
+
+
+            showMultiplePDFDocument("/api/getDocumentURL/" + URLReadyDocument, "suggestionCanvas" + i, URLReadyDocument, true);
+            //cfpLoadingBar.start();
+
+        }
+    }
+
+    $scope.destroyDocSuggestions = function () {
+        console.log("destroy docsuggestions");
+        $("#docs").children("div").remove();
+    }
+});
 
 //--------------------------------
 

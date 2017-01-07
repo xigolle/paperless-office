@@ -30,8 +30,8 @@
     <title></title>
     <meta charset="utf-8" />
 </head>
-<body ng-app="app">
+<body ng-app="app" ng-controller="styleController" ng-style="bodyStyle">
     
-    <div ng-view></div>
+    <div ng-view ng-style="divStyle"></div>
 </body>
 </html>
