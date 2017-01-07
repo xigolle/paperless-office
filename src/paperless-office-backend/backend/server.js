@@ -775,16 +775,17 @@ app.delete("/api/deleteUser", function (req, res) {
                 db.close();
                 
             }, 100);
-app.get("/api/getDocumentSuggestions/:url", function (req, res) {
-    MongoClient.connect(mongoUrl, function (err, db) {
-        assert.equal(null, err);
-        console.log("Connected succesfully to server");
 
         });
     });
     
     
 });
+
+app.get("/api/getDocumentSuggestions/:url", function (req, res) {
+    MongoClient.connect(mongoUrl, function (err, db) {
+        assert.equal(null, err);
+        console.log("Connected succesfully to server");
 
         var collection = db.collection(req.user.username);
 
@@ -877,4 +878,4 @@ app.use(function (err, req, res) {
     }));
 });*/
 
-app.listen(4000);
+app.listen(3000);

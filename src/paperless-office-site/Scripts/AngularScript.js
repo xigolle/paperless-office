@@ -110,11 +110,12 @@ app.controller("styleController", function ($scope) {
         } else if (readDoc) {
             $scope.bodyStyle = { "overflow": "hidden" };
         } else {
+            console.log("in login style");
             $scope.divStyle = { "background": "darkgrey", "height": "100%" };
             $scope.bodyStyle = { "background": "black" };
         }
     };
-    $scope.changeStyle(false);
+    $scope.changeStyle(false, false);
 })
 
 app.controller("testCTRL", function ($scope, DocumentService, cfpLoadingBar) {
