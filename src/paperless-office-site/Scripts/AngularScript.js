@@ -101,6 +101,20 @@ app.directive('disallowSpaces', function () {
     };
 });
 
+app.controller("styleController", function ($scope) {
+    
+    $scope.changeStyle = function (login) {
+        if (login) {
+            $scope.divStyle = { "background": "white", "height": "0" };
+            $scope.bodyStyle = { "background": "white" };
+        } else {
+            $scope.divStyle = { "background": "darkgrey", "height": "100%" };
+            $scope.bodyStyle = { "background": "black" };
+        }
+    };
+    $scope.changeStyle(false);
+})
+
 app.controller("testCTRL", function ($scope, DocumentService, cfpLoadingBar) {
 
 
@@ -207,12 +221,8 @@ app.controller("uploadController", function ($scope, $http) {
                 fd = new FormData();
                 firstDocAdded = false;
                 docNameAdded = false;
-            } else {
-                $scope.myStyle = { "border-color": "red" };
             }
 
-        } else {
-            $scope.myStyle = { "border-color": "darkred" };
         }
 
     }
@@ -236,7 +246,6 @@ app.controller("uploadController", function ($scope, $http) {
 
     }
     $scope.addFile = function (files) {
-        $scope.myStyle = { "border-color": "gray" };
         console.log($scope.myStyle);
         if (!firstDocAdded) {
             //Met deze lijn kunnen we de user meegeven

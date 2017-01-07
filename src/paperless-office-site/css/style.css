@@ -1,4 +1,6 @@
 ﻿html, body {
+    height: 100%;
+    width: 100%;
 }
 h1 {
 	font-size:28px;
@@ -149,6 +151,7 @@ canvas {
 
 #upload p {
     height: 100%;
+    line-height: 100%;
 }
 
 #upload.uploadToggled {
@@ -332,4 +335,21 @@ canvas {
     padding: 50px 15px 50px 15px;
     height: 100vh;
     overflow-y: hidden;
+}
+
+
+body > div {
+    display: flex;
+    /*height: 100%;*/
+    width: 100%;
+    /*background: darkgrey;*/
+}
+
+#loginWrapper, #registerWrapper {
+    margin: auto;
+    padding-bottom: 100px;
+    background: gainsboro;
+    text-align: center;
+}
+
 }
