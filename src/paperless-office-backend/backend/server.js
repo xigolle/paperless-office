@@ -179,12 +179,11 @@ var storage = multer.diskStorage({
 var upload = multer({ storage: storage }).any("myFile");
 function cleanOCROutput(text) {
     var newArray = [];
-    strippedResult = text.toString().replace(/[^\wàäâôéèëêïîçùûüÿæœÀÂÄÔÉÈËÊÏÎŸÇÙÛÜÆŒ'`´^Çç]/g, "").toLowerCase();
-    var splitResult = strippedResult.split(" ");
-    //console.log("split result length");
+    var splitResult = text.toString().split(" ");
     for (var i = 0; i < splitResult.length; i++) {
+        splitResult[i] = splitResult[i].toString().replace(/[^\wàäâôéèëêïîçùûüÿæœÀÂÄÔÉÈËÊÏÎŸÇÙÛÜÆŒ'`´^Çç]/g, "").toLowerCase();
         if (splitResult[i] != '') {
-            //console.log("add to array");
+
             newArray.push(splitResult[i]);
         }
         //console.log("inside for loops");
@@ -193,6 +192,8 @@ function cleanOCROutput(text) {
         //    newArray.push[i];
         //}
     }
+    console.log("return value new Array");
+    console.dir(newArray);
     return newArray;
 }
 
@@ -252,8 +253,7 @@ app.post("/api/uploadDocuments", function (req, res) {
             console.log("Error Occured: " + err);
             return;
         }
-
-
+        
         console.log(req.body.docName + "    " + req.body.docLabels);
         var userFolder = "./users/" + req.user.username + "/";
         var docName = req.body.docName + ".pdf";
@@ -261,14 +261,17 @@ app.post("/api/uploadDocuments", function (req, res) {
         var labelArray = getLabelArray(req.body.docLabels);
         var fileArray = [];
         var ocrTextArray = [];
-
+        var imageArray = [];
         //var ocrTextString;
         var fileExt;
         fs.readdir(userFolder, function (err, files) {
+            console.log("fs.readdir read files");
             console.dir(files);
+            
             files.forEach(function (file, index) {
                 
-              
+                console.log("seperate files");
+                console.log(file);
                 fileExt = file.split(".");
                 var completeFileUri = userFolder + file;
                 console.log("completeFileURI " + completeFileUri);
@@ -277,12 +280,17 @@ app.post("/api/uploadDocuments", function (req, res) {
                 if (fileExt[fileExt.length - 1] != "pdf") {
                     //images
                     console.log("file URI" + completeFileUri);
+                    imageArray.push(userFolder + file);
+                    console.log("Log imageArray");
+                    console.dir(imageArray);
+                    fileArray.push(makePDF(userFolder, file, fileExt[0]));
+                    console.log("Filearray push log");
+                    console.dir(fileArray);
                     tesseract.process(completeFileUri.replace(" ","\\ "), function (err, text) {
 
                         if (err) {
                             console.error("err" + err);
                         } else {
-                            fileArray.push(makePDF(userFolder, file, fileExt[0]));
                             var ocrResult = cleanOCROutput(text);
                             ocrResult.forEach(function (ocrWord) {
                                 ocrTextArray.push(ocrWord);
@@ -291,8 +299,12 @@ app.post("/api/uploadDocuments", function (req, res) {
                             //addOcrMongo(text, req.user.username, docName);
                            
                             if (aSyncCounter === files.length) {
+                                
                                 //console.dir(ocrTextArray);
-
+                                imageArray.forEach(function (file, index) {
+                                    fs.unlinkSync(file);
+                                });
+                                console.log("We are at the end lets do a callback!");
                                oCRAsyncCallback()
                             }
 
@@ -354,11 +366,19 @@ app.post("/api/uploadDocuments", function (req, res) {
                         if (!error) {
                             console.log("success");
                             fs.unlinkSync(docName);
+                            console.log("log filearray!");
+                            console.dir(fileArray);
                             fileArray.forEach(function (file, index) {
+                                console.log("logging file");
+                                console.log(file);
                                 fs.unlinkSync(file);
                             });
 
                         } else {
+                            fileArray.forEach(function (file, index) {
+                                console.log("clearing stuff");
+                                fs.unlinkSync(file);
+                            })
                             res.status(500).send("Internal server error.");
                             return;
                         };
@@ -430,7 +450,7 @@ var makePDF = function (userFolder, fileName, pdfName) {
     doc.pipe(fs.createWriteStream(newDoc));
     doc.image(userFolder + fileName, 0, 0, { fit: [doc.page.width, doc.page.height] });
     doc.end();
-    fs.unlinkSync(userFolder + fileName);
+    //fs.unlinkSync(userFolder + fileName);
     return newDoc;
 }
 
