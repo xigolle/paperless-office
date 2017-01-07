@@ -179,7 +179,7 @@ var storage = multer.diskStorage({
 var upload = multer({ storage: storage }).any("myFile");
 function cleanOCROutput(text) {
     var newArray = [];
-    strippedResult = text.toString().replace(/[^\wàäâôéèëêïîçùûüÿæœÀÂÄÔÉÈËÊÏÎŸÇÙÛÜÆŒ'`´^Çç]/g, "").toLowerCase();
+    strippedResult = text.toString().replace(/[^\wï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ÎŸï¿½ï¿½ï¿½ï¿½ÆŒ'`ï¿½^ï¿½ï¿½]/g, "").toLowerCase();
     var splitResult = strippedResult.split(" ");
     //console.log("split result length");
     for (var i = 0; i < splitResult.length; i++) {
@@ -754,10 +754,37 @@ app.get("/api/search/:url", function (req, res) {
     });
 });
 
+app.delete("/api/deleteUser", function (req, res) {
+    blobSvc.deleteContainerIfExists(req.user.username, function (error, result, response) {
+        if (!error) {
+            console.log('container deleted!');
+        }
+        MongoClient.connect(mongoUrl, function (err, db) {
+            assert.equal(null, err);
+            console.log("Connected succesfully to server for deleting user");
+            var collection = db.collection(req.user.username);
+            var usercollection = db.collection("users");
+            //remove user collection
+            collection.drop();
+            console.log("user collection dropped!");
+            //remove user from user collection
+            usercollection.remove({ "username": req.user.username });
+            console.log("user removed from user collection");
+            setTimeout(function () {
+                res.send("succes");
+                db.close();
+                
+            }, 100);
 app.get("/api/getDocumentSuggestions/:url", function (req, res) {
     MongoClient.connect(mongoUrl, function (err, db) {
         assert.equal(null, err);
         console.log("Connected succesfully to server");
+
+        });
+    });
+    
+    
+});
 
         var collection = db.collection(req.user.username);
 
@@ -850,4 +877,4 @@ app.use(function (err, req, res) {
     }));
 });*/
 
-app.listen(3000);
+app.listen(4000);
