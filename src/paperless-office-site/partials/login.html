@@ -1,4 +1,4 @@
-﻿<div id="loginWrapper" class="col-sm-7 col-xs-8 col-md-4">
+﻿<div id="loginWrapper" class="col-sm-7 col-xs-8 col-md-4" ng-init="changeStyle(false, false)">
     <h1>Login to see your documents</h1>
     <div ng-show="error" class="alert alert-danger">{{errorMessage}}</div>
     <form class="form" ng-submit="login()">

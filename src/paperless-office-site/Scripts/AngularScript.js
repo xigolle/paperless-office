@@ -115,7 +115,6 @@ app.controller("styleController", function ($scope) {
             $scope.bodyStyle = { "background": "black" };
         }
     };
-    $scope.changeStyle(false, false);
 })
 
 app.controller("testCTRL", function ($scope, DocumentService, cfpLoadingBar) {
