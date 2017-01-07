@@ -286,8 +286,9 @@ app.controller('labelController', function ($scope, $http) {
             labelDeleteSpan.setAttribute("class", "glyphicon glyphicon-remove");
             $(labelSpan).click(function (e) {
                 if (e.target !== e.currentTarget) return;
-                //code to search on this label when clicked.
-                console.log("klik op label");
+                angular.element("#search-bar").scope().searchInput = $(this).text();
+                angular.element(".glyphicon-search").click();
+                openListOfDocuments();               
             });
             $(labelDeleteSpan).click(function (e) {               
                 deleteLabel($(this).parent().text(), $(this).parent());
@@ -377,6 +378,7 @@ app.controller('labelController', function ($scope, $http) {
 app.controller('searchController', function ($scope, $http) {
     $scope.searchInput = "";
     $scope.search = function () {
+        console.log("in search: " + $scope.searchInput);
         if ($scope.searchInput.trim() != "") {
             $http.get("/api/search/" + encodeURIComponent($scope.searchInput.toLowerCase()), { ignoreLoadingBar: true }).then(function successCallback(response) {
                 console.log(response.data);

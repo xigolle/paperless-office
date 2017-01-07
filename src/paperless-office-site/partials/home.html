@@ -37,7 +37,7 @@
                 <form id="search-form" class="navbar-form navbar-right" ng-controller="searchController">
                     <div class="form-group has-feedback">
                         <input type="text" id="search-bar" class="form-control" placeholder="Search" ng-model="searchInput" ng-keyup="$event.keyCode == 13 && search()">
-                        <i class="form-control-feedback glyphicon glyphicon-search" ng-click="search()"></i>
+                        <i class="form-control-feedback glyphicon glyphicon-search" ng-click="search(); changeStyle(true,false)"></i>
                     </div>
                 </form>
                 <!-- /.navbar-collapse -->
