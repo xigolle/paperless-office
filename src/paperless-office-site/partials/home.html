@@ -1,4 +1,4 @@
-﻿<div id="wrapper" ng-init="changeStyle(true, false)">
+<div id="wrapper" ng-init="changeStyle(true, false)">
     <!-- Sidebar -->
     <div id="sidebar-wrapper">
         <ul class="sidebar-nav">
@@ -84,7 +84,7 @@
                     <div id="upload-zone-wrapper" ng-class="collapseZone">
                         <label id="fileInput" class="btn btn-block btn-file">
                             Click here to upload a file.
-                            <input type="file" id="inputUpload" multiple name="myFile" accept=".pdf, .png, .jpeg, .jpg" onchange="angular.element(this).scope().addFile(this.files)" />
+                            <input type="file" id="inputUpload" multiple name="myFile" accept=".pdf, .png, .jpeg, .jpg" onchange="angular.element(this).scope().addFile(this.files)" action="upload-target" class="dropzone" />
                         </label>
                     </div>
 
