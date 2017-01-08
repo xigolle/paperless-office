@@ -7,7 +7,12 @@
     $("#upload").children().not("p").click(function (e) {
         e.stopPropagation();
     })
+    $("#submit").click(function (e) {
+        if ($("#submit span").hasClass("upload-succes")) {
 
+            $("#upload").removeClass("uploadToggled");
+        }
+    })
 })
 
 //$(document).ready(function () {
