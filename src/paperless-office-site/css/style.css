@@ -63,6 +63,7 @@ pre, code {
     height: 100vh;
     padding-top: 50px;
     padding-bottom: 40px;
+    position: absolute;
 }
 
 #page-content-wrapper {
