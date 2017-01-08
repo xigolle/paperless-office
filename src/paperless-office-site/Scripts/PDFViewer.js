@@ -239,7 +239,7 @@ function openSinglePDFReader(url, suggestion) {
         $("#SuggestedDocumentSection").toggle();
 
         $("#DeleteButton, #HomeButton, hr").toggleClass("hidden");
-        $("#DocumentIFrame").attr('src', "/web/viewer.html?file=" + url).toggle();
+        $("#DocumentIFrame").attr('src', "/web/viewer.html?file=" + url).toggle();       
     } else {
         $("#DocumentIFrame").attr('src', "/web/viewer.html?file=" + url);
     }
