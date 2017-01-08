@@ -224,6 +224,7 @@ app.controller("uploadController", function ($scope, $http) {
                 fd.append("docName", timeStamp + $scope.docName);
                 fd.append("docLabels", $scope.docLabels);
                 $scope.docName = "";
+                $scope.docLabels = "";
             }
             if (docNameAdded) {
                 console.log("logging fd");
