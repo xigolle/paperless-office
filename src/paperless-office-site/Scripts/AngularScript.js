@@ -47,8 +47,9 @@ function addUploadStatus(classname) {
         //console.log("else gets called");
         ////there are no documents and there is pressed on the upload button
         //$("#upload").removeClass("uploadToggled");
-        $(spanObject).addClass("upload-noDocuments");
 
+        //$(spanObject).addClass("upload-noDocuments");
+        
     }
 
 
@@ -238,6 +239,7 @@ app.controller("uploadController", function ($scope, $http) {
                     addUploadStatus("upload-succes");
                     console.log("calling doc to list");
                     addDocToList(response.data);
+                    document.getElementById("inputUpload").value = "";
 
                 }, function errorCallback(response) {
                     console.log("Document upload failed.");
@@ -268,6 +270,7 @@ app.controller("uploadController", function ($scope, $http) {
             docNameAdded = false;
             addUploadStatus("upload-noDocuments");
         }
+        
         for (var i = 0; i < tempArray.length; i++) {
 
             fd.append("file", tempArray[i]);
