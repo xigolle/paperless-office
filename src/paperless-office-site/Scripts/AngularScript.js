@@ -291,7 +291,10 @@ app.controller("uploadController", function ($scope, $http) {
 function addDocToList(data) {
     console.log("log add doc to list data");
     console.log(data);
-
+    var fileName = data.replace(".pdf", "");
+    var fileWithoutExtions = data[0];
+    console.log("file withoutextions");
+    console.log(fileName);
 
 
     var newDocumentHolder = document.createElement('div');
@@ -307,15 +310,14 @@ function addDocToList(data) {
     newDocumentHolder.setAttribute("id", decodeURI(data));
     documentCanvas.width = 306;
     documentCanvas.height = 396;
-    documentCanvas.id = "canvass" + data;
+    documentCanvas.id = "canvass" + fileName;
     var PDFWrapper = document.getElementById("Canvas-Document-Holder");
 
     newDocumentHolder.appendChild(documentIdentifier);
     newDocumentHolder.appendChild(documentCanvas);
     PDFWrapper.insertBefore(newDocumentHolder,PDFWrapper.firstChild);
     var URLReadyDocument = encodeURI(data);
-    //gives server crash!
-    showMultiplePDFDocument("/api/getDocumentURL/" + URLReadyDocument, "canvass" + data, URLReadyDocument, true);
+    showMultiplePDFDocument("/api/getDocumentURL/" + URLReadyDocument, "canvass" + fileName, URLReadyDocument, false);
 
     //$("#canvass" + data).parent().on("click", function (e) {
     //    alert("I clicked the dock!");

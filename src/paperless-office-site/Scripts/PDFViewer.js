@@ -200,15 +200,15 @@ function showMultiplePDFDocument(url, canvasID, currentDoc, suggestion) {
               canvasContext: context,
               viewport: viewport
           };
-          console.log("logging canvasID");
-          console.log(currentDoc);
-          console.log(canvasID);
+          
           //set on click listener
          
 
           // Render PDF page
           page.render(renderContext).promise.then(function () {
-              
+              console.log("logging canvasID");
+              console.log(currentDoc);
+              console.log(canvasID);
               $("#" + canvasID).parent().data("currentDoc", currentDoc).click(function () {
                   console.log(suggestion);
                   console.log("start on click for dock " + canvasID);
@@ -224,9 +224,9 @@ function showMultiplePDFDocument(url, canvasID, currentDoc, suggestion) {
                   getDocName(decodeURIComponent($(this).data("currentDoc")));
               });
           });
-          $("#"+currentDoc).parent().on("click", function (e) {
-              alert("I clicked the dock!");
-          })
+          //$("#"+currentDoc).parent().on("click", function (e) {
+          //    alert("I clicked the dock!");
+          //})
          
       });
 }
