@@ -44,9 +44,9 @@ function addUploadStatus(classname) {
         }
         $(spanObject).addClass(classname);
     } else {
-        console.log("else gets called");
-        //there are no documents and there is pressed on the upload button
-        $("#upload").removeClass("uploadToggled");
+        //console.log("else gets called");
+        ////there are no documents and there is pressed on the upload button
+        //$("#upload").removeClass("uploadToggled");
         $(spanObject).addClass("upload-noDocuments");
 
     }
@@ -318,11 +318,6 @@ function addDocToList(data) {
     PDFWrapper.insertBefore(newDocumentHolder,PDFWrapper.firstChild);
     var URLReadyDocument = encodeURI(data);
     showMultiplePDFDocument("/api/getDocumentURL/" + URLReadyDocument, "canvass" + fileName, URLReadyDocument, false);
-
-    //$("#canvass" + data).parent().on("click", function (e) {
-    //    alert("I clicked the dock!");
-    //})
-    //cfpLoadingBar.start();
 
 
 
