@@ -738,7 +738,7 @@ app.get("/api/search/:url", function (req, res) {
                     textDocsArray = items[0].docs;
                     //console.log(textArray);
                 };
-                 var titelArray = new Array( textArray.values());
+                titelArray.push.apply(titelArray,textArray);
                 let inputTitel = titelArray;
                 console.log(inputTitel);
                 collection.aggregate([
