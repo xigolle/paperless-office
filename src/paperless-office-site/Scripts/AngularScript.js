@@ -213,15 +213,7 @@ app.controller("uploadController", function ($scope, $http) {
     
     $scope.upload = function () {
         
-        dropContainer.ondragover = dropContainer.ondragenter = function(evt) {
-  evt.preventDefault();
-};
-
-dropContainer.ondrop = function(evt) {
-  // pretty simple -- but not for IE :(
-  fileInput.files = evt.dataTransfer.files;
-  evt.preventDefault();
-};
+      
 
         console.log("calling upload function");
         addUploadStatus("upload-progress");
