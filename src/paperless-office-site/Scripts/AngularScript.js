@@ -268,8 +268,16 @@ app.controller("uploadController", function ($scope, $http) {
         }
         fd = new FormData();
         if (tempArray.length <= 0) {
+            console.log("should be collapsing?");
+            $scope.collapseDetails = "collapse";
+            $scope.collapseZone = "";
             docNameAdded = false;
             addUploadStatus("upload-noDocuments");
+            console.log("oops I am empty");
+            document.getElementById("inputUpload").value = "";
+            //is needed else it will only update after a certain click.
+            $scope.$apply();
+
         }
         
         for (var i = 0; i < tempArray.length; i++) {
