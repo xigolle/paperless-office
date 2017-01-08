@@ -1,4 +1,4 @@
-﻿
+
 var app = angular.module("app", ["ngRoute", "angular-loading-bar"])
 .config(['cfpLoadingBarProvider', function (cfpLoadingBarProvider) {
     cfpLoadingBarProvider.parentSelector = '#upload';
@@ -200,6 +200,7 @@ app.controller("deleteUserCtrl", function ($scope, $http, $route) {
 });
 app.controller("uploadController", function ($scope, $http) {
 
+    
     var fd = new FormData();
     var firstDocAdded = false;
     var docNameAdded = false;
@@ -209,8 +210,18 @@ app.controller("uploadController", function ($scope, $http) {
     $scope.docName = "";
     $scope.docLabels = "";
 
-
+    
     $scope.upload = function () {
+        
+        dropContainer.ondragover = dropContainer.ondragenter = function(evt) {
+  evt.preventDefault();
+};
+
+dropContainer.ondrop = function(evt) {
+  // pretty simple -- but not for IE :(
+  fileInput.files = evt.dataTransfer.files;
+  evt.preventDefault();
+};
 
         console.log("calling upload function");
         addUploadStatus("upload-progress");

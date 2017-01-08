@@ -11,6 +11,7 @@ var assert = require('assert');
 var config = require("../config.json");
 var extract = require("pdf-text-extract");
 var commonWords = require("./models/commonWords.js");
+
 //---------------------
 // dependencies
 var debug = require('debug')('passport-mongo');
