@@ -66,6 +66,7 @@ $(function () {
     $("#inputUpload").change(function () {
         for (var i = 0; i < this.files.length; i++) {
             if (this.files && this.files[i]) {
+                addUploadStatus("upload-hasDocuments");
                 var reader = new FileReader();
                 var currentFile = this.files[i];
 
