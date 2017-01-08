@@ -171,7 +171,7 @@ $(function () {
     }
 });
 
-function showMultiplePDFDocument(url, canvasID, currentDoc) {
+function showMultiplePDFDocument(url, canvasID, currentDoc, suggestion) {
     var url = url;
     // Asynchronous download PDF
     PDFJS.getDocument(url)
@@ -203,13 +203,16 @@ function showMultiplePDFDocument(url, canvasID, currentDoc) {
 
           //set on click listener
           $("#" + canvasID).parent().data("currentDoc", currentDoc).click(function () {
-
+              console.log(suggestion);
               var SingleDocumentURL = encodeURIComponent("/api/getDocumentURL/" + $(this).data("currentDoc"));
-              openSinglePDFReader(SingleDocumentURL);
+              openSinglePDFReader(SingleDocumentURL, suggestion);
               
               angular.element("#labelSection").scope().getLabels("/api/getLabels/" + $(this).data("currentDoc"));       
               angular.element("#labelSection").scope().getLabelSuggestions("/api/getLabelSuggestions/" + $(this).data("currentDoc"));
-
+              angular.element("#docs").scope().getDocumentSuggestions("/api/getDocumentSuggestions/" + $(this).data("currentDoc"));
+              angular.element("body").scope().changeStyle(false, true);
+              angular.element("#docs").scope().destroyDocSuggestions();
+              angular.element("#labels").scope().destroyLabels();
               //bring doc name to angularscript
               getDocName(decodeURIComponent($(this).data("currentDoc")));
           });
@@ -225,16 +228,23 @@ function openListOfDocuments() {
     $("#DocumentIFrame").toggle();
     $("#SuggestedDocumentSection").toggle();
     $("#PDFDocumentWrapper").toggleClass("col-md-10");
-    $("#DeleteButton").toggleClass("hidden");
+    $("#DeleteButton, #HomeButton, hr").toggleClass("hidden");
 }
-function openSinglePDFReader(url) {
-    $("#Canvas-Document-Holder").toggle();
-    //$("#DocumentIFrame")
-    $("#PDFDocumentWrapper").toggleClass("col-md-10");
+function openSinglePDFReader(url, suggestion) {
+    if (!suggestion) {
+        $("#Canvas-Document-Holder").toggle();
+        //$("#DocumentIFrame")
+        $("#PDFDocumentWrapper").toggleClass("col-md-10");
 
-    $("#SuggestedDocumentSection").toggle();
-    $("#DocumentIFrame").attr('src', "/web/viewer.html?file=" + url).toggle();
-    $("#DeleteButton").toggleClass("hidden");
+        $("#SuggestedDocumentSection").toggle();
+
+        $("#DeleteButton, #HomeButton, hr").toggleClass("hidden");
+        $("#DocumentIFrame").attr('src', "/web/viewer.html?file=" + url).toggle();
+    } else {
+        $("#DocumentIFrame").attr('src', "/web/viewer.html?file=" + url);
+    }
+
+    
 }
 
 //AngularScript will us the url var to know which doc is being deleted

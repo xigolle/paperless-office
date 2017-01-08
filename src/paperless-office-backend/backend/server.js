@@ -179,20 +179,18 @@ var storage = multer.diskStorage({
 var upload = multer({ storage: storage }).any("myFile");
 function cleanOCROutput(text) {
     var newArray = [];
-    strippedResult = text.toString().replace(/[^\wàäâôéèëêïîçùûüÿæœÀÂÄÔÉÈËÊÏÎŸÇÙÛÜÆŒ'`´^Çç]/g, "").toLowerCase();
-    var splitResult = strippedResult.split(" ");
-    //console.log("split result length");
+    var splitResult = text.toString().split(" ");
     for (var i = 0; i < splitResult.length; i++) {
+        splitResult[i] = splitResult[i].toString().replace(/[^\wï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ÎŸï¿½ï¿½ï¿½ï¿½ÆŒ'`ï¿½^ï¿½ï¿½]/g, "").toLowerCase();
         if (splitResult[i] != '') {
-            //console.log("add to array");
+
             newArray.push(splitResult[i]);
         }
-        //console.log("inside for loops");
+
         splitResult[i].length;
-        //if (splitResult[i] ) {
-        //    newArray.push[i];
-        //}
+
     }
+
     return newArray;
 }
 
@@ -252,8 +250,7 @@ app.post("/api/uploadDocuments", function (req, res) {
             console.log("Error Occured: " + err);
             return;
         }
-
-
+        
         console.log(req.body.docName + "    " + req.body.docLabels);
         var userFolder = "./users/" + req.user.username + "/";
         var docName = req.body.docName + ".pdf";
@@ -261,28 +258,25 @@ app.post("/api/uploadDocuments", function (req, res) {
         var labelArray = getLabelArray(req.body.docLabels);
         var fileArray = [];
         var ocrTextArray = [];
-
+        var imageArray = [];
         //var ocrTextString;
         var fileExt;
         fs.readdir(userFolder, function (err, files) {
-            console.dir(files);
+            
             files.forEach(function (file, index) {
                 
-              
                 fileExt = file.split(".");
                 var completeFileUri = userFolder + file;
-                console.log("completeFileURI " + completeFileUri);
-                console.log("docName" + docName);
                 
                 if (fileExt[fileExt.length - 1] != "pdf") {
                     //images
-                    console.log("file URI" + completeFileUri);
+                    imageArray.push(userFolder + file);
+                    fileArray.push(makePDF(userFolder, file, fileExt[0]));
                     tesseract.process(completeFileUri.replace(" ","\\ "), function (err, text) {
 
                         if (err) {
                             console.error("err" + err);
                         } else {
-                            fileArray.push(makePDF(userFolder, file, fileExt[0]));
                             var ocrResult = cleanOCROutput(text);
                             ocrResult.forEach(function (ocrWord) {
                                 ocrTextArray.push(ocrWord);
@@ -291,8 +285,11 @@ app.post("/api/uploadDocuments", function (req, res) {
                             //addOcrMongo(text, req.user.username, docName);
                            
                             if (aSyncCounter === files.length) {
+                                
                                 //console.dir(ocrTextArray);
-
+                                imageArray.forEach(function (file, index) {
+                                    fs.unlinkSync(file);
+                                });
                                oCRAsyncCallback()
                             }
 
@@ -317,7 +314,6 @@ app.post("/api/uploadDocuments", function (req, res) {
                         //addOcrMongo(result, req.user.username, docName);
 
                         if (aSyncCounter === files.length) {
-                            console.log("We are at the end lets do a callback!");
                             //console.dir(ocrTextArray);
                             oCRAsyncCallback();
                         }
@@ -354,11 +350,19 @@ app.post("/api/uploadDocuments", function (req, res) {
                         if (!error) {
                             console.log("success");
                             fs.unlinkSync(docName);
+                            console.log("log filearray!");
+                            console.dir(fileArray);
                             fileArray.forEach(function (file, index) {
+                                console.log("logging file");
+                                console.log(file);
                                 fs.unlinkSync(file);
                             });
 
                         } else {
+                            fileArray.forEach(function (file, index) {
+                                console.log("clearing stuff");
+                                fs.unlinkSync(file);
+                            })
                             res.status(500).send("Internal server error.");
                             return;
                         };
@@ -430,7 +434,7 @@ var makePDF = function (userFolder, fileName, pdfName) {
     doc.pipe(fs.createWriteStream(newDoc));
     doc.image(userFolder + fileName, 0, 0, { fit: [doc.page.width, doc.page.height] });
     doc.end();
-    fs.unlinkSync(userFolder + fileName);
+    //fs.unlinkSync(userFolder + fileName);
     return newDoc;
 }
 
@@ -754,6 +758,114 @@ app.get("/api/search/:url", function (req, res) {
     });
 });
 
+app.delete("/api/deleteUser", function (req, res) {
+    blobSvc.deleteContainerIfExists(req.user.username, function (error, result, response) {
+        if (!error) {
+            console.log('container deleted!');
+        }
+        MongoClient.connect(mongoUrl, function (err, db) {
+            assert.equal(null, err);
+            console.log("Connected succesfully to server for deleting user");
+            var collection = db.collection(req.user.username);
+            var usercollection = db.collection("users");
+            //remove user collection
+            collection.drop();
+            console.log("user collection dropped!");
+            //remove user from user collection
+            usercollection.remove({ "username": req.user.username });
+            console.log("user removed from user collection");
+            setTimeout(function () {
+                res.send("succes");
+                db.close();
+                
+            }, 100);
+
+        });
+    });
+    
+    
+});
+
+app.get("/api/getDocumentSuggestions/:url", function (req, res) {
+    MongoClient.connect(mongoUrl, function (err, db) {
+        assert.equal(null, err);
+        console.log("Connected succesfully to server");
+
+        var collection = db.collection(req.user.username);
+
+        collection.find({ "docs.name": req.params.url }, { "docs.$": 1 }).toArray(function (err, items) {
+            
+            var docArray = [];
+            var counter = 1;
+            var labelArray = items[0].docs[0].labels;
+
+            for (i = 0; i < labelArray.length; i++) {
+                let label = [labelArray[i]];
+                collection.aggregate([
+                    // Get just the docs that contain a shapes element where color is 'red'
+                    { "$match": { "docs.labels": { "$all": label } } },
+                    {
+                        "$project": {
+                            "docs": {
+                                "$filter": {
+                                    "input": "$docs",
+                                    "as": "doc",
+                                    "cond": { "$setIsSubset": [label, "$$doc.labels"] }
+                                }
+                            }
+                        }
+                    }
+                ]).toArray(function (err, items) {
+                    for (j = 0; j < items[0].docs.length; j++) {
+                        if (items[0].docs[j].name !== req.params.url) {
+                            docArray.push(items[0].docs[j].name);
+                        };
+                    };                                     
+                    if (counter === labelArray.length) {
+                        docArray.sort();
+                        var docCountArray = [];
+                        var current = null;
+                        var cnt = 0;
+                        for (var i = 0; i <= docArray.length; i++) {
+                            if (docArray[i] != current) {
+                                if (cnt > 0) {
+                                    docCountArray.push({"count": cnt, "name":current})
+                                    console.log(current + ' comes --> ' + cnt + ' times');
+                                }
+                                current = docArray[i];
+                                cnt = 1;
+                            } else {
+                                cnt++;
+                            }
+                        }
+                        var highest = 0;
+                        docCountArray.forEach(function (count) {
+                            if (count.count > highest) {
+                                highest = count.count;
+                            };
+                        });
+                        docArray = [];
+                        for (i = highest; i > 0; i--) {
+                            docCountArray.forEach(function (count) {
+                                if (count.count === i) {
+                                    docArray.push(count.name);
+                                };
+                            });
+                        }
+                        res.send(docArray.slice(0,4));
+                    }
+                    counter++;
+                });
+               
+            };
+            
+           
+        });
+
+        setTimeout(function () { db.close(); }, 100);
+
+    });
+});
 
 // error handlers
 /*app.use(function (req, res, next) {

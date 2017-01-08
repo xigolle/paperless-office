@@ -9,9 +9,9 @@ var app = angular.module("app", ["ngRoute", "angular-loading-bar"])
 function addUploadStatus(classname) {
     var spanObject = "#submit span";
     var SuccesfullyUploaded = false;
-    if ($(spanObject).hasClass("upload-succes")) SuccesfullyUploaded = true;  
+    if ($(spanObject).hasClass("upload-succes")) SuccesfullyUploaded = true;
     else SuccesfullyUploaded = false;
-    
+
 
 
     $(spanObject).removeClass("upload-noDocuments");
@@ -101,7 +101,21 @@ app.directive('disallowSpaces', function () {
     };
 });
 
-
+app.controller("styleController", function ($scope) {
+    
+    $scope.changeStyle = function (login, readDoc) {
+        if (login) {
+            $scope.divStyle = { "background": "white", "height": "0" };
+            $scope.bodyStyle = { "background": "white", "overflow-y": "auto" };
+        } else if (readDoc) {
+            $scope.bodyStyle = { "overflow": "hidden" };
+        } else {
+            console.log("in login style");
+            $scope.divStyle = { "background": "darkgrey", "height": "100%" };
+            $scope.bodyStyle = { "background": "black" };
+        }
+    };
+})
 
 app.controller("testCTRL", function ($scope, DocumentService, cfpLoadingBar) {
 
@@ -152,7 +166,7 @@ app.controller("testCTRL", function ($scope, DocumentService, cfpLoadingBar) {
                     var URLReadyDocument = encodeURI(documentNames.data[i].name);
 
 
-                    showMultiplePDFDocument("/api/getDocumentURL/" + URLReadyDocument, "canvass" + i, URLReadyDocument);
+                    showMultiplePDFDocument("/api/getDocumentURL/" + URLReadyDocument, "canvass" + i, URLReadyDocument, false);
                     //cfpLoadingBar.start();
 
                 }
@@ -162,7 +176,28 @@ app.controller("testCTRL", function ($scope, DocumentService, cfpLoadingBar) {
     }
 });
 
+app.controller("deleteUserCtrl", function ($scope, $http, $route) {
+    $scope.deleteUser = function () {
+        console.log("delete User function called!");
+        $http({
+            method: 'DELETE',
+            url: "/api/deleteUser",
+            ignoreLoadingBar: true
+            //headers: {
+            //    "test": "Bedrijven.pdf"
+            //}
 
+        }).then(function successCallback(response) {
+            if (response.data == "succes") {
+                $route.reload();
+            }
+            console.dir(response);
+        }, function errorCallback(response) {
+            console.dir("error" + response);
+        });
+    }
+
+});
 app.controller("uploadController", function ($scope, $http) {
 
     var fd = new FormData();
@@ -190,6 +225,8 @@ app.controller("uploadController", function ($scope, $http) {
                 $scope.docName = "";
             }
             if (docNameAdded) {
+                console.log("logging fd");
+                console.dir(fd.getAll("file"));
                 $http.post("/api/uploadDocuments", fd, {
                     //withCredentials: true,
                     headers: { 'Content-Type': undefined },
@@ -209,12 +246,8 @@ app.controller("uploadController", function ($scope, $http) {
                 fd = new FormData();
                 firstDocAdded = false;
                 docNameAdded = false;
-            } else {
-                $scope.myStyle = { "border-color": "red" };
             }
 
-        } else {
-            $scope.myStyle = { "border-color": "darkred" };
         }
 
     }
@@ -238,7 +271,6 @@ app.controller("uploadController", function ($scope, $http) {
 
     }
     $scope.addFile = function (files) {
-        $scope.myStyle = { "border-color": "gray" };
         console.log($scope.myStyle);
         if (!firstDocAdded) {
             //Met deze lijn kunnen we de user meegeven
@@ -277,10 +309,11 @@ app.controller('labelController', function ($scope, $http) {
             labelDeleteSpan.setAttribute("class", "glyphicon glyphicon-remove");
             $(labelSpan).click(function (e) {
                 if (e.target !== e.currentTarget) return;
-                //code to search on this label when clicked.
-                console.log("klik op label");
+                angular.element("#search-bar").scope().searchInput = $(this).text();
+                angular.element(".glyphicon-search").click();
+                openListOfDocuments();               
             });
-            $(labelDeleteSpan).click(function (e) {               
+            $(labelDeleteSpan).click(function (e) {
                 deleteLabel($(this).parent().text(), $(this).parent());
             });
             var text = document.createTextNode(label)
@@ -298,7 +331,7 @@ app.controller('labelController', function ($scope, $http) {
                 createLabels(response.data);
             } else {
                 $scope.labelText = "No labels";
-            }       
+            }
         }, function errorCallback(response) {
             console.log(response.data);
         });
@@ -330,7 +363,7 @@ app.controller('labelController', function ($scope, $http) {
     $scope.labelSectionStyle = "";
     $scope.buttonText = "View more";
 
-    $scope.showLabels = function () {              
+    $scope.showLabels = function () {
         if ($scope.labelSectionStyle === "") {
             $scope.buttonText = "View less";
             $scope.labelSectionStyle = { "overflow-y": "auto", "max-height": "280px" };
@@ -368,6 +401,7 @@ app.controller('labelController', function ($scope, $http) {
 app.controller('searchController', function ($scope, $http) {
     $scope.searchInput = "";
     $scope.search = function () {
+        console.log("in search: " + $scope.searchInput);
         if ($scope.searchInput.trim() != "") {
             $http.get("/api/search/" + encodeURIComponent($scope.searchInput.toLowerCase()), { ignoreLoadingBar: true }).then(function successCallback(response) {
                 console.log(response.data);
@@ -386,17 +420,64 @@ app.controller('searchController', function ($scope, $http) {
         $("#Canvas-Document-Holder > div").each(function () {
             $(this).addClass("hidden");
         });
-        for (var i = 0; i < docs.length; i++) {          
+        for (var i = 0; i < docs.length; i++) {
             $("#Canvas-Document-Holder > div").each(function () {
                 if (docs[i].name === $(this).attr("id")) {
                     $(this).removeClass("hidden");
                 };
             });
-        };       
+        };
     };
 });
 
+app.controller('docsSuggestionController', function ($scope, $http, $window) {
+    $scope.getDocumentSuggestions = function (docURL) {
+        console.log("in suggestions");
+        $http.get(docURL).then(function successCallback(response) {
+            console.log(response.data);
+            setDocuments(response.data);
+        }, function errorCallback(response) {
+            console.log(response.data);
+        });
+    };
 
+    var setDocuments = function (data) {
+        for (var i = 0; i < data.length; i++) {
+
+
+            var newDocumentHolder = document.createElement('div');
+
+            var documentCanvas = document.createElement('canvas');
+            var documentIdentifier = document.createElement('span');
+
+            var documentIdentifierText = document.createTextNode(data[i].slice(13));
+            documentIdentifier.className = "document-identifier";
+            documentIdentifier.appendChild(documentIdentifierText);
+
+            newDocumentHolder.className = "Canvas-Document ";
+            newDocumentHolder.setAttribute("id", decodeURI(data[i]));
+            //documentCanvas.width = 100;
+            //documentCanvas.height = 100;
+            documentCanvas.id = "suggestionCanvas" + i;         
+            var PDFWrapper = document.getElementById("docs");
+
+            newDocumentHolder.appendChild(documentIdentifier);
+            newDocumentHolder.appendChild(documentCanvas);
+            PDFWrapper.appendChild(newDocumentHolder);
+            var URLReadyDocument = encodeURI(data[i]);
+
+
+            showMultiplePDFDocument("/api/getDocumentURL/" + URLReadyDocument, "suggestionCanvas" + i, URLReadyDocument, true);
+            //cfpLoadingBar.start();
+
+        }
+    }
+
+    $scope.destroyDocSuggestions = function () {
+        console.log("destroy docsuggestions");
+        $("#docs").children("div").remove();
+    }
+});
 
 //--------------------------------
 
