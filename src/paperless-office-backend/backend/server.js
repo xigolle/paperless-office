@@ -679,6 +679,7 @@ app.get("/api/search/:url", function (req, res) {
         var finalArray = [];
         var labelDocsArray = [];
         var textDocsArray = [];
+        var titelArray = [];
 
         firstSplit.forEach(function (text) {
             secondSplit.push(text.split("#"));
@@ -736,6 +737,13 @@ app.get("/api/search/:url", function (req, res) {
                     textDocsArray = items[0].docs;
                     //console.log(textArray);
                 };
+                 var titelArray = new Array( textArray.values());
+                let inputTitel = titelArray;
+                console.log(inputTitel);
+                collection.aggregate([
+                    //
+                ])
+                
                 if (labelArray.length === 0) {
                     res.send(textDocsArray);
                 } else if (textArray.length === 0) {
@@ -882,4 +890,4 @@ app.use(function (err, req, res) {
     }));
 });*/
 
-app.listen(3000);
+app.listen(5000);
