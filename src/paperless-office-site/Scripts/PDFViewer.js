@@ -200,25 +200,34 @@ function showMultiplePDFDocument(url, canvasID, currentDoc, suggestion) {
               canvasContext: context,
               viewport: viewport
           };
-
+          console.log("logging canvasID");
+          console.log(currentDoc);
+          console.log(canvasID);
           //set on click listener
-          $("#" + canvasID).parent().data("currentDoc", currentDoc).click(function () {
-              console.log(suggestion);
-              var SingleDocumentURL = encodeURIComponent("/api/getDocumentURL/" + $(this).data("currentDoc"));
-              openSinglePDFReader(SingleDocumentURL, suggestion);
-              
-              angular.element("#labelSection").scope().getLabels("/api/getLabels/" + $(this).data("currentDoc"));       
-              angular.element("#labelSection").scope().getLabelSuggestions("/api/getLabelSuggestions/" + $(this).data("currentDoc"));
-              angular.element("#docs").scope().getDocumentSuggestions("/api/getDocumentSuggestions/" + $(this).data("currentDoc"));
-              angular.element("body").scope().changeStyle(false, true);
-              angular.element("#docs").scope().destroyDocSuggestions();
-              angular.element("#labels").scope().destroyLabels();
-              //bring doc name to angularscript
-              getDocName(decodeURIComponent($(this).data("currentDoc")));
-          });
+         
 
           // Render PDF page
-          page.render(renderContext);
+          page.render(renderContext).promise.then(function () {
+              
+              $("#" + canvasID).parent().data("currentDoc", currentDoc).click(function () {
+                  console.log(suggestion);
+                  console.log("start on click for dock " + canvasID);
+                  var SingleDocumentURL = encodeURIComponent("/api/getDocumentURL/" + $(this).data("currentDoc"));
+                  openSinglePDFReader(SingleDocumentURL, suggestion);
+                  angular.element("#labelSection").scope().getLabels("/api/getLabels/" + $(this).data("currentDoc"));
+                  angular.element("#labelSection").scope().getLabelSuggestions("/api/getLabelSuggestions/" + $(this).data("currentDoc"));
+                  angular.element("#docs").scope().getDocumentSuggestions("/api/getDocumentSuggestions/" + $(this).data("currentDoc"));
+                  angular.element("body").scope().changeStyle(false, true);
+                  angular.element("#docs").scope().destroyDocSuggestions();
+                  angular.element("#labels").scope().destroyLabels();
+                  //bring doc name to angularscript
+                  getDocName(decodeURIComponent($(this).data("currentDoc")));
+              });
+          });
+          $("#"+currentDoc).parent().on("click", function (e) {
+              alert("I clicked the dock!");
+          })
+         
       });
 }
 

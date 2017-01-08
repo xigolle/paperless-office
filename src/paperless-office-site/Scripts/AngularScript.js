@@ -102,7 +102,7 @@ app.directive('disallowSpaces', function () {
 });
 
 app.controller("styleController", function ($scope) {
-    
+
     $scope.changeStyle = function (login, readDoc) {
         if (login) {
             $scope.divStyle = { "background": "white", "height": "0" };
@@ -233,8 +233,12 @@ app.controller("uploadController", function ($scope, $http) {
                     transformRequest: angular.identity
                 }).then(function successCallback(response) {
                     console.log("Document upload was a success.");
-
+                    console.log("response from server");
+                    console.log(response);
                     addUploadStatus("upload-succes");
+                    console.log("calling doc to list");
+                    addDocToList(response.data);
+
                 }, function errorCallback(response) {
                     console.log("Document upload failed.");
                     addUploadStatus("upload-error");
@@ -284,7 +288,43 @@ app.controller("uploadController", function ($scope, $http) {
     }
 
 });
+function addDocToList(data) {
+    console.log("log add doc to list data");
+    console.log(data);
 
+
+
+    var newDocumentHolder = document.createElement('div');
+
+    var documentCanvas = document.createElement('canvas');
+    var documentIdentifier = document.createElement('span');
+
+    var documentIdentifierText = document.createTextNode(decodeURI(data).slice(13));
+    documentIdentifier.className = "document-identifier";
+    documentIdentifier.appendChild(documentIdentifierText);
+
+    newDocumentHolder.className = "Canvas-Document ";
+    newDocumentHolder.setAttribute("id", decodeURI(data));
+    documentCanvas.width = 306;
+    documentCanvas.height = 396;
+    documentCanvas.id = "canvass" + data;
+    var PDFWrapper = document.getElementById("Canvas-Document-Holder");
+
+    newDocumentHolder.appendChild(documentIdentifier);
+    newDocumentHolder.appendChild(documentCanvas);
+    PDFWrapper.insertBefore(newDocumentHolder,PDFWrapper.firstChild);
+    var URLReadyDocument = encodeURI(data);
+    //gives server crash!
+    showMultiplePDFDocument("/api/getDocumentURL/" + URLReadyDocument, "canvass" + data, URLReadyDocument, true);
+
+    //$("#canvass" + data).parent().on("click", function (e) {
+    //    alert("I clicked the dock!");
+    //})
+    //cfpLoadingBar.start();
+
+
+
+}
 app.controller('deleteController', function ($scope, $http, $route, cfpLoadingBar) {
     $scope.delete = function () {
 
@@ -311,7 +351,7 @@ app.controller('labelController', function ($scope, $http) {
                 if (e.target !== e.currentTarget) return;
                 angular.element("#search-bar").scope().searchInput = $(this).text();
                 angular.element(".glyphicon-search").click();
-                openListOfDocuments();               
+                openListOfDocuments();
             });
             $(labelDeleteSpan).click(function (e) {
                 deleteLabel($(this).parent().text(), $(this).parent());
@@ -434,6 +474,7 @@ app.controller('docsSuggestionController', function ($scope, $http, $window) {
     $scope.getDocumentSuggestions = function (docURL) {
         console.log("in suggestions");
         $http.get(docURL).then(function successCallback(response) {
+            console.log("suggestion response");
             console.log(response.data);
             setDocuments(response.data);
         }, function errorCallback(response) {
@@ -458,7 +499,7 @@ app.controller('docsSuggestionController', function ($scope, $http, $window) {
             newDocumentHolder.setAttribute("id", decodeURI(data[i]));
             //documentCanvas.width = 100;
             //documentCanvas.height = 100;
-            documentCanvas.id = "suggestionCanvas" + i;         
+            documentCanvas.id = "suggestionCanvas" + i;
             var PDFWrapper = document.getElementById("docs");
 
             newDocumentHolder.appendChild(documentIdentifier);

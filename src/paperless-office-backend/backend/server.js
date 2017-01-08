@@ -254,7 +254,8 @@ app.post("/api/uploadDocuments", function (req, res) {
         console.log(req.body.docName + "    " + req.body.docLabels);
         var userFolder = "./users/" + req.user.username + "/";
         var docName = req.body.docName + ".pdf";
-
+        console.log("log docname server");
+        console.log(docName);
         var labelArray = getLabelArray(req.body.docLabels);
         var fileArray = [];
         var ocrTextArray = [];
@@ -336,8 +337,10 @@ app.post("/api/uploadDocuments", function (req, res) {
                                 fileArray.forEach(function (file, index) {
                                     fs.unlinkSync(file);
                                 });
+                                res.send(docName);
 
                             } else {
+                                console.log("Error first call!");
                                 res.status(500).send("Internal server error.");
                                 return;
                             };
@@ -357,12 +360,15 @@ app.post("/api/uploadDocuments", function (req, res) {
                                 console.log(file);
                                 fs.unlinkSync(file);
                             });
+                            res.send(docName);
 
                         } else {
                             fileArray.forEach(function (file, index) {
                                 console.log("clearing stuff");
                                 fs.unlinkSync(file);
                             })
+                            console.dir(error);
+                            console.log("Error second call!");
                             res.status(500).send("Internal server error.");
                             return;
                         };
@@ -399,6 +405,7 @@ app.post("/api/uploadDocuments", function (req, res) {
                         },
                         function (err, result) {
                             if (err) {
+                                console.log("Error third call!");
                                 return;
                                 res.status(500).send("Internal server error.");
                             }
@@ -422,7 +429,7 @@ app.post("/api/uploadDocuments", function (req, res) {
 
 
 
-        res.end();
+        //res.end();
     })
 
 });
@@ -882,4 +889,4 @@ app.use(function (err, req, res) {
     }));
 });*/
 
-app.listen(3000);
+app.listen(4000);
