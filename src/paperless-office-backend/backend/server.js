@@ -680,6 +680,7 @@ app.get("/api/search/:url", function (req, res) {
         var labelDocsArray = [];
         var textDocsArray = [];
         var titelArray = [];
+        var titelDocsArray= [];
 
         firstSplit.forEach(function (text) {
             secondSplit.push(text.split("#"));
@@ -741,9 +742,24 @@ app.get("/api/search/:url", function (req, res) {
                 let inputTitel = titelArray;
                 console.log(inputTitel);
                 collection.aggregate([
-                    //
-                ])
-                
+                    { "$match": {"docs.name" : { "$all": inputTitel} } },
+                    /*{
+                        "$project":{
+                            "docs":{
+                                "$filter":{
+                                    "input":"$docs",
+                                    "as":"doc",
+                                    "cond":{"$set":[inputTitel, "$$doc.name"] }
+                                }
+                            }
+                        }
+                    }*/
+                ]).toArray(function(err,items){
+                    if(items.length > 0) {
+                        titelDocsArray = items[0].docs;
+                        console.log(titelArray);
+                    }
+                    
                 if (labelArray.length === 0) {
                     res.send(textDocsArray);
                 } else if (textArray.length === 0) {
@@ -758,6 +774,7 @@ app.get("/api/search/:url", function (req, res) {
                     });
                     res.send(finalArray);
                 }
+                    });
             });
         });
 
