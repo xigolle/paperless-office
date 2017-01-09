@@ -766,7 +766,7 @@ app.get("/api/search/:url", function (req, res) {
                                 "$filter":{
                                     "input":"$docs",
                                     "as":"doc",
-                                    "cond":{ $eq: ['$$doc.name', inputTitel] }
+                                    "cond":{ $eq: [inputTitel, "$$doc.name"] }
                                 }
                             }
                         }
