@@ -770,7 +770,7 @@ app.get("/api/search/:url", function (req, res) {
                                 }
                             }
                         }
-                    }
+                    
                 ]).toArray(function(err,items){
                     console.log(items);
                     if(items.length > 0) {
