@@ -273,7 +273,7 @@ app.post("/api/uploadDocuments", function (req, res) {
                     //images
                     imageArray.push(userFolder + file);
                     fileArray.push(makePDF(userFolder, file, fileExt[0]));
-                    tesseract.process(completeFileUri.replace(" ","\\ "), function (err, text) {
+                    tesseract.process(completeFileUri.replace(/ /g,"\\ "), function (err, text) {
 
                         if (err) {
                             console.error("err" + err);
