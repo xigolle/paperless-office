@@ -773,7 +773,7 @@ app.get("/api/search/:url", function (req, res) {
                 ]).toArray(function(err,items){
                     if(items.length > 0) {
                         titelDocsArray = items[0].docs;
-                        //console.log(titelArray);
+                        console.log(titelDocsArray);
                     }
                     
                     
