@@ -762,12 +762,11 @@ app.get("/api/search/:url", function (req, res) {
                     { "$match": {"docs.name" : { "$all": inputTitel} } } ,
                     {
                         "$project":{
-                            
                             "docs":{
                                 "$filter":{
                                     "input":"$docs",
                                     "as":"doc",
-                                    "cond":{ }
+                                    "cond":{ $eq: ['$$doc.name', inputTitel] }
                                 }
                             }
                         }
