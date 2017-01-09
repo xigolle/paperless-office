@@ -758,6 +758,7 @@ app.get("/api/search/:url", function (req, res) {
                 let inputTitel = titelArray;
                 console.log(inputTitel);
                 collection.aggregate([
+                    
                     { "$match": {"docs.name" : { "$all": inputTitel} } },
                     {
                         "$project":{
@@ -765,7 +766,7 @@ app.get("/api/search/:url", function (req, res) {
                                 "$filter":{
                                     "input":"$docs",
                                     "as":"doc",
-                                    "cond":{ $match:{ $text:{ $search : "$$doc.name"} } }
+                                    "cond":{ $text:{ $search : "$$doc.name"} } }
                                 }
                             }
                         }
