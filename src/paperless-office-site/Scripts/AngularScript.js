@@ -269,6 +269,8 @@ app.controller("uploadController", function ($scope, $http) {
         fd = new FormData();
         if (tempArray.length <= 0) {
             console.log("should be collapsing?");
+            $scope.docName = "";
+            $scope.docLabels = "";
             $scope.collapseDetails = "collapse";
             $scope.collapseZone = "";
             docNameAdded = false;
