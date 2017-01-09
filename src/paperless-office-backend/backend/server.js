@@ -759,11 +759,10 @@ app.get("/api/search/:url", function (req, res) {
                 console.log(inputTitel);
                 collection.aggregate([
                     
-                    { "$match": {"docs.name" : { "$all": inputTitel} } } /*,
+                    { "$match": {"docs.name" : { "$all": inputTitel} } } ,
                     {
                         "$project":{
-                            //
-                            /*
+                            
                             "docs":{
                                 "$filter":{
                                     "input":"$docs",
@@ -771,7 +770,7 @@ app.get("/api/search/:url", function (req, res) {
                                     "cond":{ }
                                 }
                             }
-                        }*/
+                        }
                     
                 ]).toArray(function(err,items){
                     console.log(items);
@@ -785,8 +784,7 @@ app.get("/api/search/:url", function (req, res) {
                 if (labelArray.length === 0) {
                     res.send(textDocsArray);
                 } 
-                    else if (textArray.length === 0) 
-                {
+                    else if (textArray.length === 0) {
                     res.send(labelDocsArray);
                 }
                   else if( labelArray.length === 0 && textArray.length === 0)
@@ -804,8 +802,8 @@ app.get("/api/search/:url", function (req, res) {
                         });
                     });
                     res.send(finalArray);
-                }
-                    });
+                    }
+                });
             });
         });
 
