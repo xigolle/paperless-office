@@ -681,11 +681,14 @@ app.get("/api/search/:url", function (req, res) {
 
         var firstSplit = req.params.url.match(/\S+/g);
         var secondSplit = [];
+        var thirdSplit = [];
         var labelArray = [];
         var textArray = [];
         var finalArray = [];
         var labelDocsArray = [];
         var textDocsArray = [];
+        var titelArray = [];
+        var titelDocsArray= [];
 
         firstSplit.forEach(function (text) {
             secondSplit.push(text.split("#"));
@@ -699,6 +702,22 @@ app.get("/api/search/:url", function (req, res) {
                     }
                 })
             } else {
+                thirdSplit.push(text[0].split("*"));
+                console.log(textArray);
+                //textArray.push(text[0]);
+                
+            }
+        })
+        
+        thirdSplit.forEach(function (text){
+            if( text.length > 1){
+                text.forEach(function(titel) {
+                    if(titel !== ""){
+                        titelArray.push(titel);
+                    }
+                })
+            }            
+            else {
                 textArray.push(text[0]);
             }
         })
@@ -743,20 +762,57 @@ app.get("/api/search/:url", function (req, res) {
                     textDocsArray = items[0].docs;
                     //console.log(textArray);
                 };
+                
+                let inputTitel = titelArray;
+                console.log(inputTitel);
+                console.log(titelArray);
+                collection.aggregate([
+                    
+                    { "$match": {"docs.name" : { "$all": inputTitel} } } ,
+                    {
+                        "$project":{
+                            "docs":{
+                                "$filter":{
+                                    "input":"$docs",
+                                    "as":"doc",
+                                    "cond":{ $eq: [inputTitel, "$$doc.name"] }
+                                }
+                            }
+                        }
+                    }
+                    
+                ]).toArray(function(err,items){
+                    console.log(items);
+                    if(items.length > 0) {
+                        titelDocsArray = items[0].docs;
+                        console.log("###" + items[0].docs);
+                        console.log(titelDocsArray);
+                    };
+                
+                    
                 if (labelArray.length === 0) {
                     res.send(textDocsArray);
-                } else if (textArray.length === 0) {
+                } 
+                    else if (textArray.length === 0) {
                     res.send(labelDocsArray);
-                } else {
+                }
+                  else if( labelArray.length === 0 && textArray.length === 0)
+                      {
+                         res.send(titelDocsArray); 
+                      }
+                 else {
                     textDocsArray.forEach(function (text) {
                         labelDocsArray.forEach(function (label) {
-                            if (text.name === label.name) {
+                            titelDocsArray.forEach(function(titel){
+                                if (text.name === label.name) {
                                 finalArray.push(label);
                             }
+                            });
                         });
                     });
                     res.send(finalArray);
-                }
+                    }
+                });
             });
         });
 
@@ -889,4 +945,4 @@ app.use(function (err, req, res) {
     }));
 });*/
 
-app.listen(3000);
+app.listen(5000);
