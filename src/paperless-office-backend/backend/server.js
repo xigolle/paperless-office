@@ -759,17 +759,19 @@ app.get("/api/search/:url", function (req, res) {
                 console.log(inputTitel);
                 collection.aggregate([
                     
-                    { "$match": {"docs.name" : { "$all": inputTitel} } },
+                    { "$match": {"docs.name" : { "$all": inputTitel} } } /*,
                     {
                         "$project":{
+                            //
+                            /*
                             "docs":{
                                 "$filter":{
                                     "input":"$docs",
                                     "as":"doc",
-                                    "cond":{ $text:{ $search : "$$doc.name"} } }
+                                    "cond":{ }
                                 }
                             }
-                        }
+                        }*/
                     
                 ]).toArray(function(err,items){
                     console.log(items);
