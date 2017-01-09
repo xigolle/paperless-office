@@ -778,7 +778,7 @@ app.get("/api/search/:url", function (req, res) {
                         titelDocsArray = items[0].docs;
                         console.log("###" + items[0].docs);
                         console.log(titelDocsArray);
-                    }
+                    };
                 
                     
                 if (labelArray.length === 0) {
