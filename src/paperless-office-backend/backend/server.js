@@ -674,6 +674,7 @@ app.get("/api/search/:url", function (req, res) {
 
         var firstSplit = req.params.url.match(/\S+/g);
         var secondSplit = [];
+        var thirdSplit = [];
         var labelArray = [];
         var textArray = [];
         var finalArray = [];
@@ -694,6 +695,21 @@ app.get("/api/search/:url", function (req, res) {
                     }
                 })
             } else {
+                thirdSplit.push(text.split("*"));
+                //textArray.push(text[0]);
+                
+            }
+        })
+        
+        thirdSplit.forEach(function (text){
+            if( text.length > 1){
+                text.forEach(function(titel) {
+                    if(titel !== ""){
+                        titelArray.push("*" + titel);
+                    }
+                })
+            }            
+            else {
                 textArray.push(text[0]);
             }
         })
@@ -738,7 +754,7 @@ app.get("/api/search/:url", function (req, res) {
                     textDocsArray = items[0].docs;
                     //console.log(textArray);
                 };
-                titelArray.push.apply(titelArray,textArray);
+                
                 let inputTitel = titelArray;
                 console.log(inputTitel);
                 collection.aggregate([
@@ -757,19 +773,25 @@ app.get("/api/search/:url", function (req, res) {
                 ]).toArray(function(err,items){
                     if(items.length > 0) {
                         titelDocsArray = items[0].docs;
-                        console.log(titelArray);
+                        //console.log(titelArray);
                     }
+                    
                     
                 if (labelArray.length === 0) {
                     res.send(textDocsArray);
                 } else if (textArray.length === 0) {
                     res.send(labelDocsArray);
+                    else if (titelArray.length ==0){
+                        res.send(titelDocsArray);
+                    }
                 } else {
                     textDocsArray.forEach(function (text) {
                         labelDocsArray.forEach(function (label) {
-                            if (text.name === label.name) {
+                            titelDocsArray.forEach(function(titel){
+                                if (text.name === label.name) {
                                 finalArray.push(label);
                             }
+                            });
                         });
                     });
                     res.send(finalArray);
