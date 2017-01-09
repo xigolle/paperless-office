@@ -695,8 +695,7 @@ app.get("/api/search/:url", function (req, res) {
                     }
                 })
             } else {
-                thirdSplit.push(text[0].split("*"));
-                console.log(textArray);
+                thirdSplit.push(text[0].split("@"));
                 //textArray.push(text[0]);
                 
             }
