@@ -780,11 +780,13 @@ app.get("/api/search/:url", function (req, res) {
                         console.log("###" + items[0].docs);
                         console.log(titelDocsArray);
                     }
-                    
+                
                     
                 if (labelArray.length === 0) {
                     res.send(textDocsArray);
-                } else if (textArray.length === 0) {
+                } 
+                    else if (textArray.length === 0) 
+                {
                     res.send(labelDocsArray);
                 }
                   else if( labelArray.length === 0 && textArray.length === 0)
