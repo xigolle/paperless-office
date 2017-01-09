@@ -765,7 +765,7 @@ app.get("/api/search/:url", function (req, res) {
                                 "$filter":{
                                     "input":"$docs",
                                     "as":"doc",
-                                    "cond":{"$setEquals":[inputTitel, "$$doc.name".splice(13,1)] }
+                                    "cond":{"$setEquals":[inputTitel, { $slice:["$$doc.name", 13 ]}] }
                                 }
                             }
                         }
