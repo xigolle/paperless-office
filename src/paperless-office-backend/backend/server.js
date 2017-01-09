@@ -715,7 +715,7 @@ app.get("/api/search/:url", function (req, res) {
         })
 
         let inputLabels = labelArray;
-        console.log(inputLabels);
+        //console.log(inputLabels);
         collection.aggregate([
             { "$match": { "docs.labels": { "$all": inputLabels } } },
             {
@@ -735,7 +735,7 @@ app.get("/api/search/:url", function (req, res) {
                 //console.log(labelArray);
             };
             let inputText = textArray;
-            console.log(inputText);
+            //console.log(inputText);
             collection.aggregate([
                 { "$match": { "docs.ocrOutput": { "$all": inputText } } },
                 {
@@ -756,7 +756,7 @@ app.get("/api/search/:url", function (req, res) {
                 };
                 
                 let inputTitel = titelArray;
-                console.log(inputTitel);
+                //console.log(inputTitel);
                 console.log(titelArray);
                 collection.aggregate([
                     
@@ -767,18 +767,18 @@ app.get("/api/search/:url", function (req, res) {
                                 "$filter":{
                                     "input":"$docs",
                                     "as":"doc",
-                                    "cond":{ $eq: [inputTitel, { $slice :[ "$$doc.name" , 13 , { $size : "$$doc.name" } ] } ]
+                                    "cond":{ $eq: [inputTitel, { $slice :[ "$$doc.name" , 13 , { $size : "$$doc.name" } -13 ] } ]
                                 
                             }
                         }
                     }
                     
                 ]).toArray(function(err,items){
-                    console.log(items);
+                   // console.log(items);
                     if(items.length > 0) {
                         titelDocsArray = items[0].docs;
-                        console.log("###" + items[0].docs);
-                        console.log(titelDocsArray);
+                        //console.log("###" + items[0].docs);
+                        //console.log(titelDocsArray);
                     };
                 
                     
