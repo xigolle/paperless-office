@@ -695,7 +695,7 @@ app.get("/api/search/:url", function (req, res) {
                     }
                 })
             } else {
-                thirdSplit.push(text.split("*"));
+                thirdSplit.push(text[0].split("*"));
                 //textArray.push(text[0]);
                 
             }
