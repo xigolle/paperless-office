@@ -705,7 +705,7 @@ app.get("/api/search/:url", function (req, res) {
             if( text.length > 1){
                 text.forEach(function(titel) {
                     if(titel !== ""){
-                        titelArray.push("*" + titel);
+                        titelArray.push(titel);
                     }
                 })
             }            
