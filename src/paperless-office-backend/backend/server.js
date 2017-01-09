@@ -743,17 +743,17 @@ app.get("/api/search/:url", function (req, res) {
                 console.log(inputTitel);
                 collection.aggregate([
                     { "$match": {"docs.name" : { "$all": inputTitel} } },
-                    /*{
+                    {
                         "$project":{
                             "docs":{
                                 "$filter":{
                                     "input":"$docs",
                                     "as":"doc",
-                                    "cond":{"$set":[inputTitel, "$$doc.name"] }
+                                    "cond":{"$setEquals":[inputTitel, "$$doc.name"] }
                                 }
                             }
                         }
-                    }*/
+                    }
                 ]).toArray(function(err,items){
                     if(items.length > 0) {
                         titelDocsArray = items[0].docs;
