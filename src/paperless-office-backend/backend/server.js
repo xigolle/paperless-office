@@ -785,7 +785,7 @@ app.get("/api/search/:url", function (req, res) {
                     else if (titelArray.length ==0){
                         res.send(titelDocsArray);
                     }
-                } else {
+                 else {
                     textDocsArray.forEach(function (text) {
                         labelDocsArray.forEach(function (label) {
                             titelDocsArray.forEach(function(titel){
