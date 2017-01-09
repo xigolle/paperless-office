@@ -782,9 +782,10 @@ app.get("/api/search/:url", function (req, res) {
                 } else if (textArray.length === 0) {
                     res.send(labelDocsArray);
                 }
-                    else if (titelArray.length ==0){
-                        res.send(titelDocsArray);
-                    }
+                  else if( labelArray.length === 0 && textArray.length === 0)
+                      {
+                         res.send(titelDocsArray); 
+                      }
                  else {
                     textDocsArray.forEach(function (text) {
                         labelDocsArray.forEach(function (label) {
