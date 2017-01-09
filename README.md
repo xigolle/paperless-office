@@ -1,6 +1,10 @@
 # paperless-office
 Link werkt mits de server aanstaat:
 [Link naar huidige website](http://paperless-office.westeurope.cloudapp.azure.com)
+
+
+[Link naar de mockup slides](http://http://bit.ly/2ixhRfJ)
+
 ##team
  - Joosens Marijn
  - Samyn Mathias
