@@ -1,9 +1,12 @@
 # paperless-office
-
+Link werkt mits de server aanstaat:
+[Link naar huidige website](http://paperless-office.westeurope.cloudapp.azure.com)
 ##team
  - Joosens Marijn
  - Samyn Mathias
  - Driessen Joey
+
+
 
 ##Disclaimer
 Dit project is nog steeds in alpha versie. Hierdoor werkt dit enkel op geteste devices/browsers.
