@@ -781,6 +781,7 @@ app.get("/api/search/:url", function (req, res) {
                     res.send(textDocsArray);
                 } else if (textArray.length === 0) {
                     res.send(labelDocsArray);
+                }
                     else if (titelArray.length ==0){
                         res.send(titelDocsArray);
                     }
