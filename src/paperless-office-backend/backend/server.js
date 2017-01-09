@@ -757,6 +757,7 @@ app.get("/api/search/:url", function (req, res) {
                 
                 let inputTitel = titelArray;
                 console.log(inputTitel);
+                console.log(titelArray);
                 collection.aggregate([
                     
                     { "$match": {"docs.name" : { "$all": inputTitel} } } ,
