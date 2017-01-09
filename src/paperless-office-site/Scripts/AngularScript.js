@@ -322,14 +322,17 @@ function addDocToList(data) {
     newDocumentHolder.setAttribute("id", decodeURI(data));
     documentCanvas.width = 306;
     documentCanvas.height = 396;
-    documentCanvas.id = "canvass" + fileName;
+    var filteredfileName = fileName.replace(/[^a-zA-Z0-9]/g, "");
+    console.log("filtered");
+    console.log(filteredfileName);
+    documentCanvas.id = "canvass" + filteredfileName;
     var PDFWrapper = document.getElementById("Canvas-Document-Holder");
 
     newDocumentHolder.appendChild(documentIdentifier);
     newDocumentHolder.appendChild(documentCanvas);
     PDFWrapper.insertBefore(newDocumentHolder,PDFWrapper.firstChild);
     var URLReadyDocument = encodeURI(data);
-    showMultiplePDFDocument("/api/getDocumentURL/" + URLReadyDocument, "canvass" + fileName, URLReadyDocument, false);
+    showMultiplePDFDocument("/api/getDocumentURL/" + URLReadyDocument, "canvass" + filteredfileName, URLReadyDocument, false);
 
 
 
