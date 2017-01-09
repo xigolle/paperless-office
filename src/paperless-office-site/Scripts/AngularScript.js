@@ -322,7 +322,9 @@ function addDocToList(data) {
     newDocumentHolder.setAttribute("id", decodeURI(data));
     documentCanvas.width = 306;
     documentCanvas.height = 396;
-    var filteredfileName = fileName.replace(/[^a-zA-Z0-9]/g);
+    var filteredfileName = fileName.replace(/[^a-zA-Z0-9]/g, "");
+    console.log("filtered");
+    console.log(filteredfileName);
     documentCanvas.id = "canvass" + filteredfileName;
     var PDFWrapper = document.getElementById("Canvas-Document-Holder");
 
