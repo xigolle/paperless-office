@@ -771,6 +771,7 @@ app.get("/api/search/:url", function (req, res) {
                         }
                     }
                 ]).toArray(function(err,items){
+                    console.log(items);
                     if(items.length > 0) {
                         titelDocsArray = items[0].docs;
                         console.log("###" + items[0].docs);
