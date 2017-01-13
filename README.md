@@ -73,7 +73,7 @@ Joey/paperless-office/src/
 ```
 
 Je gaat hierna naar de volgende folder:
-`paperless-office-back-backend` en voert dan het volgende commando uit `sudo npm install` deze zal via de [`application.js`](https://github.com/xigolle/paperless-office/blob/master/src/paperless-office-backend/backend/package.json) file alle nodige packages downloaden.
+`paperless-office-backend/backend` en voert dan het volgende commando uit `sudo npm install` deze zal via de [`application.js`](https://github.com/xigolle/paperless-office/blob/master/src/paperless-office-backend/backend/package.json) file alle nodige packages downloaden.
 
 Vanaf het moment dat dit gebeurt is ga je het commando `sudo npm start` moeten gebruiken.
 
@@ -85,7 +85,7 @@ Of je kan het volgende commando gebruiken dat poort 80 verkeer redirect naar poo
 ##opzetten storage account
 Voor het opzetten van een storage account zal je eerste een Azure account moeten hebben.
 Via de portal van Azure ga je het account moeten opzetten.
-Je zal de file `server.json` nodig hebben in de folder `paperless-office-backend` en hier zullen de credentials van het storage account in moeten komen in volgende formaat:
+Je zal de file `config.json` nodig hebben in de folder `paperless-office-backend` en hier zullen de credentials van het storage account in moeten komen in volgende formaat:
 
 ```
 {
